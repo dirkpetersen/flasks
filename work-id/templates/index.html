@@ -31,14 +31,10 @@
                 <!-- Form Section -->
                 <div class="card p-4">
                     <h5 class="card-title mb-3">
-                        <i class="bi bi-pencil-square me-2"></i>{{ app_name }} Entry - {{ new_id }}
+                        <i class="bi bi-pencil-square me-2"></i>{{ app_name }} Entry - <span class="fw-bold" id="displayId" style="color: var(--bs-primary);">{{ new_id }}</span>
                     </h5>
                     <form id="recordForm" class="needs-validation" novalidate>
                     <input type="hidden" id="recordId" value="{{ new_id }}">
-                    
-                    <div class="mb-4 text-center">
-                        <h3 class="fw-bold" id="displayId" style="color: var(--bs-primary);">{{ new_id }}</h3>
-                    </div>
 
                     <div class="mb-3">
                         <label class="form-label">Title <span class="text-danger">*</span></label>
