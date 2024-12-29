@@ -183,10 +183,11 @@ function loadCaptcha() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Load initial CAPTCHA
-    loadCaptcha();
     document.getElementById('recordForm').addEventListener('submit', function(e) {
         e.preventDefault();
+        
+        const captchaContainer = document.getElementById('captchaContainer');
+        const captchaInput = document.getElementById('captchaInput');
         
         const formData = {
             id: document.getElementById('recordId').value,
@@ -197,8 +198,15 @@ document.addEventListener('DOMContentLoaded', function() {
             work_type: document.getElementById('workType').value,
             required_apps: $('#requiredApps').val(),
             active: document.getElementById('active').checked,
-            captcha: document.getElementById('captchaInput').value
+            captcha: captchaInput ? captchaInput.value : ''
         };
+
+        // If CAPTCHA is not visible yet, show it and load a new one
+        if (captchaContainer.classList.contains('d-none')) {
+            captchaContainer.classList.remove('d-none');
+            loadCaptcha();
+            return; // Stop form submission until CAPTCHA is filled
+        }
 
         const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
         const method = isNewRecord ? 'POST' : 'PUT';
