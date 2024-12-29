@@ -220,28 +220,13 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Failed to load CAPTCHA:', error);
             alert('Failed to load CAPTCHA. Please try again.');
         });
-        })
-        .then(() => {
-            loadRecords();
-            if (method === 'POST') {
-                resetForm();
-            }
-            // Hide CAPTCHA after successful verification
-            captchaContainer.classList.add('d-none');
-            captchaInput.value = '';
-        })
-        .catch(error => {
-            alert(error.message);
-            if (error.message.includes('CAPTCHA')) {
-                loadCaptcha();  // Reload CAPTCHA if invalid
-            }
-        });
     });
 // Function to handle form submission with CAPTCHA
 function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
     const titleInput = document.getElementById('title');
     const submitButton = document.querySelector('#captchaModal .btn-primary');
+    const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
 
     if (!titleInput.value.trim()) {
         alert('Title is required');
@@ -266,7 +251,7 @@ function submitWithCaptcha() {
         start_date: document.getElementById('startDate').value,
         end_date: document.getElementById('endDate').value,
         work_type: document.getElementById('workType').value,
-        required_apps: $('#requiredApps').val(),
+        required_apps: $('#requiredApps').val() || [],
         active: document.getElementById('active').checked,
         captcha: captchaInput.value
     };
