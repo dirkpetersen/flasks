@@ -9,7 +9,7 @@ import io
 import random
 import string
 from dotenv import load_dotenv
-from models import WorkRecord
+from models import WorkRecord, redis_client
 import pytz
 
 # Load environment variables
