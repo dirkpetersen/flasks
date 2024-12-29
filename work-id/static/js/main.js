@@ -176,7 +176,16 @@ function loadCaptcha() {
             const captchaImage = document.getElementById('captchaImage');
             captchaImage.src = 'data:image/png;base64,' + data.image;
             captchaImage.style.display = 'block';
-            document.getElementById('captchaInput').value = '';
+            const captchaInput = document.getElementById('captchaInput');
+            captchaInput.value = '';
+            
+            // Add enter key handler
+            captchaInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submitWithCaptcha();
+                }
+            });
         })
         .catch(error => {
             console.error('Error loading CAPTCHA:', error);
