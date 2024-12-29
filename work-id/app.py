@@ -1,16 +1,11 @@
 #! /usr/bin/env python3
 
-import sys, os
+import sys, os, base64, io, random, string
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, make_response, send_from_directory, session
 from captcha.image import ImageCaptcha
-import base64
-import io
-import random
-import string
 from dotenv import load_dotenv
 from models import WorkRecord
-import pytz
 
 # Load environment variables
 load_dotenv()
