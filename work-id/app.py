@@ -45,6 +45,22 @@ def index():
                          force_captcha=force_captcha,
                          app_name=app_name)
 
+@app.route('/api/captcha')
+def get_captcha():
+    image = ImageCaptcha(width=280, height=90)
+    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    session['captcha_text'] = captcha_text
+    
+    # Generate the image
+    data = image.generate(captcha_text)
+    
+    # Convert to base64
+    buffered = io.BytesIO()
+    image.write(captcha_text, buffered)
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    
+    return jsonify({'image': img_str})
+
 @app.route('/api/records', methods=['GET'])
 def get_records():
     recent = request.args.get('recent', None)
@@ -80,22 +96,6 @@ def get_records():
     
     # Default behavior - return all IDs when no email is set
     return jsonify([record.id for record in records])
-
-@app.route('/api/captcha')
-def get_captcha():
-    image = ImageCaptcha(width=280, height=90)
-    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    session['captcha_text'] = captcha_text
-    
-    # Generate the image
-    data = image.generate(captcha_text)
-    
-    # Convert to base64
-    buffered = io.BytesIO()
-    image.write(captcha_text, buffered)
-    img_str = base64.b64encode(buffered.getvalue()).decode()
-    
-    return jsonify({'image': img_str})
 
 @app.route('/api/records', methods=['POST'])
 def create_record():
