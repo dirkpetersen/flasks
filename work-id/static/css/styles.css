@@ -65,12 +65,13 @@ html, body {
 }
 
 select[multiple] {
-    height: 4.5em;  /* Show approximately 2 lines */
-    padding: 0.25rem;
+    height: 2.4em;  /* Show approximately 1 line */
+    padding: 0.15rem;
 }
 
 select[multiple] option {
-    padding: 2px 5px;
+    padding: 1px 5px;
+    font-size: 0.95em;
 }
 
 .badge {
