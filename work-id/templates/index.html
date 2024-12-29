@@ -176,13 +176,20 @@
         }
 
         function loadRecord(id) {
-            fetch(`/api/records/${id}`)
+            console.log('Loading record with ID:', id);
+            fetch('/api/records')
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Record not found');
+                        throw new Error('Failed to fetch records');
                     }
                     return response.json();
                 })
+                .then(records => {
+                    const record = records.find(r => r.id === id);
+                    if (!record) {
+                        throw new Error(`Record with ID ${id} not found`);
+                    }
+                    console.log('Found record:', record);
                 .then(record => {
                     if (!record) return;
                     
@@ -241,7 +248,7 @@
                 })
                 .catch(error => {
                     console.error('Error loading record:', error);
-                    alert('Failed to load record. Please try again.');
+                    alert(`Failed to load record: ${error.message}`);
                 });
         }
 
