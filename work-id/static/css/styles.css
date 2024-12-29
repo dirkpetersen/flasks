@@ -1,0 +1,13 @@
+.record-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.record-item:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}
+
+.loading {
+    cursor: wait !important;
+}

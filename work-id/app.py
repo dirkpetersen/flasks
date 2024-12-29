@@ -2,7 +2,7 @@
 
 import sys, os
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, make_response
+from flask import Flask, render_template, request, jsonify, make_response, send_from_directory
 from dotenv import load_dotenv
 from models import WorkRecord
 import pytz
@@ -11,7 +11,7 @@ import pytz
 load_dotenv()
 
 debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['SECRET_KEY'] = os.urandom(24)
 
 def get_meta_fields():
