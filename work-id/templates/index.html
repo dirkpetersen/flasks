@@ -29,18 +29,6 @@
             </div>
         </div>
 
-        <!-- Search Bar -->
-        <div class="mb-4">
-            <div class="input-group">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search records...">
-                <div class="input-group-text">
-                    <input class="form-check-input mt-0" type="checkbox" id="userOnlyCheck">
-                    <label class="form-check-label ms-2" for="userOnlyCheck">My records only</label>
-                </div>
-                <button class="btn btn-outline-secondary" onclick="searchRecords()">Search</button>
-            </div>
-        </div>
-
         <div class="row">
             <!-- Form Section -->
             <div class="col-md-6">
@@ -114,6 +102,17 @@
             <!-- Records List Section -->
             <div class="col-md-6">
                 <h3>My Records</h3>
+                <!-- Search Bar -->
+                <div class="mb-3">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search records...">
+                        <div class="input-group-text">
+                            <input class="form-check-input mt-0" type="checkbox" id="userOnlyCheck">
+                            <label class="form-check-label ms-2" for="userOnlyCheck">My records only</label>
+                        </div>
+                        <button class="btn btn-outline-secondary" onclick="searchRecords()">Search</button>
+                    </div>
+                </div>
                 <div id="recordsList" class="record-list list-group">
                     <!-- Records will be populated here -->
                 </div>
