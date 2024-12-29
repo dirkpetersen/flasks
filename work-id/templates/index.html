@@ -177,45 +177,71 @@
 
         function loadRecord(id) {
             fetch(`/api/records/${id}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Record not found');
+                    }
+                    return response.json();
+                })
                 .then(record => {
                     if (!record) return;
                     
-                    // Update form fields
-                    document.getElementById('recordId').value = record.id;
-                    document.getElementById('displayId').value = record.id;
+                    console.log('Loading record:', record); // Debug log
+                    
+                    // Update form fields with strict null checks
+                    document.getElementById('recordId').value = record.id || '';
+                    document.getElementById('displayId').value = record.id || '';
                     document.getElementById('title').value = record.title || '';
                     document.getElementById('description').value = record.description || '';
                     
-                    // Handle dates - ensure we get local datetime-local format
+                    // Handle dates with proper timezone conversion
                     if (record.start_date) {
-                        const startDate = new Date(record.start_date);
-                        document.getElementById('startDate').value = startDate.toISOString().slice(0, 16);
+                        try {
+                            const startDate = new Date(record.start_date);
+                            const localStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
+                            document.getElementById('startDate').value = localStartDate.toISOString().slice(0, 16);
+                        } catch (e) {
+                            console.error('Error parsing start_date:', e);
+                            document.getElementById('startDate').value = '';
+                        }
                     } else {
                         document.getElementById('startDate').value = '';
                     }
                     
                     if (record.end_date) {
-                        const endDate = new Date(record.end_date);
-                        document.getElementById('endDate').value = endDate.toISOString().slice(0, 16);
+                        try {
+                            const endDate = new Date(record.end_date);
+                            const localEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
+                            document.getElementById('endDate').value = localEndDate.toISOString().slice(0, 16);
+                        } catch (e) {
+                            console.error('Error parsing end_date:', e);
+                            document.getElementById('endDate').value = '';
+                        }
                     } else {
                         document.getElementById('endDate').value = '';
                     }
                     
-                    // Handle work type
+                    // Handle work type with validation
                     const workTypeSelect = document.getElementById('workType');
                     if (workTypeSelect) {
                         workTypeSelect.value = record.work_type || '';
+                        // Trigger change event for any dependent behaviors
+                        workTypeSelect.dispatchEvent(new Event('change'));
                     }
                     
                     // Handle required apps with Select2
                     const requiredAppsSelect = $('#requiredApps');
                     if (requiredAppsSelect.length) {
-                        requiredAppsSelect.val(record.required_apps || []).trigger('change');
+                        const apps = Array.isArray(record.required_apps) ? record.required_apps : [];
+                        requiredAppsSelect.val(apps).trigger('change');
                     }
                     
-                    // Handle active status
+                    // Handle active status with default true
                     document.getElementById('active').checked = record.active !== undefined ? record.active : true;
+                })
+                .catch(error => {
+                    console.error('Error loading record:', error);
+                    alert('Failed to load record. Please try again.');
                 });
         }
 
