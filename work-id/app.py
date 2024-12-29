@@ -15,12 +15,21 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 
 def get_meta_fields():
-    work_types = os.getenv('META_SEL_WorkType', '').split(',')
-    required_apps = os.getenv('META_MSEL_RequiredApps', '').split(',')
-    return {
-        'work_types': work_types,
-        'required_apps': required_apps
-    }
+    meta_fields = {'single_select': {}, 'multi_select': {}}
+    
+    # Get all environment variables
+    for key, value in os.environ.items():
+        # Process single select fields
+        if key.startswith('META_SEL_'):
+            field_name = key[9:]  # Remove 'META_SEL_' prefix
+            meta_fields['single_select'][field_name] = value.split(',')
+            
+        # Process multi select fields
+        elif key.startswith('META_MSEL_'):
+            field_name = key[10:]  # Remove 'META_MSEL_' prefix
+            meta_fields['multi_select'][field_name] = value.split(',')
+            
+    return meta_fields
 
 @app.route('/')
 def index():
