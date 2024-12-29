@@ -1,13 +1,5 @@
-#! /usr/bin/env python3
-
-import sys, os, base64, io, random, string
-from datetime import datetime
-from flask import Flask, render_template, request, jsonify, make_response, send_from_directory, session
-from captcha.image import ImageCaptcha
-from dotenv import load_dotenv
-<<<<<<< HEAD
-from models import WorkRecord, redis_client
-import pytz
+from models import WorkRecord
+>>>>>>> 8eeeedbd024f7dd9114c391c52bf4fff796fae4c
 =======
 from models import WorkRecord
 >>>>>>> 8eeeedbd024f7dd9114c391c52bf4fff796fae4c
