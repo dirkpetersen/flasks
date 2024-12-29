@@ -11,9 +11,13 @@ html, body {
     padding: 0 24px;
 }
 
-.d-flex.h-100 {
+.row.h-100 {
     height: 100%;
     gap: 24px;
+}
+
+.col-lg-8, .col-lg-4 {
+    padding: 0 12px;
 }
 
 .card {
