@@ -230,9 +230,10 @@ document.addEventListener('DOMContentLoaded', function() {
 function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
     const titleInput = document.getElementById('title');
-    const submitButton = document.querySelector('#captchaModal .btn-primary');
+    const submitButton = document.querySelector('#captchaModal button.btn-primary');
+    const form = document.getElementById('recordForm');
 
-    if (!titleInput.value.trim()) {
+    if (!form.checkValidity() || !titleInput.value.trim()) {
         alert('Title is required');
         titleInput.focus();
         return;
@@ -245,9 +246,12 @@ function submitWithCaptcha() {
     }
 
     // Disable submit button and show loading state
-    const loadingSpinner = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
     submitButton.disabled = true;
-    submitButton.innerHTML = loadingSpinner;
+    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+    
+    // Disable the refresh button during submission
+    const refreshButton = document.querySelector('#captchaModal button.btn-secondary');
+    refreshButton.disabled = true;
 
     const formData = {
         id: document.getElementById('recordId').value,
@@ -317,5 +321,6 @@ function submitWithCaptcha() {
         // Re-enable submit button
         submitButton.disabled = false;
         submitButton.innerHTML = 'Submit';
+        refreshButton.disabled = false;
     });
 }
