@@ -132,6 +132,9 @@ class WorkRecord:
         if user_only and not user_email:
             return []
             
+        # Treat asterisk as empty string
+        query = '' if query == '*' else query
+            
         all_keys = redis_client.keys("work:*")
         results = []
         

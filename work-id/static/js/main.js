@@ -149,7 +149,9 @@ function resetForm() {
 let isSearchActive = false;
 
 function searchRecords() {
-    const query = document.getElementById('searchInput').value;
+    let query = document.getElementById('searchInput').value;
+    // Convert asterisk to empty string
+    query = query === '*' ? '' : query;
     const userOnly = document.getElementById('userOnlyCheck').checked;
     
     if (!query.trim()) {
