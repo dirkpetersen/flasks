@@ -289,27 +289,14 @@ function submitFormData(formData) {
         if (method === 'POST') {
             resetForm();
         }
-        // Hide modal after successful verification
-        const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
-        if (captchaModal) {
-            captchaModal.hide();
+        // Clear CAPTCHA input if it exists
+        const captchaInput = document.getElementById('captchaInput');
+        if (captchaInput) {
+            captchaInput.value = '';
         }
-        // Clear CAPTCHA input
-        captchaInput.value = '';
         // Show success message
-        const toast = new bootstrap.Toast(Object.assign(document.createElement('div'), {
-            className: 'toast position-fixed top-0 end-0 m-3',
-            innerHTML: `
-                <div class="toast-header bg-success text-white">
-                    <strong class="me-auto">Success</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-                </div>
-                <div class="toast-body">Record saved successfully!</div>
-            `
-        }));
-        document.body.appendChild(toast._element);
-        toast.show();
-        setTimeout(() => toast._element.remove(), 3000);
+        // Show success alert
+        alert('Record saved successfully!');
     })
     .catch(error => {
         alert(error.message);
