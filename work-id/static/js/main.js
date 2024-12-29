@@ -27,10 +27,15 @@ function loadRecords() {
     }
 
     fetch('/api/records')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch records');
+            }
+            return response.json();
+        })
         .then(records => {
             const recordsList = document.getElementById('recordsList');
-            if (records.length === 0) {
+            if (!Array.isArray(records) || records.length === 0) {
                 recordsList.innerHTML = '<div class="list-group-item text-center text-muted py-4">' +
                     '<i class="bi bi-inbox fs-2 mb-2"></i><br>' +
                     'No records found</div>';
@@ -57,7 +62,7 @@ function loadRecords() {
                     <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="text-truncate me-2">
-                                <strong>${record.id}</strong> - ${record.title}
+                                <strong>${record.id}</strong> - ${record.title || 'Untitled'}
                                 ${metaBadges}
                                 ${record.active ? '<span class="badge bg-success">Active</span>' : 
                                                '<span class="badge bg-danger">Inactive</span>'}
@@ -507,22 +512,42 @@ function submitFormData(formData) {
 }
 function updateRecordsList(records) {
     const recordsList = document.getElementById('recordsList');
-    if (records.length === 0) {
-        recordsList.innerHTML = '<div class="list-group-item">No records found</div>';
+    if (!Array.isArray(records) || records.length === 0) {
+        recordsList.innerHTML = '<div class="list-group-item text-center text-muted py-4">' +
+            '<i class="bi bi-inbox fs-2 mb-2"></i><br>' +
+            'No records found</div>';
         return;
     }
-    recordsList.innerHTML = records.map(record => `
-        <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-truncate me-2">
-                    <strong>${record.id}</strong> - ${record.title}
-                    ${record.work_type ? `<span class="badge bg-secondary">${record.work_type}</span>` : ''}
-                    ${record.required_apps ? `<span class="badge bg-info">Apps: ${record.required_apps.join(', ')}</span>` : ''}
-                    ${record.active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}
+    recordsList.innerHTML = records.map(record => {
+        // Get all meta fields that have values
+        const metaBadges = Object.entries(record)
+            .filter(([key, value]) => 
+                value !== null && 
+                !['id', 'title', 'description', 'start_date', 'end_date', 
+                  'active', 'creator_id', 'created_at'].includes(key)
+            )
+            .map(([key, value]) => {
+                if (Array.isArray(value)) {
+                    return `<span class="badge bg-info">${key}: ${value.join(', ')}</span>`;
+                } else {
+                    return `<span class="badge bg-secondary">${key}: ${value}</span>`;
+                }
+            })
+            .join(' ');
+
+        return `
+            <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-truncate me-2">
+                        <strong>${record.id}</strong> - ${record.title || 'Untitled'}
+                        ${metaBadges}
+                        ${record.active ? '<span class="badge bg-success">Active</span>' : 
+                                      '<span class="badge bg-danger">Inactive</span>'}
+                    </div>
+                    <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
                 </div>
-                <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
+                <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
             </div>
-            <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
