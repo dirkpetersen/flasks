@@ -238,15 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
-    const titleInput = document.getElementById('title');
     const submitButton = document.querySelector('#captchaModal button.btn-primary');
-    const form = document.getElementById('recordForm');
-
-    if (!form.checkValidity() || !titleInput.value.trim()) {
-        alert('Title is required');
-        titleInput.focus();
-        return;
-    }
 
     if (!captchaInput.value.trim()) {
         alert('Please complete the CAPTCHA verification');
