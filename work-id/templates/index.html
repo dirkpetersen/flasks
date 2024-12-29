@@ -53,7 +53,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Description</label>
-                        <textarea class="form-control" id="description" required maxlength="1024" rows="3"></textarea>
+                        <textarea class="form-control" id="description" maxlength="1024" rows="3"></textarea>
                     </div>
 
                     <div class="row">
@@ -71,7 +71,7 @@
                     {% for field_name, options in meta_fields.single_select.items() %}
                     <div class="mb-3">
                         <label class="form-label">{{ field_name }}</label>
-                        <select class="form-select" id="{{ field_name|lower }}" required>
+                        <select class="form-select" id="{{ field_name|lower }}">
                             <option value="">Select {{ field_name }}</option>
                             {% for option in options %}
                             <option value="{{ option }}">{{ option }}</option>
