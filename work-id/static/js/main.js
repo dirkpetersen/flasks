@@ -1,17 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
-    loadRecords();
-    
-    // Initialize Select2 for multi-select fields after jQuery is ready
-    $(function() {
-        $('.form-select[multiple]').select2({
-            width: '100%',
-            placeholder: 'Select options',
-            closeOnSelect: false,
-            allowClear: true,
-            tags: false
-        });
-    });
-
+// Function declarations first
 function setEmail() {
     const email = document.getElementById('emailInput').value;
     if (!email) return;
@@ -222,6 +209,48 @@ function loadCaptcha() {
         });
     });
 // Function to handle form submission with CAPTCHA
+// Main initialization
+document.addEventListener('DOMContentLoaded', function() {
+    loadRecords();
+    
+    // Initialize Select2 for multi-select fields after jQuery is ready
+    $(function() {
+        $('.form-select[multiple]').select2({
+            width: '100%',
+            placeholder: 'Select options',
+            closeOnSelect: false,
+            allowClear: true,
+            tags: false
+        });
+    });
+
+    const recordIdInput = document.getElementById('recordId');
+    // Store the initial ID as the new-id
+    recordIdInput.setAttribute('data-new-id', recordIdInput.value);
+
+    // Set up form submission handler
+    document.getElementById('recordForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate title field
+        const titleInput = document.getElementById('title');
+        if (!titleInput.value.trim()) {
+            alert('Title is required');
+            titleInput.focus();
+            return false;
+        }
+
+        // Show CAPTCHA modal on save attempt
+        const captchaModal = new bootstrap.Modal(document.getElementById('captchaModal'));
+        loadCaptcha().then(() => {
+            captchaModal.show();
+        }).catch(error => {
+            console.error('Failed to load CAPTCHA:', error);
+            alert('Failed to load CAPTCHA. Please try again.');
+        });
+    });
+});
+
 function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
     const titleInput = document.getElementById('title');
