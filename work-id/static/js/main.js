@@ -184,30 +184,6 @@ function loadCaptcha() {
         });
 }
 
-    const recordIdInput = document.getElementById('recordId');
-    // Store the initial ID as the new-id
-    recordIdInput.setAttribute('data-new-id', recordIdInput.value);
-
-    document.getElementById('recordForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validate title field
-        const titleInput = document.getElementById('title');
-        if (!titleInput.value.trim()) {
-            alert('Title is required');
-            titleInput.focus();
-            return false;
-        }
-
-        // Show CAPTCHA modal on save attempt
-        const captchaModal = new bootstrap.Modal(document.getElementById('captchaModal'));
-        loadCaptcha().then(() => {
-            captchaModal.show();
-        }).catch(error => {
-            console.error('Failed to load CAPTCHA:', error);
-            alert('Failed to load CAPTCHA. Please try again.');
-        });
-    });
 // Function to handle form submission with CAPTCHA
 // Main initialization
 document.addEventListener('DOMContentLoaded', function() {
@@ -255,7 +231,6 @@ function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
     const titleInput = document.getElementById('title');
     const submitButton = document.querySelector('#captchaModal .btn-primary');
-    const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
 
     if (!titleInput.value.trim()) {
         alert('Title is required');
@@ -310,7 +285,6 @@ function submitWithCaptcha() {
             resetForm();
         }
         // Hide modal after successful verification
-        const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
         captchaModal.hide();
         // Clear CAPTCHA input
         captchaInput.value = '';
