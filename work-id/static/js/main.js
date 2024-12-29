@@ -179,11 +179,13 @@ function searchRecords() {
 
 // Form submission handler
 function loadCaptcha() {
-    fetch('/api/captcha')
+    return fetch('/api/captcha')
         .then(response => response.json())
         .then(data => {
-            document.getElementById('captchaImage').src = 'data:image/png;base64,' + data.image;
-            document.getElementById('captchaInput').value = ''; // Clear previous input
+            const captchaImage = document.getElementById('captchaImage');
+            captchaImage.src = 'data:image/png;base64,' + data.image;
+            captchaImage.style.display = 'block';
+            document.getElementById('captchaInput').value = '';
         })
         .catch(error => {
             console.error('Error loading CAPTCHA:', error);
@@ -214,10 +216,14 @@ document.addEventListener('DOMContentLoaded', function() {
             captcha: captchaInput ? captchaInput.value : ''
         };
 
-        // Always show CAPTCHA on first save attempt
+        // Show CAPTCHA on first save attempt
         if (captchaContainer.classList.contains('d-none')) {
             captchaContainer.classList.remove('d-none');
-            loadCaptcha();
+            loadCaptcha().then(() => {
+                console.log('CAPTCHA loaded and displayed');
+            }).catch(error => {
+                console.error('Failed to load CAPTCHA:', error);
+            });
             return false; // Stop form submission until CAPTCHA is filled
         }
 
