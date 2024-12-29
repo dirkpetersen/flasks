@@ -235,8 +235,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
 
-            // Submit the form
-            submitForm();
+            // Get form data and submit
+            const formData = {
+                id: document.getElementById('recordId').value,
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                start_date: document.getElementById('startDate').value,
+                end_date: document.getElementById('endDate').value,
+                work_type: document.getElementById('workType').value,
+                required_apps: $('#requiredApps').val() || [],
+                active: document.getElementById('active').checked,
+                captcha: captchaInput ? captchaInput.value : null
+            };
+
+            submitFormData(formData);
         });
     }
 
@@ -247,26 +259,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function submitForm() {
+function submitFormData(formData) {
     const submitButton = document.querySelector('#recordForm button[type="submit"]');
     submitButton.disabled = true;
     submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
-
-    const formData = {
-        id: document.getElementById('recordId').value,
-        title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
-        start_date: document.getElementById('startDate').value,
-        end_date: document.getElementById('endDate').value,
-        work_type: document.getElementById('workType').value,
-        required_apps: $('#requiredApps').val() || [],
-        active: document.getElementById('active').checked
-    };
-
-    const captchaInput = document.getElementById('captchaInput');
-    if (captchaInput) {
-        formData.captcha = captchaInput.value;
-    }
 
     const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
     const method = isNewRecord ? 'POST' : 'PUT';
