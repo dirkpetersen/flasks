@@ -245,8 +245,9 @@ function submitWithCaptcha() {
     }
 
     // Disable submit button and show loading state
+    const loadingSpinner = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
     submitButton.disabled = true;
-    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
+    submitButton.innerHTML = loadingSpinner;
 
     const formData = {
         id: document.getElementById('recordId').value,
