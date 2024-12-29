@@ -36,20 +36,45 @@ function loadRecords() {
                     'No records found</div>';
                 return;
             }
-            recordsList.innerHTML = records.map(record => `
-                <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-truncate me-2">
-                            <strong>${record.id}</strong> - ${record.title}
-                            ${record.work_type ? `<span class="badge bg-secondary">${record.work_type}</span>` : ''}
-                            ${record.required_apps ? `<span class="badge bg-info">Apps: ${record.required_apps.join(', ')}</span>` : ''}
-                            ${record.active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}
+            recordsList.innerHTML = records.map(record => {
+                // Get all meta fields that have values
+                const metaBadges = Object.entries(record)
+                    .filter(([key, value]) => 
+                        value !== null && 
+                        !['id', 'title', 'description', 'start_date', 'end_date', 
+                          'active', 'creator_id', 'created_at'].includes(key)
+                    )
+                    .map(([key, value]) => {
+                        if (Array.isArray(value)) {
+                            return `<span class="badge bg-info">${key}: ${value.join(', ')}</span>`;
+                        } else {
+                            return `<span class="badge bg-secondary">${key}: ${value}</span>`;
+                        }
+                    })
+                    .join(' ');
+
+                return `
+                    <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-truncate me-2">
+                                <strong>${record.id}</strong> - ${record.title}
+                                ${metaBadges}
+                                ${record.active ? '<span class="badge bg-success">Active</span>' : 
+                                               '<span class="badge bg-danger">Inactive</span>'}
+                            </div>
+                            <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
                         </div>
-                        <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
+                        <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
                     </div>
-                    <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
+        })
+        .catch(error => {
+            console.error('Error loading records:', error);
+            const recordsList = document.getElementById('recordsList');
+            recordsList.innerHTML = '<div class="list-group-item text-center text-danger py-4">' +
+                '<i class="bi bi-exclamation-triangle fs-2 mb-2"></i><br>' +
+                'Error loading records</div>';
         });
 }
 
