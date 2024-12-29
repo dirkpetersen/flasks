@@ -237,7 +237,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
 // Function to handle form submission with CAPTCHA
 function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
