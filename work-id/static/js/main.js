@@ -237,13 +237,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // CAPTCHA validation only if CAPTCHA section exists
+            // CAPTCHA validation only if force_captcha is true and section exists
             const captchaSection = document.getElementById('captchaSection');
-            const captchaInput = document.getElementById('captchaInput');
-            if (captchaSection && captchaInput && !captchaInput.value.trim()) {
-                alert('Please complete the CAPTCHA verification');
-                captchaInput.focus();
-                return;
+            if (captchaSection) {
+                const captchaInput = document.getElementById('captchaInput');
+                if (!captchaInput.value.trim()) {
+                    alert('Please complete the CAPTCHA verification');
+                    captchaInput.focus();
+                    return;
+                }
             }
 
             try {
@@ -261,9 +263,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 console.log('Form data:', formData); // Debug log
 
-                // Add CAPTCHA if section exists and input is present
+                // Add CAPTCHA only if section exists (force_captcha is true)
                 const captchaSection = document.getElementById('captchaSection');
-                if (captchaSection && captchaInput) {
+                if (captchaSection) {
+                    const captchaInput = document.getElementById('captchaInput');
                     formData.captcha = captchaInput.value.trim();
                 }
 

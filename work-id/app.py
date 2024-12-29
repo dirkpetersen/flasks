@@ -77,8 +77,8 @@ def get_captcha():
 def create_record():
     data = request.json
     
-    # Check if this is the first save in the session
-    if not session.get('verified', False):
+    # Only check CAPTCHA if force_captcha is enabled
+    if force_captcha and not session.get('verified', False):
         # Verify CAPTCHA
         captcha_input = data.get('captcha')
         if not captcha_input or captcha_input.upper() != session.get('captcha_text', ''):
