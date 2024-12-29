@@ -54,6 +54,7 @@ class WorkRecord:
 
     def to_dict(self) -> dict:
         data = {}
+        # Handle standard fields
         if self.id:
             data['id'] = self.id
         if self.title:
@@ -68,12 +69,17 @@ class WorkRecord:
             data['active'] = self.active
         if self.creator_id:
             data['creator_id'] = self.creator_id
-        if self.work_type:
-            data['work_type'] = self.work_type
-        if self.required_apps:
-            data['required_apps'] = self.required_apps
         if self.created_at:
             data['created_at'] = self.created_at.isoformat()
+            
+        # Handle dynamic meta fields
+        for field_name in self.__dict__:
+            if field_name not in ['id', 'title', 'description', 'start_date', 
+                                'end_date', 'active', 'creator_id', 'created_at']:
+                value = getattr(self, field_name)
+                if value is not None:
+                    data[field_name] = value
+                    
         return data
 
     @classmethod
