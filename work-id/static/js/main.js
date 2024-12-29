@@ -71,8 +71,8 @@ function loadRecord(id) {
             if (record.start_date) {
                 try {
                     const startDate = new Date(record.start_date);
-                    const localStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
-                    document.getElementById('startDate').value = localStartDate.toISOString().slice(0, 16);
+                    const localStartDate = startDate.toISOString().split('T')[0];
+                    document.getElementById('startDate').value = localStartDate;
                     document.getElementById('startDateTimezone').textContent = `(${record.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone})`;
                 } catch (e) {
                     console.error('Error parsing start_date:', e);
@@ -87,8 +87,8 @@ function loadRecord(id) {
             if (record.end_date) {
                 try {
                     const endDate = new Date(record.end_date);
-                    const localEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
-                    document.getElementById('endDate').value = localEndDate.toISOString().slice(0, 16);
+                    const localEndDate = endDate.toISOString().split('T')[0];
+                    document.getElementById('endDate').value = localEndDate;
                     document.getElementById('endDateTimezone').textContent = `(${record.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone})`;
                 } catch (e) {
                     console.error('Error parsing end_date:', e);
