@@ -146,9 +146,34 @@ function resetForm() {
         });
 }
 
+let isSearchActive = false;
+
+function toggleSearch() {
+    const searchButton = document.getElementById('searchButton');
+    if (isSearchActive) {
+        // Reset to show all records
+        isSearchActive = false;
+        document.getElementById('searchInput').value = '';
+        searchButton.innerHTML = '<i class="bi bi-search me-1"></i>Search';
+        loadRecords(); // Load all records
+    } else {
+        // Perform search
+        searchRecords();
+    }
+}
+
 function searchRecords() {
     const query = document.getElementById('searchInput').value;
     const userOnly = document.getElementById('userOnlyCheck').checked;
+    
+    if (!query.trim()) {
+        loadRecords();
+        return;
+    }
+
+    isSearchActive = true;
+    const searchButton = document.getElementById('searchButton');
+    searchButton.innerHTML = '<i class="bi bi-arrow-counterclockwise me-1"></i>Show All Records';
     
     fetch(`/api/search?q=${encodeURIComponent(query)}&user_only=${userOnly}`)
         .then(response => {
@@ -220,7 +245,11 @@ document.addEventListener('DOMContentLoaded', function() {
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                searchRecords();
+                if (isSearchActive) {
+                    toggleSearch(); // Reset search if active
+                } else {
+                    searchRecords(); // Perform new search
+                }
             }
         });
     }
