@@ -1,10 +1,4 @@
-// Initialize Select2
 $(document).ready(function() {
-    // Initialize Select2 for all multi-select fields
-    $('.select2-multi').select2({
-        width: '100%',
-        dropdownAutoWidth: false
-    });
     loadRecords();
 });
 
