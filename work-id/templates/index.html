@@ -99,27 +99,21 @@
                         </div>
                     </div>
 
-                    <!-- CAPTCHA Modal -->
-                    <div class="modal fade" id="captchaModal" tabindex="-1" aria-labelledby="captchaModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="captchaModalLabel">Verify you are human</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div id="captchaContainer">
-                                        <img id="captchaImage" class="mb-2 d-block w-100" alt="CAPTCHA" style="border: 1px solid #dee2e6; border-radius: 4px;">
-                                        <input type="text" class="form-control" id="captchaInput" placeholder="Enter the code above">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary" onclick="submitWithCaptcha()">Submit</button>
-                                    <button type="button" class="btn btn-secondary" onclick="loadCaptcha()">Refresh CAPTCHA</button>
-                                </div>
+                    {% if force_captcha %}
+                    <div class="mb-3" id="captchaSection">
+                        <label class="form-label">Verification</label>
+                        <div class="card p-3">
+                            <img id="captchaImage" class="mb-2" alt="CAPTCHA" style="max-width: 280px; border: 1px solid #dee2e6; border-radius: 4px;">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="captchaInput" placeholder="Enter the code above">
+                                <button type="button" class="btn btn-outline-secondary" onclick="loadCaptcha()">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
+                    {% endif %}
+
                     <button type="submit" class="btn btn-primary">Save Record</button>
                     <button type="button" class="btn btn-secondary" onclick="resetForm()">New Record</button>
                 </form>

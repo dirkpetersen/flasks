@@ -16,6 +16,7 @@ import pytz
 load_dotenv()
 
 debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+force_captcha = os.getenv('FORCE_CAPTCHA', 'False').lower() == 'true'
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour session
@@ -44,7 +45,8 @@ def index():
     return render_template('index.html', 
                          email=email,
                          meta_fields=meta_fields,
-                         new_id=WorkRecord.generate_id())
+                         new_id=WorkRecord.generate_id(),
+                         force_captcha=force_captcha)
 
 @app.route('/api/records', methods=['GET'])
 def get_records():

@@ -214,42 +214,42 @@ document.addEventListener('DOMContentLoaded', function() {
     recordIdInput.setAttribute('data-new-id', recordIdInput.value);
 
     // Set up form submission handler
-    document.getElementById('recordForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Validate title field
-        const titleInput = document.getElementById('title');
-        if (!titleInput.value.trim()) {
-            alert('Title is required');
-            titleInput.focus();
-            return false;
-        }
+    const form = document.getElementById('recordForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate title field
+            const titleInput = document.getElementById('title');
+            if (!titleInput.value.trim()) {
+                alert('Title is required');
+                titleInput.focus();
+                return false;
+            }
 
-        // Show CAPTCHA modal on save attempt
-        const captchaModal = new bootstrap.Modal(document.getElementById('captchaModal'));
-        loadCaptcha().then(() => {
-            captchaModal.show();
-        }).catch(error => {
-            console.error('Failed to load CAPTCHA:', error);
-            alert('Failed to load CAPTCHA. Please try again.');
+            // If CAPTCHA is enabled, validate it
+            const captchaInput = document.getElementById('captchaInput');
+            if (captchaInput && !captchaInput.value.trim()) {
+                alert('Please complete the CAPTCHA verification');
+                captchaInput.focus();
+                return false;
+            }
+
+            // Submit the form
+            submitForm();
         });
-    });
-});
-
-function submitWithCaptcha() {
-    const captchaInput = document.getElementById('captchaInput');
-    const submitButton = document.querySelector('#captchaModal button.btn-primary');
-    const refreshButton = document.querySelector('#captchaModal button.btn-secondary');
-
-    if (!captchaInput.value.trim()) {
-        alert('Please complete the CAPTCHA verification');
-        captchaInput.focus();
-        return;
     }
 
-    // Disable both buttons and show loading state
+    // Load initial CAPTCHA if enabled
+    const captchaImage = document.getElementById('captchaImage');
+    if (captchaImage) {
+        loadCaptcha();
+    }
+});
+
+function submitForm() {
+    const submitButton = document.querySelector('#recordForm button[type="submit"]');
     submitButton.disabled = true;
-    refreshButton.disabled = true;
     submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
 
     const formData = {
@@ -260,9 +260,13 @@ function submitWithCaptcha() {
         end_date: document.getElementById('endDate').value,
         work_type: document.getElementById('workType').value,
         required_apps: $('#requiredApps').val() || [],
-        active: document.getElementById('active').checked,
-        captcha: captchaInput.value
+        active: document.getElementById('active').checked
     };
+
+    const captchaInput = document.getElementById('captchaInput');
+    if (captchaInput) {
+        formData.captcha = captchaInput.value;
+    }
 
     const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
     const method = isNewRecord ? 'POST' : 'PUT';
@@ -318,20 +322,12 @@ function submitWithCaptcha() {
         }
     })
     .finally(() => {
-        // Re-enable buttons and reset state
+        // Re-enable button and reset state
         submitButton.disabled = false;
-        refreshButton.disabled = false;
-        submitButton.innerHTML = 'Submit';
+        submitButton.innerHTML = 'Save Record';
         
         if (submitButton.classList.contains('error')) {
-            // If there was an error, just remove the error class
             submitButton.classList.remove('error');
-        } else {
-            // If successful, hide the modal
-            const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
-            if (captchaModal) {
-                captchaModal.hide();
-            }
         }
     });
 }
