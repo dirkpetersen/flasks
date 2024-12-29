@@ -195,30 +195,22 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('recordForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        const captchaContainer = document.getElementById('captchaContainer');
-        const captchaInput = document.getElementById('captchaInput');
-        
-        const formData = {
-            id: recordIdInput.value,
-            title: document.getElementById('title').value,
-            description: document.getElementById('description').value,
-            start_date: document.getElementById('startDate').value,
-            end_date: document.getElementById('endDate').value,
-            work_type: document.getElementById('workType').value,
-            required_apps: $('#requiredApps').val(),
-            active: document.getElementById('active').checked,
-            captcha: captchaInput ? captchaInput.value : ''
-        };
+        // Validate title field
+        const titleInput = document.getElementById('title');
+        if (!titleInput.value.trim()) {
+            alert('Title is required');
+            titleInput.focus();
+            return false;
+        }
 
-        // Show CAPTCHA modal on first save attempt
+        // Show CAPTCHA modal on save attempt
         const captchaModal = new bootstrap.Modal(document.getElementById('captchaModal'));
         loadCaptcha().then(() => {
             captchaModal.show();
-            console.log('CAPTCHA modal displayed');
         }).catch(error => {
             console.error('Failed to load CAPTCHA:', error);
+            alert('Failed to load CAPTCHA. Please try again.');
         });
-        return false; // Stop form submission until CAPTCHA is verified
 
         const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
         const method = isNewRecord ? 'POST' : 'PUT';
@@ -259,8 +251,17 @@ document.addEventListener('DOMContentLoaded', function() {
 // Function to handle form submission with CAPTCHA
 function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
-    if (!captchaInput.value) {
+    const titleInput = document.getElementById('title');
+
+    if (!titleInput.value.trim()) {
+        alert('Title is required');
+        titleInput.focus();
+        return;
+    }
+
+    if (!captchaInput.value.trim()) {
         alert('Please complete the CAPTCHA verification');
+        captchaInput.focus();
         return;
     }
 
