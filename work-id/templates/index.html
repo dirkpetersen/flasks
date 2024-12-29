@@ -174,11 +174,12 @@
         }
 
         function resetForm() {
-            fetch('/api/records')
-                .then(() => {
+            fetch('/api/new-id')
+                .then(response => response.json())
+                .then(data => {
                     document.getElementById('recordForm').reset();
-                    document.getElementById('recordId').value = '{{ new_id }}';
-                    document.getElementById('displayId').value = '{{ new_id }}';
+                    document.getElementById('recordId').value = data.id;
+                    document.getElementById('displayId').value = data.id;
                     $('#requiredApps').val([]).trigger('change');
                 });
         }

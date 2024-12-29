@@ -88,6 +88,10 @@ def update_record(id):
     record.save()
     return jsonify(record.to_dict())
 
+@app.route('/api/new-id')
+def get_new_id():
+    return jsonify({'id': WorkRecord.generate_id()})
+
 @app.route('/api/search')
 def search():
     query = request.args.get('q', '')
