@@ -19,13 +19,14 @@
 </head>
 <body>
     <div class="container mt-4">
-        <h1 class="mb-4">Work-ID Management</h1>
-        
-        <!-- Email Setup -->
-        <div id="emailSetup" class="mb-4">
-            <div class="input-group">
-                <input type="email" id="emailInput" class="form-control" placeholder="Enter your email" value="{{ email }}">
-                <button class="btn btn-primary" onclick="setEmail()">Set Email</button>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="mb-0">Work-ID Management</h1>
+            <!-- Email Setup -->
+            <div id="emailSetup" style="width: 400px;">
+                <div class="input-group">
+                    <input type="email" id="emailInput" class="form-control" placeholder="Enter your email" value="{{ email }}">
+                    <button class="btn btn-primary" onclick="setEmail()">Set Email</button>
+                </div>
             </div>
         </div>
 
