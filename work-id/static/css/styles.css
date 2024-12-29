@@ -76,6 +76,12 @@ html, body {
 .badge {
     font-weight: 500;
     padding: 0.5em 0.75em;
+    margin-right: 0.5em;
+}
+
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+    color: #000;
 }
 
 .btn {

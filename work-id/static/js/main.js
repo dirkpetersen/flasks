@@ -34,12 +34,14 @@ function loadRecords() {
                 <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-truncate me-2">
-                            <strong>${record.id}</strong> - ${record.title} 
+                            <strong>${record.id}</strong> - ${record.title}
                             <span class="badge bg-secondary">${record.work_type}</span>
+                            <span class="badge bg-info">Apps: ${record.required_apps.join(', ') || 'None'}</span>
+                            ${record.active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}
                         </div>
                         <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
                     </div>
-                    <div class="small text-muted text-truncate">Apps: ${record.required_apps.join(', ') || 'None'}</div>
+                    <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
                 </div>
             `).join('');
         });
@@ -154,10 +156,17 @@ function searchRecords() {
         .then(records => {
             const recordsList = document.getElementById('recordsList');
             recordsList.innerHTML = records.map(record => `
-                <div class="list-group-item record-item" onclick="loadRecord('${record.id}')">
-                    <h5 class="mb-1">${record.id} - ${record.title}</h5>
-                    <p class="mb-1">Type: ${record.work_type}</p>
-                    <small>Apps: ${record.required_apps.join(', ')}</small>
+                <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-truncate me-2">
+                            <strong>${record.id}</strong> - ${record.title}
+                            <span class="badge bg-secondary">${record.work_type}</span>
+                            <span class="badge bg-info">Apps: ${record.required_apps.join(', ') || 'None'}</span>
+                            ${record.active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}
+                        </div>
+                        <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
+                    </div>
+                    <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
                 </div>
             `).join('');
         });
