@@ -2,6 +2,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
 
+    // Validate date range
+    function validateDateRange() {
+        if (startDateInput.value && endDateInput.value) {
+            if (startDateInput.value > endDateInput.value) {
+                alert('Start date must be before end date');
+                endDateInput.value = startDateInput.value;
+                updateDateTime(endDateInput, 23, 59);
+            }
+        }
+    }
+
     // Function to get ISO datetime string with specific time
     function getDateTimeString(dateStr, hours, minutes) {
         if (!dateStr) return '';
@@ -21,11 +32,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set start date to beginning of day (00:00)
     startDateInput.addEventListener('change', function() {
         updateDateTime(this, 0, 0);
+        validateDateRange();
     });
 
     // Set end date to end of day (23:59)
     endDateInput.addEventListener('change', function() {
         updateDateTime(this, 23, 59);
+        validateDateRange();
     });
 
     // Handle form submission
