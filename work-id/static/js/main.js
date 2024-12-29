@@ -239,6 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
     const submitButton = document.querySelector('#captchaModal button.btn-primary');
+    const refreshButton = document.querySelector('#captchaModal button.btn-secondary');
 
     if (!captchaInput.value.trim()) {
         alert('Please complete the CAPTCHA verification');
@@ -246,13 +247,10 @@ function submitWithCaptcha() {
         return;
     }
 
-    // Disable submit button and show loading state
+    // Disable both buttons and show loading state
     submitButton.disabled = true;
-    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
-    
-    // Disable the refresh button during submission
-    const refreshButton = document.querySelector('#captchaModal button.btn-secondary');
     refreshButton.disabled = true;
+    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
 
     const formData = {
         id: document.getElementById('recordId').value,
@@ -319,9 +317,17 @@ function submitWithCaptcha() {
         }
     })
     .finally(() => {
-        // Re-enable submit button
+        // Re-enable buttons and reset state
         submitButton.disabled = false;
-        submitButton.innerHTML = 'Submit';
         refreshButton.disabled = false;
+        submitButton.innerHTML = 'Submit';
+        
+        // Clear the form if it was a successful submission
+        if (!submitButton.classList.contains('error')) {
+            const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
+            if (captchaModal) {
+                captchaModal.hide();
+            }
+        }
     });
 }
