@@ -193,8 +193,6 @@ function searchRecords() {
 
     isSearchActive = true;
     const searchButton = document.getElementById('searchButton');
-    searchButton.innerHTML = '<i class="bi bi-arrow-counterclockwise me-1"></i>Show All Records';
-    
     fetch(`/api/search?q=${encodeURIComponent(query)}&user_only=${userOnly}`)
         .then(response => {
             if (!response.ok) {
