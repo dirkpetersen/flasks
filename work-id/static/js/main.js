@@ -137,9 +137,12 @@ function resetForm() {
             recordIdInput.setAttribute('data-new-id', data.id);
             document.getElementById('displayId').value = data.id;
             $('#requiredApps').val([]).trigger('change');
-            // Reset CAPTCHA state
-            document.getElementById('captchaContainer').classList.add('d-none');
-            document.getElementById('captchaInput').value = '';
+            // Reset CAPTCHA if it exists
+            const captchaInput = document.getElementById('captchaInput');
+            if (captchaInput) {
+                captchaInput.value = '';
+                loadCaptcha();
+            }
         });
 }
 
@@ -216,39 +219,54 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set up form submission handler
     const form = document.getElementById('recordForm');
     if (form) {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Validate title field
+            // Basic form validation
+            if (!form.checkValidity()) {
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+
             const titleInput = document.getElementById('title');
             if (!titleInput.value.trim()) {
                 alert('Title is required');
                 titleInput.focus();
-                return false;
+                return;
             }
 
-            // If CAPTCHA is enabled, validate it
+            // CAPTCHA validation
             const captchaInput = document.getElementById('captchaInput');
             if (captchaInput && !captchaInput.value.trim()) {
                 alert('Please complete the CAPTCHA verification');
                 captchaInput.focus();
-                return false;
+                return;
             }
 
-            // Get form data and submit
+            // Prepare form data
             const formData = {
                 id: document.getElementById('recordId').value,
-                title: document.getElementById('title').value,
-                description: document.getElementById('description').value,
+                title: titleInput.value.trim(),
+                description: document.getElementById('description').value.trim(),
                 start_date: document.getElementById('startDate').value,
                 end_date: document.getElementById('endDate').value,
                 work_type: document.getElementById('workType').value,
                 required_apps: $('#requiredApps').val() || [],
-                active: document.getElementById('active').checked,
-                captcha: captchaInput ? captchaInput.value : null
+                active: document.getElementById('active').checked
             };
 
-            submitFormData(formData);
+            // Add CAPTCHA if present
+            if (captchaInput) {
+                formData.captcha = captchaInput.value.trim();
+            }
+
+            try {
+                await submitFormData(formData);
+            } catch (error) {
+                console.error('Form submission error:', error);
+                alert(error.message || 'Failed to save record');
+            }
         });
     }
 
