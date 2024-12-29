@@ -221,6 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
+            console.log('Form submitted'); // Debug log
             
             // Basic form validation
             if (!form.checkValidity()) {
@@ -244,24 +245,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Prepare form data
-            const formData = {
-                id: document.getElementById('recordId').value,
-                title: titleInput.value.trim(),
-                description: document.getElementById('description').value.trim(),
-                start_date: document.getElementById('startDate').value,
-                end_date: document.getElementById('endDate').value,
-                work_type: document.getElementById('workType').value,
-                required_apps: $('#requiredApps').val() || [],
-                active: document.getElementById('active').checked
-            };
-
-            // Add CAPTCHA if present
-            if (captchaInput) {
-                formData.captcha = captchaInput.value.trim();
-            }
-
             try {
+                // Prepare form data
+                const formData = {
+                    id: document.getElementById('recordId').value,
+                    title: titleInput.value.trim(),
+                    description: document.getElementById('description').value.trim(),
+                    start_date: document.getElementById('startDate').value || null,
+                    end_date: document.getElementById('endDate').value || null,
+                    work_type: document.getElementById('worktype')?.value || null,
+                    required_apps: $('#requiredapps').val() || [],
+                    active: document.getElementById('active').checked
+                };
+
+                console.log('Form data:', formData); // Debug log
+
+                // Add CAPTCHA if present
+                if (captchaInput) {
+                    formData.captcha = captchaInput.value.trim();
+                }
+
                 await submitFormData(formData);
             } catch (error) {
                 console.error('Form submission error:', error);
