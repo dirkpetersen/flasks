@@ -34,12 +34,19 @@ class WorkRecord:
     @staticmethod
     def generate_id() -> str:
         pattern = os.getenv('WORK_ID_PATTERN', '(XX-XX)')
-        valid_chars = string.ascii_uppercase.replace('O', '') + string.digits.replace('0', '')
+        # Define separate character sets for first X and subsequent X's
+        valid_chars_first = string.ascii_uppercase.replace('O', '')  # Only letters for first X
+        valid_chars_rest = valid_chars_first + string.digits.replace('0', '')  # Letters and numbers for rest
         
         result = ''
+        first_x = True
         for char in pattern:
             if char == 'X':
-                result += random.choice(valid_chars)
+                if first_x:
+                    result += random.choice(valid_chars_first)
+                    first_x = False
+                else:
+                    result += random.choice(valid_chars_rest)
             else:
                 result += char
         return result
