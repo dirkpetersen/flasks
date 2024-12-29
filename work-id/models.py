@@ -75,8 +75,17 @@ class WorkRecord:
         record.id = data.get('id')
         record.title = data.get('title')
         record.description = data.get('description')
-        record.start_date = datetime.fromisoformat(data['start_date']) if data.get('start_date') else None
-        record.end_date = datetime.fromisoformat(data['end_date']) if data.get('end_date') else None
+        if data.get('start_date'):
+            start_date = datetime.fromisoformat(data['start_date'])
+            record.start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        else:
+            record.start_date = None
+            
+        if data.get('end_date'):
+            end_date = datetime.fromisoformat(data['end_date'])
+            record.end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            record.end_date = None
         record.timezone = data.get('timezone')
         record.active = data.get('active', True)
         record.creator_email = data.get('creator_email')
