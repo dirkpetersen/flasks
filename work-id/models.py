@@ -143,10 +143,16 @@ class WorkRecord:
             if user_only and record.creator_email != user_email:
                 continue
                 
-            # Search in title and description
-            if (query.lower() in record.title.lower() or 
-                query.lower() in record.description.lower() or
-                query.lower() in record.id.lower()):
+            # Search in title, description and id with None checks
+            searchable_text = []
+            if record.title:
+                searchable_text.append(record.title.lower())
+            if record.description:
+                searchable_text.append(record.description.lower())
+            if record.id:
+                searchable_text.append(record.id.lower())
+                
+            if any(query.lower() in text for text in searchable_text):
                 results.append(record)
                 
         return sorted(results, key=lambda x: x.created_at, reverse=True)
