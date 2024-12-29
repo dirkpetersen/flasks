@@ -219,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(formData),
         })
-        .then(response => response.json())
         .then(response => {
             if (!response.ok) {
                 return response.json().then(err => {
@@ -234,7 +233,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 resetForm();
             }
             // Hide CAPTCHA after successful verification
-            document.getElementById('captchaContainer').style.display = 'none';
+            captchaContainer.classList.add('d-none');
+            captchaInput.value = '';
         })
         .catch(error => {
             alert(error.message);
