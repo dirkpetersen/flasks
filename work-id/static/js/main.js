@@ -1,7 +1,8 @@
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
     loadRecords();
     
-    // Initialize Select2 for multi-select fields
+    // Initialize Select2 for multi-select fields after jQuery is ready
+    $(function() {
     $('.form-select[multiple]').select2({
         width: '100%',
         placeholder: 'Select options',
