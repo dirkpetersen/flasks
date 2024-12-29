@@ -4,3 +4,4 @@ python-dotenv==1.0.0
 pytz==2023.3
 Flask-WTF==1.2.1
 email-validator==2.1.0.post1
+captcha==0.4

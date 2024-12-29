@@ -173,7 +173,18 @@ function searchRecords() {
 }
 
 // Form submission handler
+function loadCaptcha() {
+    fetch('/api/captcha')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('captchaImage').src = 'data:image/png;base64,' + data.image;
+            document.getElementById('captchaContainer').style.display = 'block';
+        });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Load initial CAPTCHA
+    loadCaptcha();
     document.getElementById('recordForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -185,7 +196,8 @@ document.addEventListener('DOMContentLoaded', function() {
             end_date: document.getElementById('endDate').value,
             work_type: document.getElementById('workType').value,
             required_apps: $('#requiredApps').val(),
-            active: document.getElementById('active').checked
+            active: document.getElementById('active').checked,
+            captcha: document.getElementById('captchaInput').value
         };
 
         const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
@@ -200,10 +212,26 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify(formData),
         })
         .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => {
+                    throw new Error(err.error || 'Failed to save record');
+                });
+            }
+            return response.json();
+        })
         .then(() => {
             loadRecords();
             if (method === 'POST') {
                 resetForm();
+            }
+            // Hide CAPTCHA after successful verification
+            document.getElementById('captchaContainer').style.display = 'none';
+        })
+        .catch(error => {
+            alert(error.message);
+            if (error.message.includes('CAPTCHA')) {
+                loadCaptcha();  // Reload CAPTCHA if invalid
             }
         });
     });

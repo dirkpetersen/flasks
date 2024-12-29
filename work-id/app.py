@@ -2,7 +2,10 @@
 
 import sys, os
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, make_response, send_from_directory
+from flask import Flask, render_template, request, jsonify, make_response, send_from_directory, session
+from captcha.image import ImageCaptcha
+import base64
+import io
 from dotenv import load_dotenv
 from models import WorkRecord
 import pytz
@@ -13,6 +16,7 @@ load_dotenv()
 debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['SECRET_KEY'] = os.urandom(24)
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour session
 
 def get_meta_fields():
     meta_fields = {'single_select': {}, 'multi_select': {}}
@@ -49,9 +53,33 @@ def get_records():
     records = WorkRecord.get_by_user(email)
     return jsonify([record.to_dict() for record in records])
 
+@app.route('/api/captcha')
+def get_captcha():
+    image = ImageCaptcha(width=280, height=90)
+    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    session['captcha_text'] = captcha_text
+    
+    # Generate the image
+    data = image.generate(captcha_text)
+    
+    # Convert to base64
+    buffered = io.BytesIO()
+    image.write(captcha_text, buffered)
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+    
+    return jsonify({'image': img_str})
+
 @app.route('/api/records', methods=['POST'])
 def create_record():
     data = request.json
+    
+    # Check if this is the first save in the session
+    if not session.get('verified', False):
+        # Verify CAPTCHA
+        captcha_input = data.get('captcha')
+        if not captcha_input or captcha_input.upper() != session.get('captcha_text', ''):
+            return jsonify({'error': 'Invalid CAPTCHA'}), 400
+        session['verified'] = True
     email = request.cookies.get('creator_email')
     
     if not email:
