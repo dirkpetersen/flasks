@@ -1,5 +1,14 @@
 $(document).ready(function() {
     loadRecords();
+    
+    // Initialize Select2 for multi-select fields
+    $('.form-select[multiple]').select2({
+        width: '100%',
+        placeholder: 'Select options',
+        closeOnSelect: false,
+        allowClear: true,
+        tags: false
+    });
 });
 
 function setEmail() {
