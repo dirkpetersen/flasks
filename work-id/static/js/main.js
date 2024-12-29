@@ -426,11 +426,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const isMulti = select.id.startsWith('meta_msel_');
                     const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
                                     select.id.split('_').slice(2).join('_').toUpperCase();
-                    if (select.multiple) {
-                        formData[fieldName] = $(select).val()?.length ? $(select).val() : null;
-                    } else {
-                        formData[fieldName] = select.value || null;
-                    }
+                    const value = isMulti ? 
+                        ($(select).val()?.length ? $(select).val() : null) :
+                        (select.value || null);
+                    formData[fieldName] = value;
                 });
 
                 console.log('Form data:', formData); // Debug log
