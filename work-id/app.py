@@ -126,17 +126,25 @@ def create_record():
         # Set to end of day (23:59:59)
         end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-    record = WorkRecord(
-        id=data.get('id') or WorkRecord.generate_id(),
-        title=data.get('title'),
-        description=data.get('description'),
-        start_date=start_date,
-        end_date=end_date,
-        active=data.get('active', True),
-        creator_id=user_id,
-        work_type=data.get('work_type'),
-        required_apps=data.get('required_apps', [])
-    )
+    # Build record data dynamically
+    record_data = {
+        'id': data.get('id') or WorkRecord.generate_id(),
+        'title': data.get('title'),
+        'description': data.get('description'),
+        'start_date': start_date,
+        'end_date': end_date,
+        'active': data.get('active', True),
+        'creator_id': user_id
+    }
+    
+    # Add meta fields dynamically
+    meta_fields = get_meta_fields()
+    for field_type in ['single_select', 'multi_select']:
+        for field_name in meta_fields[field_type]:
+            meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
+            record_data[meta_key] = data.get(field_name.lower())
+
+    record = WorkRecord(**record_data)
     
     record.save()
     return jsonify(record.to_dict())
