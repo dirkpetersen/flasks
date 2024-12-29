@@ -13,13 +13,13 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
         <div class="container">
             <a class="navbar-brand" href="/"><i class="bi bi-briefcase-fill me-2"></i>{{ app_name }} / unique identifier System</a>
-            <div id="emailSetup" class="ms-auto" style="width: 400px;">
+            <div id="userIdSetup" class="ms-auto" style="width: 400px;">
                 <div class="input-group">
                     <span class="input-group-text bg-primary border-light">
-                        <i class="bi bi-envelope-fill text-light"></i>
+                        <i class="bi bi-person-fill text-light"></i>
                     </span>
-                    <input type="email" id="emailInput" class="form-control" placeholder="Enter your email" value="{{ email }}">
-                    <button class="btn btn-outline-light" onclick="setEmail()">Set Email</button>
+                    <input type="text" id="userIdInput" class="form-control" placeholder="Enter your user ID" value="{{ user_id }}">
+                    <button class="btn btn-outline-light" onclick="setUserId()">Set User ID</button>
                 </div>
             </div>
         </div>

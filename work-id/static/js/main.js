@@ -1,14 +1,14 @@
 // Function declarations first
-function setEmail() {
-    const email = document.getElementById('emailInput').value;
-    if (!email) return;
+function setUserId() {
+    const userId = document.getElementById('userIdInput').value;
+    if (!userId) return;
 
-    fetch('/api/set-email', {
+    fetch('/api/set-user-id', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ user_id: userId }),
     })
     .then(response => response.json())
     .then(() => {
@@ -17,12 +17,12 @@ function setEmail() {
 }
 
 function loadRecords() {
-    const email = document.getElementById('emailInput').value;
-    if (!email) {
+    const userId = document.getElementById('userIdInput').value;
+    if (!userId) {
         const recordsList = document.getElementById('recordsList');
         recordsList.innerHTML = '<div class="list-group-item text-center text-muted py-4">' +
-            '<i class="bi bi-envelope-exclamation fs-2 mb-2"></i><br>' +
-            'Please set your email address above to view records</div>';
+            '<i class="bi bi-person-exclamation fs-2 mb-2"></i><br>' +
+            'Please set your user ID above to view records</div>';
         return;
     }
 
@@ -164,12 +164,12 @@ function resetForm() {
 let isSearchActive = false;
 
 function searchRecords() {
-    const email = document.getElementById('emailInput').value;
-    if (!email) {
+    const userId = document.getElementById('userIdInput').value;
+    if (!userId) {
         const recordsList = document.getElementById('recordsList');
         recordsList.innerHTML = '<div class="list-group-item text-center text-muted py-4">' +
-            '<i class="bi bi-envelope-exclamation fs-2 mb-2"></i><br>' +
-            'Please set your email address above to view records</div>';
+            '<i class="bi bi-person-exclamation fs-2 mb-2"></i><br>' +
+            'Please set your user ID above to view records</div>';
         return;
     }
 

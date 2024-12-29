@@ -16,7 +16,7 @@ redis_client = redis.Redis(
 class WorkRecord:
     def __init__(self, id: str = None, title: str = None, description: str = None,
                  start_date: datetime = None, end_date: datetime = None,
-                 active: bool = True, creator_email: str = None,
+                 active: bool = True, creator_id: str = None,
                  work_type: str = None, required_apps: List[str] = None,
                  created_at: datetime = None):
         self.id = id
@@ -26,7 +26,7 @@ class WorkRecord:
         self.start_date = start_date.astimezone(pytz.UTC) if start_date else None
         self.end_date = end_date.astimezone(pytz.UTC) if end_date else None
         self.active = active
-        self.creator_email = creator_email
+        self.creator_id = creator_id
         self.work_type = work_type if work_type else None
         self.required_apps = required_apps if required_apps else None
         self.created_at = created_at or datetime.now(pytz.UTC)
@@ -65,8 +65,8 @@ class WorkRecord:
             data['end_date'] = self.end_date.isoformat()
         if self.active is not None:
             data['active'] = self.active
-        if self.creator_email:
-            data['creator_email'] = self.creator_email
+        if self.creator_id:
+            data['creator_id'] = self.creator_id
         if self.work_type:
             data['work_type'] = self.work_type
         if self.required_apps:
@@ -100,7 +100,7 @@ class WorkRecord:
         else:
             record.end_date = None
         record.active = data.get('active', True)
-        record.creator_email = data.get('creator_email')
+        record.creator_id = data.get('creator_id')
         record.work_type = data.get('work_type')
         record.required_apps = data.get('required_apps', [])
         record.created_at = datetime.fromisoformat(data['created_at']) if data.get('created_at') else None
@@ -108,7 +108,7 @@ class WorkRecord:
 
     def save(self):
         redis_client.set(f"work:{self.id}", json.dumps(self.to_dict()))
-        redis_client.sadd(f"user_works:{self.creator_email}", self.id)
+        redis_client.sadd(f"user_works:{self.creator_id}", self.id)
 
     @classmethod
     def get_by_id(cls, id: str) -> Optional['WorkRecord']:
@@ -118,8 +118,8 @@ class WorkRecord:
         return cls.from_dict(json.loads(data))
 
     @classmethod
-    def get_by_user(cls, email: str) -> List['WorkRecord']:
-        work_ids = redis_client.smembers(f"user_works:{email}")
+    def get_by_user(cls, user_id: str) -> List['WorkRecord']:
+        work_ids = redis_client.smembers(f"user_works:{user_id}")
         records = []
         for work_id in work_ids:
             record = cls.get_by_id(work_id.decode())
@@ -128,8 +128,8 @@ class WorkRecord:
         return sorted(records, key=lambda x: x.created_at, reverse=True)
 
     @classmethod
-    def search(cls, query: str, user_only: bool = False, user_email: str = None) -> List['WorkRecord']:
-        if user_only and not user_email:
+    def search(cls, query: str, user_only: bool = False, user_id: str = None) -> List['WorkRecord']:
+        if user_only and not user_id:
             return []
             
         # Treat asterisk as empty string
@@ -143,7 +143,7 @@ class WorkRecord:
             if not record:
                 continue
                 
-            if user_only and record.creator_email != user_email:
+            if user_only and record.creator_id != user_id:
                 continue
                 
             # Search in title, description and id with None checks

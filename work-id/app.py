@@ -35,11 +35,11 @@ def get_meta_fields():
 
 @app.route('/')
 def index():
-    email = request.cookies.get('creator_email', '')
+    user_id = request.cookies.get('creator_id', '')
     meta_fields = get_meta_fields()
     app_name = os.getenv('APP_NAME', 'Work-ID')
     return render_template('index.html', 
-                         email=email,
+                         user_id=user_id,
                          meta_fields=meta_fields,
                          new_id=WorkRecord.generate_id(),
                          force_captcha=force_captcha,
@@ -48,7 +48,7 @@ def index():
 @app.route('/api/records', methods=['GET'])
 def get_records():
     recent = request.args.get('recent', None)
-    email = request.cookies.get('creator_email')
+    user_id = request.cookies.get('creator_id')
     
     # Get all records
     all_keys = redis_client.keys("work:*")
@@ -73,9 +73,9 @@ def get_records():
         except ValueError:
             return jsonify({'error': 'Invalid recent parameter'}), 400
     
-    # If email is set, return full records for that user
-    if email:
-        user_records = [r for r in records if r.creator_email == email]
+    # If user_id is set, return full records for that user
+    if user_id:
+        user_records = [r for r in records if r.creator_id == user_id]
         return jsonify([record.to_dict() for record in user_records])
     
     # Default behavior - return all IDs when no email is set
@@ -108,10 +108,10 @@ def create_record():
         if not captcha_input or captcha_input.upper() != session.get('captcha_text', ''):
             return jsonify({'error': 'Invalid CAPTCHA'}), 400
         session['verified'] = True
-    email = request.cookies.get('creator_email')
+    user_id = request.cookies.get('creator_id')
     
-    if not email:
-        return jsonify({'error': 'No email set'}), 400
+    if not user_id:
+        return jsonify({'error': 'No user ID set'}), 400
 
     # Set default times for dates
     start_date = None
@@ -133,7 +133,7 @@ def create_record():
         start_date=start_date,
         end_date=end_date,
         active=data.get('active', True),
-        creator_email=email,
+        creator_id=user_id,
         work_type=data.get('work_type'),
         required_apps=data.get('required_apps', [])
     )
@@ -144,13 +144,13 @@ def create_record():
 @app.route('/api/records/<id>', methods=['PUT'])
 def update_record(id):
     data = request.json
-    email = request.cookies.get('creator_email')
+    user_id = request.cookies.get('creator_id')
     
     record = WorkRecord.get_by_id(id)
     if not record:
         return jsonify({'error': 'Record not found'}), 404
     
-    if record.creator_email != email:
+    if record.creator_id != user_id:
         return jsonify({'error': 'Unauthorized'}), 403
 
     record.title = data.get('title', record.title)
@@ -177,7 +177,7 @@ def get_new_id():
 def search():
     query = request.args.get('q', '')
     user_only = request.args.get('user_only', 'false').lower() == 'true'
-    email = request.cookies.get('creator_email')
+    user_id = request.cookies.get('creator_id')
     
     if not email and user_only:
         return jsonify({'error': 'No email set'}), 400
@@ -185,14 +185,14 @@ def search():
     results = WorkRecord.search(query, user_only, email)
     return jsonify([record.to_dict() for record in results])
 
-@app.route('/api/set-email', methods=['POST'])
-def set_email():
-    email = request.json.get('email')
-    if not email:
-        return jsonify({'error': 'Email is required'}), 400
+@app.route('/api/set-user-id', methods=['POST'])
+def set_user_id():
+    user_id = request.json.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'User ID is required'}), 400
         
     response = make_response(jsonify({'status': 'ok'}))
-    response.set_cookie('creator_email', email)
+    response.set_cookie('creator_id', user_id)
     return response
 
 @app.route('/api/records/<id>', methods=['GET'])
