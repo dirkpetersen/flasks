@@ -26,8 +26,8 @@ function loadRecords() {
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-truncate me-2">
                             <strong>${record.id}</strong> - ${record.title}
-                            <span class="badge bg-secondary">${record.work_type}</span>
-                            <span class="badge bg-info">Apps: ${record.required_apps.join(', ') || 'None'}</span>
+                            ${record.work_type ? `<span class="badge bg-secondary">${record.work_type}</span>` : ''}
+                            ${record.required_apps ? `<span class="badge bg-info">Apps: ${record.required_apps.join(', ')}</span>` : ''}
                             ${record.active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}
                         </div>
                         <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     start_date: document.getElementById('startDate').value || null,
                     end_date: document.getElementById('endDate').value || null,
                     work_type: document.getElementById('worktype')?.value || null,
-                    required_apps: $('#requiredapps').val() || [],
+                    required_apps: $('#requiredapps').val()?.length ? $('#requiredapps').val() : null,
                     active: document.getElementById('active').checked
                 };
 

@@ -27,8 +27,8 @@ class WorkRecord:
         self.timezone = timezone or str(datetime.now().astimezone().tzinfo)
         self.active = active
         self.creator_email = creator_email
-        self.work_type = work_type
-        self.required_apps = required_apps or []
+        self.work_type = work_type if work_type else None
+        self.required_apps = required_apps if required_apps else None
         self.created_at = created_at or datetime.now(pytz.UTC)
 
     @staticmethod
@@ -54,8 +54,8 @@ class WorkRecord:
             'timezone': self.timezone,
             'active': self.active,
             'creator_email': self.creator_email,
-            'work_type': self.work_type,
-            'required_apps': self.required_apps,
+            'work_type': self.work_type if self.work_type else None,
+            'required_apps': self.required_apps if self.required_apps else None,
             'created_at': self.created_at.isoformat()
         }
 
