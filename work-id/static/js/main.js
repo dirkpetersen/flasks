@@ -80,12 +80,15 @@ function loadRecord(id) {
                     const startDate = new Date(record.start_date);
                     const localStartDate = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
                     document.getElementById('startDate').value = localStartDate.toISOString().slice(0, 16);
+                    document.getElementById('startDateTimezone').textContent = `(${record.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone})`;
                 } catch (e) {
                     console.error('Error parsing start_date:', e);
                     document.getElementById('startDate').value = '';
+                    document.getElementById('startDateTimezone').textContent = '';
                 }
             } else {
                 document.getElementById('startDate').value = '';
+                document.getElementById('startDateTimezone').textContent = '';
             }
             
             if (record.end_date) {
@@ -93,12 +96,15 @@ function loadRecord(id) {
                     const endDate = new Date(record.end_date);
                     const localEndDate = new Date(endDate.getTime() - endDate.getTimezoneOffset() * 60000);
                     document.getElementById('endDate').value = localEndDate.toISOString().slice(0, 16);
+                    document.getElementById('endDateTimezone').textContent = `(${record.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone})`;
                 } catch (e) {
                     console.error('Error parsing end_date:', e);
                     document.getElementById('endDate').value = '';
+                    document.getElementById('endDateTimezone').textContent = '';
                 }
             } else {
                 document.getElementById('endDate').value = '';
+                document.getElementById('endDateTimezone').textContent = '';
             }
             
             // Handle work type with validation
