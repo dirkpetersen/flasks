@@ -15,6 +15,9 @@
             background-color: #f8f9fa;
             cursor: pointer;
         }
+        .loading {
+            cursor: wait !important;
+        }
     </style>
 </head>
 <body>
@@ -176,6 +179,7 @@
         }
 
         function loadRecord(id) {
+            document.body.classList.add('loading');
             console.log('Loading record with ID:', id);
             fetch('/api/records')
                 .then(response => {
@@ -251,6 +255,9 @@
                 .catch(error => {
                     console.error('Error loading record:', error);
                     alert(`Failed to load record: ${error.message}`);
+                })
+                .finally(() => {
+                    document.body.classList.remove('loading');
                 });
         }
 
