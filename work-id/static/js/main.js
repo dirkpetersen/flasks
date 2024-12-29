@@ -101,7 +101,7 @@ function loadRecord(id) {
             }
             
             // Handle work type with validation
-            const workTypeSelect = document.getElementById('workType');
+            const workTypeSelect = document.getElementById('worktype');
             if (workTypeSelect) {
                 workTypeSelect.value = record.work_type || '';
                 // Trigger change event for any dependent behaviors
@@ -109,7 +109,7 @@ function loadRecord(id) {
             }
             
             // Handle required apps with Select2
-            const requiredAppsSelect = $('#requiredApps');
+            const requiredAppsSelect = $('#requiredapps');
             if (requiredAppsSelect.length) {
                 const apps = Array.isArray(record.required_apps) ? record.required_apps : [];
                 requiredAppsSelect.val(apps).trigger('change');
