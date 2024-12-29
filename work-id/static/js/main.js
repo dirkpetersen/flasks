@@ -3,14 +3,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize Select2 for multi-select fields after jQuery is ready
     $(function() {
-    $('.form-select[multiple]').select2({
-        width: '100%',
-        placeholder: 'Select options',
-        closeOnSelect: false,
-        allowClear: true,
-        tags: false
+        $('.form-select[multiple]').select2({
+            width: '100%',
+            placeholder: 'Select options',
+            closeOnSelect: false,
+            allowClear: true,
+            tags: false
+        });
     });
-});
 
 function setEmail() {
     const email = document.getElementById('emailInput').value;
@@ -197,7 +197,6 @@ function loadCaptcha() {
         });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
     const recordIdInput = document.getElementById('recordId');
     // Store the initial ID as the new-id
     recordIdInput.setAttribute('data-new-id', recordIdInput.value);
