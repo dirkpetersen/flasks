@@ -5,19 +5,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     startDateInput.addEventListener('change', function() {
         if (this.value) {
-            // Set time to 00:00
-            const date = new Date(this.value);
-            date.setHours(0, 0, 0, 0);
-            this.value = date.toISOString().slice(0, 16);
+            let date = new Date(this.value);
+            // Get just the date part in YYYY-MM-DD format
+            const datePart = date.toISOString().split('T')[0];
+            // Set to midnight (00:00)
+            this.value = datePart + 'T00:00';
         }
     });
 
     endDateInput.addEventListener('change', function() {
         if (this.value) {
-            // Set time to 23:59
-            const date = new Date(this.value);
-            date.setHours(23, 59, 59, 999);
-            this.value = date.toISOString().slice(0, 16);
+            let date = new Date(this.value);
+            // Get just the date part in YYYY-MM-DD format
+            const datePart = date.toISOString().split('T')[0];
+            // Set to 23:59
+            this.value = datePart + 'T23:59';
         }
     });
 });
