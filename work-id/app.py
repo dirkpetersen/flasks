@@ -6,6 +6,8 @@ from flask import Flask, render_template, request, jsonify, make_response, send_
 from captcha.image import ImageCaptcha
 import base64
 import io
+import random
+import string
 from dotenv import load_dotenv
 from models import WorkRecord
 import pytz
