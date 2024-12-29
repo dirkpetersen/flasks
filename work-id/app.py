@@ -53,39 +53,38 @@ def index():
 @app.route('/api/records', methods=['GET'])
 def get_records():
     recent = request.args.get('recent', None)
+    email = request.cookies.get('creator_email')
+    
+    # Get all records
+    all_keys = redis_client.keys("work:*")
+    records = []
+    
+    for key in all_keys:
+        record = WorkRecord.get_by_id(key.decode().split(':')[1])
+        if record:
+            records.append(record)
+    
+    # Sort by created_at timestamp, newest first
+    records.sort(key=lambda x: x.created_at, reverse=True)
     
     if recent:
         try:
             limit = int(recent)
             if limit < 1:
                 return jsonify({'error': 'Recent parameter must be positive'}), 400
-                
-            # Get all records and sort by created_at
-            all_keys = redis_client.keys("work:*")
-            records = []
-            
-            for key in all_keys:
-                record = WorkRecord.get_by_id(key.decode().split(':')[1])
-                if record:
-                    records.append(record)
-            
-            # Sort by created_at timestamp, newest first
-            records.sort(key=lambda x: x.created_at, reverse=True)
-            
             # Apply limit and return just IDs
             records = records[:limit]
             return jsonify([record.id for record in records])
-            
         except ValueError:
             return jsonify({'error': 'Invalid recent parameter'}), 400
     
-    # Default behavior - get user's records
-    email = request.cookies.get('creator_email')
-    if not email:
-        return jsonify({'error': 'No email set'}), 400
+    # If email is set, return full records for that user
+    if email:
+        user_records = [r for r in records if r.creator_email == email]
+        return jsonify([record.to_dict() for record in user_records])
     
-    records = WorkRecord.get_by_user(email)
-    return jsonify([record.to_dict() for record in records])
+    # Default behavior - return all IDs
+    return jsonify([record.id for record in records])
 
 @app.route('/api/captcha')
 def get_captcha():
