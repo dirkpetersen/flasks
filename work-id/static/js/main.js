@@ -63,7 +63,7 @@ function loadRecord(id) {
             
             // Update form fields with strict null checks
             document.getElementById('recordId').value = record.id || '';
-            document.getElementById('displayId').value = record.id || '';
+            document.getElementById('displayId').textContent = record.id || '';
             document.getElementById('title').value = record.title || '';
             document.getElementById('description').value = record.description || '';
             
@@ -135,7 +135,7 @@ function resetForm() {
             const recordIdInput = document.getElementById('recordId');
             recordIdInput.value = data.id;
             recordIdInput.setAttribute('data-new-id', data.id);
-            document.getElementById('displayId').value = data.id;
+            document.getElementById('displayId').textContent = data.id;
             $('#requiredApps').val([]).trigger('change');
             // Reset CAPTCHA if it exists
             const captchaInput = document.getElementById('captchaInput');
