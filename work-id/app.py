@@ -72,10 +72,9 @@ def get_records():
             # Sort by created_at timestamp, newest first
             records.sort(key=lambda x: x.created_at, reverse=True)
             
-            # Apply limit
+            # Apply limit and return just IDs
             records = records[:limit]
-            
-            return jsonify([record.to_dict() for record in records])
+            return jsonify([record.id for record in records])
             
         except ValueError:
             return jsonify({'error': 'Invalid recent parameter'}), 400
