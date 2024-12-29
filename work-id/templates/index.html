@@ -186,10 +186,35 @@
                     document.getElementById('displayId').value = record.id;
                     document.getElementById('title').value = record.title || '';
                     document.getElementById('description').value = record.description || '';
-                    document.getElementById('startDate').value = record.start_date ? record.start_date.split('+')[0] : '';
-                    document.getElementById('endDate').value = record.end_date ? record.end_date.split('+')[0] : '';
-                    document.getElementById('workType').value = record.work_type || '';
-                    $('#requiredApps').val(record.required_apps || []).trigger('change');
+                    
+                    // Handle dates - ensure we get local datetime-local format
+                    if (record.start_date) {
+                        const startDate = new Date(record.start_date);
+                        document.getElementById('startDate').value = startDate.toISOString().slice(0, 16);
+                    } else {
+                        document.getElementById('startDate').value = '';
+                    }
+                    
+                    if (record.end_date) {
+                        const endDate = new Date(record.end_date);
+                        document.getElementById('endDate').value = endDate.toISOString().slice(0, 16);
+                    } else {
+                        document.getElementById('endDate').value = '';
+                    }
+                    
+                    // Handle work type
+                    const workTypeSelect = document.getElementById('workType');
+                    if (workTypeSelect) {
+                        workTypeSelect.value = record.work_type || '';
+                    }
+                    
+                    // Handle required apps with Select2
+                    const requiredAppsSelect = $('#requiredApps');
+                    if (requiredAppsSelect.length) {
+                        requiredAppsSelect.val(record.required_apps || []).trigger('change');
+                    }
+                    
+                    // Handle active status
                     document.getElementById('active').checked = record.active !== undefined ? record.active : true;
                 });
         }
