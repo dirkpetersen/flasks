@@ -216,22 +216,15 @@ document.addEventListener('DOMContentLoaded', function() {
             captcha: captchaInput ? captchaInput.value : ''
         };
 
-        // Show CAPTCHA on first save attempt
-        if (captchaContainer.classList.contains('d-none')) {
-            captchaContainer.classList.remove('d-none');
-            loadCaptcha().then(() => {
-                console.log('CAPTCHA loaded and displayed');
-            }).catch(error => {
-                console.error('Failed to load CAPTCHA:', error);
-            });
-            return false; // Stop form submission until CAPTCHA is filled
-        }
-
-        // If CAPTCHA is visible but empty, alert user
-        if (captchaContainer.classList.contains('d-none') === false && !captchaInput.value) {
-            alert('Please complete the CAPTCHA verification');
-            return;
-        }
+        // Show CAPTCHA modal on first save attempt
+        const captchaModal = new bootstrap.Modal(document.getElementById('captchaModal'));
+        loadCaptcha().then(() => {
+            captchaModal.show();
+            console.log('CAPTCHA modal displayed');
+        }).catch(error => {
+            console.error('Failed to load CAPTCHA:', error);
+        });
+        return false; // Stop form submission until CAPTCHA is verified
 
         const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
         const method = isNewRecord ? 'POST' : 'PUT';
@@ -269,3 +262,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// Function to handle form submission with CAPTCHA
+function submitWithCaptcha() {
+    const captchaInput = document.getElementById('captchaInput');
+    if (!captchaInput.value) {
+        alert('Please complete the CAPTCHA verification');
+        return;
+    }
+
+    const formData = {
+        id: document.getElementById('recordId').value,
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        start_date: document.getElementById('startDate').value,
+        end_date: document.getElementById('endDate').value,
+        work_type: document.getElementById('workType').value,
+        required_apps: $('#requiredApps').val(),
+        active: document.getElementById('active').checked,
+        captcha: captchaInput.value
+    };
+
+    const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
+    const method = isNewRecord ? 'POST' : 'PUT';
+    const url = method === 'POST' ? '/api/records' : `/api/records/${formData.id}`;
+
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                throw new Error(err.error || 'Failed to save record');
+            });
+        }
+        return response.json();
+    })
+    .then(() => {
+        loadRecords();
+        if (method === 'POST') {
+            resetForm();
+        }
+        // Hide modal after successful verification
+        const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
+        captchaModal.hide();
+        // Clear CAPTCHA input
+        captchaInput.value = '';
+    })
+    .catch(error => {
+        alert(error.message);
+        if (error.message.includes('CAPTCHA')) {
+            loadCaptcha();  // Reload CAPTCHA if invalid
+        }
+    });
+}
