@@ -173,6 +173,44 @@ def set_email():
     response.set_cookie('creator_email', email)
     return response
 
+@app.route('/api/records/<id>/details', methods=['GET'])
+def get_record_details(id):
+    """Get detailed information for a specific record by ID"""
+    record = WorkRecord.get_by_id(id)
+    if not record:
+        return jsonify({'error': 'Record not found'}), 404
+    return jsonify(record.to_dict())
+
+@app.route('/api/records/recent', methods=['GET'])
+def get_recent_records():
+    """Get list of recent records, optionally limited by count parameter"""
+    try:
+        limit = request.args.get('limit', None)
+        if limit:
+            limit = int(limit)
+            if limit < 1:
+                return jsonify({'error': 'Limit must be positive'}), 400
+    except ValueError:
+        return jsonify({'error': 'Invalid limit parameter'}), 400
+
+    # Get all records and sort by created_at
+    all_keys = redis_client.keys("work:*")
+    records = []
+    
+    for key in all_keys:
+        record = WorkRecord.get_by_id(key.decode().split(':')[1])
+        if record:
+            records.append(record)
+    
+    # Sort by created_at timestamp, newest first
+    records.sort(key=lambda x: x.created_at, reverse=True)
+    
+    # Apply limit if specified
+    if limit:
+        records = records[:limit]
+        
+    return jsonify([record.to_dict() for record in records])
+
 if __name__ == '__main__':
     ssl_cert = os.getenv('SSL_CERT')
     ssl_key = os.getenv('SSL_KEY')    
