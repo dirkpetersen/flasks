@@ -200,6 +200,7 @@ def set_email():
     response.set_cookie('creator_email', email)
     return response
 
+@app.route('/api/records/<id>', methods=['GET'])
 @app.route('/api/records/<id>/details', methods=['GET'])
 def get_record_details(id):
     """Get detailed information for a specific record by ID"""
