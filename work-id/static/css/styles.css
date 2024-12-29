@@ -1,15 +1,16 @@
-body {
-    min-height: 100vh;
+html, body {
+    height: 100%;
     max-width: 1920px;
     margin: 0 auto;
 }
 
 .main-content {
     margin-top: 1rem;
+    height: calc(100vh - 100px);
 }
 
 .card {
-    height: calc(100vh - 140px);
+    height: 100%;
     overflow-y: auto;
 }
 
