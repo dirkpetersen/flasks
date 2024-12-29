@@ -190,6 +190,8 @@
                         throw new Error(`Record with ID ${id} not found`);
                     }
                     console.log('Found record:', record);
+                    return record;
+                })
                 .then(record => {
                     if (!record) return;
                     
