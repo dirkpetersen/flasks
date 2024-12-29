@@ -150,12 +150,26 @@ let isSearchActive = false;
 
 function toggleSearch() {
     const searchButton = document.getElementById('searchButton');
+    const userOnly = document.getElementById('userOnlyCheck').checked;
+    
     if (isSearchActive) {
         // Reset to show all records
         isSearchActive = false;
         document.getElementById('searchInput').value = '';
         searchButton.innerHTML = '<i class="bi bi-search me-1"></i>Search';
-        loadRecords(); // Load all records
+        
+        if (userOnly) {
+            loadRecords(); // Load only user's records
+        } else {
+            // Show all records regardless of user
+            fetch('/api/search?q=&user_only=false')
+                .then(response => response.json())
+                .then(records => updateRecordsList(records))
+                .catch(error => {
+                    console.error('Error loading records:', error);
+                    alert('Failed to load records: ' + error.message);
+                });
+        }
     } else {
         // Perform search
         searchRecords();
