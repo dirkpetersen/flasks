@@ -188,8 +188,8 @@
                     document.getElementById('description').value = record.description || '';
                     document.getElementById('startDate').value = record.start_date ? record.start_date.split('+')[0] : '';
                     document.getElementById('endDate').value = record.end_date ? record.end_date.split('+')[0] : '';
-                    document.getElementById('worktype').value = record.work_type || '';
-                    $('#requiredapps').val(record.required_apps || []).trigger('change');
+                    document.getElementById('workType').value = record.work_type || '';
+                    $('#requiredApps').val(record.required_apps || []).trigger('change');
                     document.getElementById('active').checked = record.active !== undefined ? record.active : true;
                 });
         }
