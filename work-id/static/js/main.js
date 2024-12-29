@@ -220,18 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Failed to load CAPTCHA:', error);
             alert('Failed to load CAPTCHA. Please try again.');
         });
-
-        const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
-        const method = isNewRecord ? 'POST' : 'PUT';
-        const url = method === 'POST' ? '/api/records' : `/api/records/${formData.id}`;
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(err => {
@@ -261,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function submitWithCaptcha() {
     const captchaInput = document.getElementById('captchaInput');
     const titleInput = document.getElementById('title');
+    const submitButton = document.querySelector('#captchaModal .btn-primary');
 
     if (!titleInput.value.trim()) {
         alert('Title is required');
@@ -273,6 +262,10 @@ function submitWithCaptcha() {
         captchaInput.focus();
         return;
     }
+
+    // Disable submit button and show loading state
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
 
     const formData = {
         id: document.getElementById('recordId').value,
@@ -315,11 +308,30 @@ function submitWithCaptcha() {
         captchaModal.hide();
         // Clear CAPTCHA input
         captchaInput.value = '';
+        // Show success message
+        const toast = new bootstrap.Toast(Object.assign(document.createElement('div'), {
+            className: 'toast position-fixed top-0 end-0 m-3',
+            innerHTML: `
+                <div class="toast-header bg-success text-white">
+                    <strong class="me-auto">Success</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">Record saved successfully!</div>
+            `
+        }));
+        document.body.appendChild(toast._element);
+        toast.show();
+        setTimeout(() => toast._element.remove(), 3000);
     })
     .catch(error => {
         alert(error.message);
         if (error.message.includes('CAPTCHA')) {
             loadCaptcha();  // Reload CAPTCHA if invalid
         }
+    })
+    .finally(() => {
+        // Re-enable submit button
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Submit';
     });
 }
