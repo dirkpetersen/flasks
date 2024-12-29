@@ -423,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Add meta fields dynamically
                 document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
-                    const fieldName = select.id.split('_').slice(2).join('_');
+                    const fieldName = select.id.split('_').slice(2).join('_').toUpperCase();
                     if (select.multiple) {
                         formData[fieldName] = $(select).val()?.length ? $(select).val() : null;
                     } else {
