@@ -108,7 +108,6 @@ def create_record():
         description=data.get('description'),
         start_date=start_date,
         end_date=end_date,
-        timezone=data.get('timezone') or str(datetime.now().astimezone().tzinfo),
         active=data.get('active', True),
         creator_email=email,
         work_type=data.get('work_type'),
