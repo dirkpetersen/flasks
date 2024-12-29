@@ -176,23 +176,10 @@ function searchRecords() {
     const userOnly = document.getElementById('userOnlyCheck').checked;
     
     if (!query.trim()) {
-        if (userOnly) {
-            loadRecords();
-        } else {
-            // Show all records regardless of email
-            fetch('/api/search?q=&user_only=false')
-                .then(response => response.json())
-                .then(records => updateRecordsList(records))
-                .catch(error => {
-                    console.error('Search error:', error);
-                    alert('Failed to load records: ' + error.message);
-                });
-        }
+        loadRecords();
         return;
     }
 
-    isSearchActive = true;
-    const searchButton = document.getElementById('searchButton');
     fetch(`/api/search?q=${encodeURIComponent(query)}&user_only=${userOnly}`)
         .then(response => {
             if (!response.ok) {
