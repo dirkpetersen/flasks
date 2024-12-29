@@ -1,5 +1,7 @@
 from models import WorkRecord
 >>>>>>> 8eeeedbd024f7dd9114c391c52bf4fff796fae4c
+
+# Load environment variables
 =======
 from models import WorkRecord
 >>>>>>> 8eeeedbd024f7dd9114c391c52bf4fff796fae4c
