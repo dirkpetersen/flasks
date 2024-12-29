@@ -278,6 +278,7 @@ function submitWithCaptcha() {
     .then(response => {
         if (!response.ok) {
             return response.json().then(err => {
+                submitButton.classList.add('error');
                 throw new Error(err.error || 'Failed to save record');
             });
         }
@@ -322,8 +323,11 @@ function submitWithCaptcha() {
         refreshButton.disabled = false;
         submitButton.innerHTML = 'Submit';
         
-        // Clear the form if it was a successful submission
-        if (!submitButton.classList.contains('error')) {
+        if (submitButton.classList.contains('error')) {
+            // If there was an error, just remove the error class
+            submitButton.classList.remove('error');
+        } else {
+            // If successful, hide the modal
             const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
             if (captchaModal) {
                 captchaModal.hide();
