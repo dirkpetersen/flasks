@@ -17,8 +17,7 @@ class WorkRecord:
     def __init__(self, id: str = None, title: str = None, description: str = None,
                  start_date: datetime = None, end_date: datetime = None,
                  active: bool = True, creator_id: str = None,
-                 work_type: str = None, required_apps: List[str] = None,
-                 created_at: datetime = None):
+                 created_at: datetime = None, **meta_fields):
         self.id = id
         self.title = title
         self.description = description
@@ -27,9 +26,11 @@ class WorkRecord:
         self.end_date = end_date.astimezone(pytz.UTC) if end_date else None
         self.active = active
         self.creator_id = creator_id
-        self.work_type = work_type if work_type else None
-        self.required_apps = required_apps if required_apps else None
         self.created_at = created_at or datetime.now(pytz.UTC)
+        
+        # Handle dynamic meta fields
+        for field_name, value in meta_fields.items():
+            setattr(self, field_name, value)
 
     @staticmethod
     def generate_id() -> str:
