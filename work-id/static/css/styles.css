@@ -18,7 +18,7 @@ html, body {
     flex-wrap: nowrap;
 }
 
-.col-lg-8, .col-lg-4 {
+.col-lg-6 {
     padding: 0 12px;
     height: 100%;
 }
