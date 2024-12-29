@@ -178,7 +178,11 @@ function loadCaptcha() {
         .then(response => response.json())
         .then(data => {
             document.getElementById('captchaImage').src = 'data:image/png;base64,' + data.image;
-            document.getElementById('captchaContainer').style.display = 'block';
+            document.getElementById('captchaInput').value = ''; // Clear previous input
+        })
+        .catch(error => {
+            console.error('Error loading CAPTCHA:', error);
+            alert('Failed to load CAPTCHA. Please try again.');
         });
 }
 
@@ -206,6 +210,12 @@ document.addEventListener('DOMContentLoaded', function() {
             captchaContainer.classList.remove('d-none');
             loadCaptcha();
             return; // Stop form submission until CAPTCHA is filled
+        }
+
+        // If CAPTCHA is visible but empty, alert user
+        if (captchaContainer.classList.contains('d-none') === false && !captchaInput.value) {
+            alert('Please complete the CAPTCHA verification');
+            return;
         }
 
         const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
