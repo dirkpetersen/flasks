@@ -129,7 +129,10 @@
         $(document).ready(function() {
             // Initialize Select2 for all multi-select fields
             {% for field_name in meta_fields.multi_select.keys() %}
-            $('#{{ field_name|lower }}').select2();
+            $('#{{ field_name|lower }}').select2({
+                width: '100%',
+                dropdownAutoWidth: false
+            });
             {% endfor %}
             loadRecords();
         });
