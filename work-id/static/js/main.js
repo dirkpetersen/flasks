@@ -167,7 +167,18 @@ function searchRecords() {
     const userOnly = document.getElementById('userOnlyCheck').checked;
     
     if (!query.trim()) {
-        loadRecords();
+        if (userOnly) {
+            loadRecords();
+        } else {
+            // Show all records regardless of email
+            fetch('/api/search?q=&user_only=false')
+                .then(response => response.json())
+                .then(records => updateRecordsList(records))
+                .catch(error => {
+                    console.error('Search error:', error);
+                    alert('Failed to load records: ' + error.message);
+                });
+        }
         return;
     }
 
@@ -237,7 +248,18 @@ function loadCaptcha() {
 // Function to handle form submission with CAPTCHA
 // Main initialization
 document.addEventListener('DOMContentLoaded', function() {
-    loadRecords();
+    const userOnly = document.getElementById('userOnlyCheck').checked;
+    if (userOnly) {
+        loadRecords();
+    } else {
+        fetch('/api/search?q=&user_only=false')
+            .then(response => response.json())
+            .then(records => updateRecordsList(records))
+            .catch(error => {
+                console.error('Error loading records:', error);
+                alert('Failed to load records: ' + error.message);
+            });
+    }
     
     // Add search input event listeners
     const searchInput = document.getElementById('searchInput');
@@ -257,7 +279,24 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add search checkbox event listener
     const userOnlyCheck = document.getElementById('userOnlyCheck');
     if (userOnlyCheck) {
-        userOnlyCheck.addEventListener('change', searchRecords);
+        userOnlyCheck.addEventListener('change', function() {
+            const query = document.getElementById('searchInput').value;
+            if (query.trim()) {
+                searchRecords();
+            } else {
+                if (this.checked) {
+                    loadRecords();
+                } else {
+                    fetch('/api/search?q=&user_only=false')
+                        .then(response => response.json())
+                        .then(records => updateRecordsList(records))
+                        .catch(error => {
+                            console.error('Error loading records:', error);
+                            alert('Failed to load records: ' + error.message);
+                        });
+                }
+            }
+        });
     }
     
     // Initialize Select2 for multi-select fields after jQuery is ready
@@ -398,4 +437,25 @@ function submitFormData(formData) {
             submitButton.classList.remove('error');
         }
     });
+}
+function updateRecordsList(records) {
+    const recordsList = document.getElementById('recordsList');
+    if (records.length === 0) {
+        recordsList.innerHTML = '<div class="list-group-item">No records found</div>';
+        return;
+    }
+    recordsList.innerHTML = records.map(record => `
+        <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-truncate me-2">
+                    <strong>${record.id}</strong> - ${record.title}
+                    ${record.work_type ? `<span class="badge bg-secondary">${record.work_type}</span>` : ''}
+                    ${record.required_apps ? `<span class="badge bg-info">Apps: ${record.required_apps.join(', ')}</span>` : ''}
+                    ${record.active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}
+                </div>
+                <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
+            </div>
+            <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
+        </div>
+    `).join('');
 }
