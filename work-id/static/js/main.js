@@ -115,20 +115,17 @@ function loadRecord(id) {
                 document.getElementById('endDateTimezone').textContent = '';
             }
             
-            // Handle work type with validation
-            const workTypeSelect = document.getElementById('worktype');
-            if (workTypeSelect) {
-                workTypeSelect.value = record.work_type || '';
-                // Trigger change event for any dependent behaviors
-                workTypeSelect.dispatchEvent(new Event('change'));
-            }
-            
-            // Handle required apps with Select2
-            const requiredAppsSelect = $('#requiredapps');
-            if (requiredAppsSelect.length) {
-                const apps = Array.isArray(record.required_apps) ? record.required_apps : [];
-                requiredAppsSelect.val(apps).trigger('change');
-            }
+            // Handle meta fields dynamically
+            document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
+                const fieldName = select.id.split('_').slice(2).join('_');
+                const value = record[fieldName];
+                if (select.multiple) {
+                    $(select).val(Array.isArray(value) ? value : []).trigger('change');
+                } else {
+                    select.value = value || '';
+                    select.dispatchEvent(new Event('change'));
+                }
+            });
             
             // Handle active status with default true
             document.getElementById('active').checked = record.active !== undefined ? record.active : true;
