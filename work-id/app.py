@@ -179,10 +179,10 @@ def search():
     user_only = request.args.get('user_only', 'false').lower() == 'true'
     user_id = request.cookies.get('creator_id')
     
-    if not email and user_only:
-        return jsonify({'error': 'No email set'}), 400
+    if not user_id and user_only:
+        return jsonify({'error': 'No user ID set'}), 400
         
-    results = WorkRecord.search(query, user_only, email)
+    results = WorkRecord.search(query, user_only, user_id)
     return jsonify([record.to_dict() for record in results])
 
 @app.route('/api/set-user-id', methods=['POST'])
