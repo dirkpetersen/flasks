@@ -220,13 +220,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Failed to load CAPTCHA:', error);
             alert('Failed to load CAPTCHA. Please try again.');
         });
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => {
-                    throw new Error(err.error || 'Failed to save record');
-                });
-            }
-            return response.json();
         })
         .then(() => {
             loadRecords();
