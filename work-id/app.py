@@ -204,6 +204,22 @@ def set_email():
 @app.route('/api/records/<id>/details', methods=['GET'])
 def get_record_details(id):
     """Get detailed information for a specific record by ID"""
+    # Get the pattern from env
+    pattern = os.getenv('WORK_ID_PATTERN', '(XX-XX)')
+    
+    # If ID length doesn't match pattern, try to fix it
+    if len(id) != len(pattern):
+        # Extract non-alphanumeric characters from pattern
+        pattern_special = ''.join(c for c in pattern if not c.isalnum())
+        # Add missing special characters from pattern
+        for char in pattern_special:
+            if char not in id:
+                pos = pattern.find(char)
+                if pos < len(id):
+                    id = id[:pos] + char + id[pos:]
+                else:
+                    id = id + char
+    
     record = WorkRecord.get_by_id(id)
     if not record:
         return jsonify({'error': 'Record not found'}), 404
