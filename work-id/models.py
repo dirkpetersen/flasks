@@ -16,15 +16,15 @@ redis_client = redis.Redis(
 class WorkRecord:
     def __init__(self, id: str = None, title: str = None, description: str = None,
                  start_date: datetime = None, end_date: datetime = None,
-                 timezone: str = None, active: bool = True, creator_email: str = None,
+                 active: bool = True, creator_email: str = None,
                  work_type: str = None, required_apps: List[str] = None,
                  created_at: datetime = None):
         self.id = id
         self.title = title
         self.description = description
-        self.start_date = start_date
-        self.end_date = end_date
-        self.timezone = timezone or str(datetime.now().astimezone().tzinfo)
+        # Ensure dates are stored in UTC
+        self.start_date = start_date.astimezone(pytz.UTC) if start_date else None
+        self.end_date = end_date.astimezone(pytz.UTC) if end_date else None
         self.active = active
         self.creator_email = creator_email
         self.work_type = work_type if work_type else None
@@ -58,7 +58,6 @@ class WorkRecord:
             'description': self.description,
             'start_date': self.start_date.isoformat() if self.start_date else None,
             'end_date': self.end_date.isoformat() if self.end_date else None,
-            'timezone': self.timezone,
             'active': self.active,
             'creator_email': self.creator_email,
             'work_type': self.work_type if self.work_type else None,
@@ -77,16 +76,19 @@ class WorkRecord:
         record.description = data.get('description')
         if data.get('start_date'):
             start_date = datetime.fromisoformat(data['start_date'])
-            record.start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+            if not start_date.tzinfo:
+                start_date = pytz.UTC.localize(start_date)
+            record.start_date = start_date.astimezone(pytz.UTC)
         else:
             record.start_date = None
             
         if data.get('end_date'):
             end_date = datetime.fromisoformat(data['end_date'])
-            record.end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+            if not end_date.tzinfo:
+                end_date = pytz.UTC.localize(end_date)
+            record.end_date = end_date.astimezone(pytz.UTC)
         else:
             record.end_date = None
-        record.timezone = data.get('timezone')
         record.active = data.get('active', True)
         record.creator_email = data.get('creator_email')
         record.work_type = data.get('work_type')
