@@ -4,15 +4,13 @@ body {
     margin: 0 auto;
 }
 
-@media (min-width: 1200px) {
-    .row {
-        height: calc(100vh - 100px);
-    }
-    
-    .card {
-        height: 100%;
-        overflow-y: auto;
-    }
+.main-content {
+    margin-top: 1rem;
+}
+
+.card {
+    height: calc(100vh - 140px);
+    overflow-y: auto;
 }
 
 .record-list {
