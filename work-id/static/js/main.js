@@ -148,32 +148,27 @@ function resetForm() {
 
 let isSearchActive = false;
 
-function toggleSearch() {
-    const searchButton = document.getElementById('searchButton');
+function searchRecords() {
+    const query = document.getElementById('searchInput').value;
     const userOnly = document.getElementById('userOnlyCheck').checked;
     
-    if (isSearchActive) {
-        // Reset to show all records
-        isSearchActive = false;
-        document.getElementById('searchInput').value = '';
-        searchButton.innerHTML = '<i class="bi bi-search me-1"></i>Search';
-        
-        if (userOnly) {
-            loadRecords(); // Load only user's records
-        } else {
-            // Show all records regardless of user
-            fetch('/api/search?q=&user_only=false')
-                .then(response => response.json())
-                .then(records => updateRecordsList(records))
-                .catch(error => {
-                    console.error('Error loading records:', error);
-                    alert('Failed to load records: ' + error.message);
-                });
-        }
-    } else {
-        // Perform search
-        searchRecords();
+    if (!query.trim()) {
+        loadRecords();
+        return;
     }
+
+    fetch(`/api/search?q=${encodeURIComponent(query)}&user_only=${userOnly}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Search failed');
+            }
+            return response.json();
+        })
+        .then(records => updateRecordsList(records))
+        .catch(error => {
+            console.error('Search error:', error);
+            alert('Failed to search records: ' + error.message);
+        });
 }
 
 function searchRecords() {
@@ -281,11 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                if (isSearchActive) {
-                    toggleSearch(); // Reset search if active
-                } else {
-                    searchRecords(); // Perform new search
-                }
+                searchRecords();
             }
         });
     }
