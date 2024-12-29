@@ -141,9 +141,14 @@ function resetForm() {
         .then(response => response.json())
         .then(data => {
             document.getElementById('recordForm').reset();
-            document.getElementById('recordId').value = data.id;
+            const recordIdInput = document.getElementById('recordId');
+            recordIdInput.value = data.id;
+            recordIdInput.setAttribute('data-new-id', data.id);
             document.getElementById('displayId').value = data.id;
             $('#requiredApps').val([]).trigger('change');
+            // Reset CAPTCHA state
+            document.getElementById('captchaContainer').classList.add('d-none');
+            document.getElementById('captchaInput').value = '';
         });
 }
 
@@ -187,6 +192,10 @@ function loadCaptcha() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const recordIdInput = document.getElementById('recordId');
+    // Store the initial ID as the new-id
+    recordIdInput.setAttribute('data-new-id', recordIdInput.value);
+
     document.getElementById('recordForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -194,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const captchaInput = document.getElementById('captchaInput');
         
         const formData = {
-            id: document.getElementById('recordId').value,
+            id: recordIdInput.value,
             title: document.getElementById('title').value,
             description: document.getElementById('description').value,
             start_date: document.getElementById('startDate').value,
@@ -205,11 +214,11 @@ document.addEventListener('DOMContentLoaded', function() {
             captcha: captchaInput ? captchaInput.value : ''
         };
 
-        // If CAPTCHA is not visible yet, show it and load a new one
+        // Always show CAPTCHA on first save attempt
         if (captchaContainer.classList.contains('d-none')) {
             captchaContainer.classList.remove('d-none');
             loadCaptcha();
-            return; // Stop form submission until CAPTCHA is filled
+            return false; // Stop form submission until CAPTCHA is filled
         }
 
         // If CAPTCHA is visible but empty, alert user
