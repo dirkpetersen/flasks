@@ -42,11 +42,13 @@ def get_meta_fields():
 def index():
     email = request.cookies.get('creator_email', '')
     meta_fields = get_meta_fields()
+    app_name = os.getenv('APP_NAME', 'Work-ID')
     return render_template('index.html', 
                          email=email,
                          meta_fields=meta_fields,
                          new_id=WorkRecord.generate_id(),
-                         force_captcha=force_captcha)
+                         force_captcha=force_captcha,
+                         app_name=app_name)
 
 @app.route('/api/records', methods=['GET'])
 def get_records():
