@@ -141,8 +141,8 @@ def create_record():
     meta_fields = get_meta_fields()
     for field_type in ['single_select', 'multi_select']:
         for field_name in meta_fields[field_type]:
-            meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
-            record_data[meta_key] = data.get(field_name.lower())
+            # Use the original field name from .env for Redis storage
+            record_data[field_name] = data.get(f"meta_{'sel' if field_type == 'single_select' else 'msel'}_{field_name.lower()}")
 
     record = WorkRecord(**record_data)
     
