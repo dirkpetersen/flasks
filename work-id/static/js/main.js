@@ -17,10 +17,25 @@ function setEmail() {
 }
 
 function loadRecords() {
+    const email = document.getElementById('emailInput').value;
+    if (!email) {
+        const recordsList = document.getElementById('recordsList');
+        recordsList.innerHTML = '<div class="list-group-item text-center text-muted py-4">' +
+            '<i class="bi bi-envelope-exclamation fs-2 mb-2"></i><br>' +
+            'Please set your email address above to view records</div>';
+        return;
+    }
+
     fetch('/api/records')
         .then(response => response.json())
         .then(records => {
             const recordsList = document.getElementById('recordsList');
+            if (records.length === 0) {
+                recordsList.innerHTML = '<div class="list-group-item text-center text-muted py-4">' +
+                    '<i class="bi bi-inbox fs-2 mb-2"></i><br>' +
+                    'No records found</div>';
+                return;
+            }
             recordsList.innerHTML = records.map(record => `
                 <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
                     <div class="d-flex justify-content-between align-items-center">
@@ -149,6 +164,15 @@ function resetForm() {
 let isSearchActive = false;
 
 function searchRecords() {
+    const email = document.getElementById('emailInput').value;
+    if (!email) {
+        const recordsList = document.getElementById('recordsList');
+        recordsList.innerHTML = '<div class="list-group-item text-center text-muted py-4">' +
+            '<i class="bi bi-envelope-exclamation fs-2 mb-2"></i><br>' +
+            'Please set your email address above to view records</div>';
+        return;
+    }
+
     let query = document.getElementById('searchInput').value;
     // Convert asterisk to empty string
     query = query === '*' ? '' : query;

@@ -73,13 +73,13 @@ def get_records():
         except ValueError:
             return jsonify({'error': 'Invalid recent parameter'}), 400
     
-    # If email is set, return full records for that user
-    if email:
-        user_records = [r for r in records if r.creator_email == email]
-        return jsonify([record.to_dict() for record in user_records])
-    
-    # Default behavior - return all IDs
-    return jsonify([record.id for record in records])
+    # If no email is set, return empty list
+    if not email:
+        return jsonify([])
+        
+    # Return full records for that user
+    user_records = [r for r in records if r.creator_email == email]
+    return jsonify([record.to_dict() for record in user_records])
 
 @app.route('/api/captcha')
 def get_captcha():
