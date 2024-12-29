@@ -101,8 +101,10 @@ class WorkRecord:
             record.end_date = None
         record.active = data.get('active', True)
         record.creator_id = data.get('creator_id')
-        record.work_type = data.get('work_type')
-        record.required_apps = data.get('required_apps', [])
+        # Get meta fields dynamically from data
+        for key in data:
+            if key.startswith('META_SEL') or key.startswith('META_MSEL'):
+                setattr(record, key, data.get(key))
         record.created_at = datetime.fromisoformat(data['created_at']) if data.get('created_at') else None
         return record
 

@@ -384,16 +384,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 // Prepare form data
+                // Build form data dynamically
                 const formData = {
                     id: document.getElementById('recordId').value,
                     title: titleInput.value.trim(),
                     description: document.getElementById('description').value.trim(),
                     start_date: document.getElementById('startDate').value || null,
                     end_date: document.getElementById('endDate').value || null,
-                    work_type: document.getElementById('worktype')?.value || null,
-                    required_apps: $('#requiredapps').val()?.length ? $('#requiredapps').val() : null,
                     active: document.getElementById('active').checked
                 };
+
+                // Add meta fields dynamically
+                document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
+                    const fieldName = select.id.split('_').slice(2).join('_');
+                    if (select.multiple) {
+                        formData[fieldName] = $(select).val()?.length ? $(select).val() : null;
+                    } else {
+                        formData[fieldName] = select.value || null;
+                    }
+                });
 
                 console.log('Form data:', formData); // Debug log
 
