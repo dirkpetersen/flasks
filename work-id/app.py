@@ -89,12 +89,25 @@ def create_record():
     if not email:
         return jsonify({'error': 'No email set'}), 400
 
+    # Set default times for dates
+    start_date = None
+    if data.get('start_date'):
+        start_date = datetime.fromisoformat(data.get('start_date'))
+        # Set to beginning of day (00:00:00)
+        start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    end_date = None
+    if data.get('end_date'):
+        end_date = datetime.fromisoformat(data.get('end_date'))
+        # Set to end of day (23:59:59)
+        end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+
     record = WorkRecord(
         id=data.get('id') or WorkRecord.generate_id(),
         title=data.get('title'),
         description=data.get('description'),
-        start_date=datetime.fromisoformat(data.get('start_date')) if data.get('start_date') else None,
-        end_date=datetime.fromisoformat(data.get('end_date')) if data.get('end_date') else None,
+        start_date=start_date,
+        end_date=end_date,
         timezone=data.get('timezone') or str(datetime.now().astimezone().tzinfo),
         active=data.get('active', True),
         creator_email=email,
@@ -119,8 +132,12 @@ def update_record(id):
 
     record.title = data.get('title', record.title)
     record.description = data.get('description', record.description)
-    record.start_date = datetime.fromisoformat(data['start_date']) if data.get('start_date') else record.start_date
-    record.end_date = datetime.fromisoformat(data['end_date']) if data.get('end_date') else record.end_date
+    if data.get('start_date'):
+        start_date = datetime.fromisoformat(data['start_date'])
+        record.start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+    if data.get('end_date'):
+        end_date = datetime.fromisoformat(data['end_date'])
+        record.end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
     record.timezone = data.get('timezone', record.timezone)
     record.active = data.get('active', record.active)
     record.work_type = data.get('work_type', record.work_type)
