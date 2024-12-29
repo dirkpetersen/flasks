@@ -151,16 +151,25 @@ function searchRecords() {
     const userOnly = document.getElementById('userOnlyCheck').checked;
     
     fetch(`/api/search?q=${encodeURIComponent(query)}&user_only=${userOnly}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Search failed');
+            }
+            return response.json();
+        })
         .then(records => {
             const recordsList = document.getElementById('recordsList');
+            if (records.length === 0) {
+                recordsList.innerHTML = '<div class="list-group-item">No records found</div>';
+                return;
+            }
             recordsList.innerHTML = records.map(record => `
                 <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-truncate me-2">
                             <strong>${record.id}</strong> - ${record.title}
-                            <span class="badge bg-secondary">${record.work_type}</span>
-                            <span class="badge bg-info">Apps: ${record.required_apps.join(', ') || 'None'}</span>
+                            ${record.work_type ? `<span class="badge bg-secondary">${record.work_type}</span>` : ''}
+                            ${record.required_apps ? `<span class="badge bg-info">Apps: ${record.required_apps.join(', ')}</span>` : ''}
                             ${record.active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}
                         </div>
                         <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
@@ -168,6 +177,10 @@ function searchRecords() {
                     <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
                 </div>
             `).join('');
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+            alert('Failed to search records: ' + error.message);
         });
 }
 
@@ -200,6 +213,23 @@ function loadCaptcha() {
 // Main initialization
 document.addEventListener('DOMContentLoaded', function() {
     loadRecords();
+    
+    // Add search input event listeners
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchRecords();
+            }
+        });
+    }
+    
+    // Add search checkbox event listener
+    const userOnlyCheck = document.getElementById('userOnlyCheck');
+    if (userOnlyCheck) {
+        userOnlyCheck.addEventListener('change', searchRecords);
+    }
     
     // Initialize Select2 for multi-select fields after jQuery is ready
     $(function() {
