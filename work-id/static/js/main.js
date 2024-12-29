@@ -286,7 +286,10 @@ function submitWithCaptcha() {
             resetForm();
         }
         // Hide modal after successful verification
-        captchaModal.hide();
+        const captchaModal = bootstrap.Modal.getInstance(document.getElementById('captchaModal'));
+        if (captchaModal) {
+            captchaModal.hide();
+        }
         // Clear CAPTCHA input
         captchaInput.value = '';
         // Show success message
