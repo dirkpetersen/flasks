@@ -8,25 +8,18 @@ html, body {
 .container-fluid {
     max-width: 1920px;
     height: calc(100vh - 76px); /* Navbar height is 56px + 20px margin */
+    padding: 0 24px;
 }
 
-.row.h-100 {
+.d-flex.h-100 {
     height: 100%;
+    gap: 24px;
 }
 
 .card {
     height: 100%;
     margin: 0;
     overflow-y: auto;
-}
-
-@media (min-width: 768px) {
-    .col-md-7, .col-md-5 {
-        padding: 0 12px;
-    }
-    .card {
-        margin: 0;
-    }
 }
 
 .record-list {
