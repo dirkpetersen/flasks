@@ -52,18 +52,28 @@ class WorkRecord:
         return result
 
     def to_dict(self) -> dict:
-        return {
-            'id': self.id,
-            'title': self.title,
-            'description': self.description,
-            'start_date': self.start_date.isoformat() if self.start_date else None,
-            'end_date': self.end_date.isoformat() if self.end_date else None,
-            'active': self.active,
-            'creator_email': self.creator_email,
-            'work_type': self.work_type if self.work_type else None,
-            'required_apps': self.required_apps if self.required_apps else None,
-            'created_at': self.created_at.isoformat()
-        }
+        data = {}
+        if self.id:
+            data['id'] = self.id
+        if self.title:
+            data['title'] = self.title
+        if self.description:
+            data['description'] = self.description
+        if self.start_date:
+            data['start_date'] = self.start_date.isoformat()
+        if self.end_date:
+            data['end_date'] = self.end_date.isoformat()
+        if self.active is not None:
+            data['active'] = self.active
+        if self.creator_email:
+            data['creator_email'] = self.creator_email
+        if self.work_type:
+            data['work_type'] = self.work_type
+        if self.required_apps:
+            data['required_apps'] = self.required_apps
+        if self.created_at:
+            data['created_at'] = self.created_at.isoformat()
+        return data
 
     @classmethod
     def from_dict(cls, data: dict) -> 'WorkRecord':
