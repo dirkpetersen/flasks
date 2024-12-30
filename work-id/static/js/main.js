@@ -10,9 +10,18 @@ function setUserId() {
         },
         body: JSON.stringify({ user_id: userId }),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error setting user ID: ${response.statusText}`);
+        }
+        return response.json();
+    })
     .then(() => {
         loadRecords();
+    })
+    .catch(error => {
+        console.error('Error in setUserId:', error);
+        alert('Failed to set user ID: ' + error.message);
     });
 }
 
@@ -29,7 +38,7 @@ function loadRecords() {
     fetch('/api/records')
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to fetch records');
+                throw new Error('Failed to fetch records: ' + response.statusText);
             }
             return response.json();
         })
@@ -79,7 +88,7 @@ function loadRecords() {
             const recordsList = document.getElementById('recordsList');
             recordsList.innerHTML = '<div class="list-group-item text-center text-danger py-4">' +
                 '<i class="bi bi-exclamation-triangle fs-2 mb-2"></i><br>' +
-                'Error loading records</div>';
+                'Error loading records: ' + error.message + '</div>';
         });
 }
 
@@ -89,7 +98,7 @@ function loadRecord(id) {
     fetch('/api/records')
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to fetch records');
+                throw new Error('Failed to fetch records: ' + response.statusText);
             }
             return response.json();
         })
@@ -182,7 +191,12 @@ function loadRecord(id) {
 
 function resetForm() {
     fetch('/api/new-id')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch new ID: ' + response.statusText);
+            }
+            return response.json();
+        })
         .then(data => {
             document.getElementById('recordForm').reset();
             const recordIdInput = document.getElementById('recordId');
@@ -196,6 +210,10 @@ function resetForm() {
                 captchaInput.value = '';
                 loadCaptcha();
             }
+        })
+        .catch(error => {
+            console.error('Error resetting form:', error);
+            alert('Failed to reset form: ' + error.message);
         });
 }
 
@@ -221,7 +239,12 @@ function searchRecords() {
             loadRecords();
         } else {
             fetch('/api/search?q=&user_only=false')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch records: ' + response.statusText);
+                    }
+                    return response.json();
+                })
                 .then(records => updateRecordsList(records))
                 .catch(error => {
                     console.error('Search error:', error);
@@ -234,7 +257,7 @@ function searchRecords() {
     fetch(`/api/search?q=${encodeURIComponent(query)}&user_only=${userOnly}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Search failed');
+                throw new Error('Search failed: ' + response.statusText);
             }
             return response.json();
         })
@@ -248,7 +271,12 @@ function searchRecords() {
 // Form submission handler
 function loadCaptcha() {
     return fetch('/api/captcha')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load CAPTCHA: ' + response.statusText);
+            }
+            return response.json();
+        })
         .then(data => {
             const captchaImage = document.getElementById('captchaImage');
             captchaImage.src = 'data:image/png;base64,' + data.image;
@@ -277,7 +305,12 @@ document.addEventListener('DOMContentLoaded', function() {
         loadRecords();
     } else {
         fetch('/api/search?q=&user_only=false')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch records: ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(records => updateRecordsList(records))
             .catch(error => {
                 console.error('Error loading records:', error);
@@ -308,7 +341,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     loadRecords();
                 } else {
                     fetch('/api/search?q=&user_only=false')
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch records: ' + response.statusText);
+                            }
+                            return response.json();
+                        })
                         .then(records => updateRecordsList(records))
                         .catch(error => {
                             console.error('Error loading records:', error);
