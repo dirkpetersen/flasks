@@ -418,12 +418,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 
                 // Show debug information in an alert
-                alert('Meta Fields Debug:\n' + 
-                      JSON.stringify(metaFieldsDebug, null, 2) + 
-                      '\n\nFinal Form Data:\n' + 
-                      JSON.stringify(formData, null, 2));
+                // alert('Meta Fields Debug:\n' + 
+                //        JSON.stringify(metaFieldsDebug, null, 2) + 
+                //        '\n\nFinal Form Data:\n' + 
+                //        JSON.stringify(formData, null, 2));
 
-                console.log('Form data:', formData); // Debug log
+                // console.log('Form data:', formData); // Debug log
 
                 // Add CAPTCHA only if section exists (force_captcha is true)
                 const captchaSection = document.getElementById('captchaSection');
