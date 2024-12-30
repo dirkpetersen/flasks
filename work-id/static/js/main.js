@@ -402,16 +402,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     metaFieldsDebug.push({fieldName, value, type: isMulti ? 'multi' : 'single'});
                 });
 
-                // // Show debug information in an alert
-                // alert('\n\nFinal Form Data:\n' + 
-                //        JSON.stringify(formData, null, 2));
-
-                // alert('Meta Fields Debug:\n' + 
-                //        JSON.stringify(metaFieldsDebug, null, 2) + 
-                //        '\n\nFinal Form Data:\n' + 
-                //        JSON.stringify(formData, null, 2));                
-
-                console.log('Final Form data:', formData); // Debug log
+                // Debug information for formData
+                console.log('Final Form data before submission:', formData); // Debug log
 
                 // Add CAPTCHA only if section exists (force_captcha is true)
                 const captchaSection = document.getElementById('captchaSection');
@@ -443,6 +435,8 @@ function submitFormData(formData) {
     const isNewRecord = formData.id === document.getElementById('recordId').getAttribute('data-new-id');
     const method = isNewRecord ? 'POST' : 'PUT';
     const url = method === 'POST' ? '/api/records' : `/api/records/${formData.id}`;
+
+    console.log(`Submitting ${method} request to ${url} with data:`, formData); // Debug log
 
     fetch(url, {
         method: method,
