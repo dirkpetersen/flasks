@@ -154,18 +154,22 @@ def create_record():
             if k.startswith('META_'):
                 print(f"  {k}: {type(v)} = {v}")
 
-    # Process meta fields
+    # Extract meta fields
+    meta_fields = {}
     for key, value in data.items():
         if key.startswith('META_'):
             # For multi-select fields, ensure we have a list
             if key.startswith('META_MSEL_'):
-                record_data[key] = value if isinstance(value, list) else value.split('\t') if value else []
+                meta_fields[key] = value if isinstance(value, list) else value.split('\t') if value else []
             # For single-select fields, ensure we have a string
             elif key.startswith('META_SEL_'):
-                record_data[key] = str(value) if value else ''
+                meta_fields[key] = str(value) if value else ''
             
             if record_id == '(ML-3A)':
                 print(f"DEBUG - Route - Adding meta field {key}: {value} (type: {type(value)})")
+
+    # Add meta fields to record data
+    record_data.update(meta_fields)
     
     print("DEBUG - Route - Final record data before WorkRecord creation:", record_data)
 
