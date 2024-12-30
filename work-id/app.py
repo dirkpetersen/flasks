@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-import sys, os, base64, io, random, string
+import sys, os, base64, io, random, string, json
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, make_response, session
 from captcha.image import ImageCaptcha
