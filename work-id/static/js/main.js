@@ -394,6 +394,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     end_date: document.getElementById('endDate').value || null,
                     active: document.getElementById('active').checked
                 };
+                
+                console.log('Initial form data:', formData);
 
                 // Add meta fields dynamically
                 document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
@@ -404,7 +406,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         ($(select).val()?.length ? $(select).val() : null) :
                         (select.value || null);
                     formData[fieldName] = value;
+                    console.log(`Processing meta field ${fieldName}:`, {
+                        elementId: select.id,
+                        isMulti: isMulti,
+                        rawValue: $(select).val(),
+                        processedValue: value
+                    });
                 });
+                
+                console.log('Final form data with meta fields:', formData);
 
                 console.log('Form data:', formData); // Debug log
 
