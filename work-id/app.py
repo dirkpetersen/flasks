@@ -206,6 +206,11 @@ def update_record(id):
         
         print(f"\nDEBUG - PUT Route - Raw request data for {id}:", json.dumps(data, indent=2))
         print(f"DEBUG - PUT Route - Content-Type:", request.headers.get('Content-Type'))
+        print(f"DEBUG - PUT Route - Meta fields in request:", [k for k in data.keys() if k.startswith('META_')])
+        print("DEBUG - PUT Route - Meta field values:")
+        for k, v in data.items():
+            if k.startswith('META_'):
+                print(f"  {k}: {type(v)} = {v}")
         
         record = WorkRecord.get_by_id(id)
         if not record:

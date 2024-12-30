@@ -159,6 +159,10 @@ class WorkRecord:
         if self._data.get('id') == '(ML-3A)':
             print("\nDEBUG - WorkRecord Validate:")
             print("Validating record data:", self._data)
+            print("\nDEBUG - WorkRecord Validate - Meta fields:")
+            for k, v in self._data.items():
+                if k.startswith('META_'):
+                    print(f"  {k}: {type(v)} = {v}")
         
         # Check meta fields
         for key, value in self._data.items():
@@ -189,12 +193,22 @@ class WorkRecord:
     def save(self):
         try:
             print("\nDEBUG - WorkRecord save - Current _data contents:", self._data)
+            print("\nDEBUG - WorkRecord save - Meta fields before validation:")
+            for k, v in self._data.items():
+                if k.startswith('META_'):
+                    print(f"  {k}: {type(v)} = {v}")
+                    
             self.validate()
             record_data = self.to_dict()
+            
             print("\nDEBUG - WorkRecord save - Data being saved:")
             print(f"Key: work:{self.id}")
             print(f"Data: {json.dumps(record_data, indent=2)}")
             print(f"User works key: user_works:{self.creator_id}")
+            print("\nDEBUG - WorkRecord save - Meta fields in final record:")
+            for k, v in record_data.items():
+                if k.startswith('META_'):
+                    print(f"  {k}: {type(v)} = {v}")
             
             # Try to save and verify the data
             redis_client.set(f"work:{self.id}", json.dumps(record_data))
