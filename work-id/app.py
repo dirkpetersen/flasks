@@ -71,10 +71,10 @@ def get_records():
         all_keys = redis_client.keys("work:*")
         records = []
     
-    for key in all_keys:
-        record = WorkRecord.get_by_id(key.decode().split(':')[1])
-        if record:
-            records.append(record)
+        for key in all_keys:
+            record = WorkRecord.get_by_id(key.decode().split(':')[1])
+            if record:
+                records.append(record)
     
     # Sort by created_at timestamp, newest first
     records.sort(key=lambda x: x.created_at, reverse=True)
