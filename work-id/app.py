@@ -143,12 +143,15 @@ def create_record():
     
     # Add meta fields dynamically
     meta_fields = get_meta_fields()
+    print("Available meta fields:", meta_fields)  # Debug print
     for field_type in ['single_select', 'multi_select']:
         for field_name in meta_fields[field_type]:
             # Use the original field name from .env for Redis storage
             meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
             if meta_key in data:
                 record_data[meta_key] = data[meta_key]
+                print(f"Processing meta field {meta_key}: {data[meta_key]}")  # Debug print
+    print("Final record data:", record_data)  # Debug print
 
     record = WorkRecord(**record_data)
     

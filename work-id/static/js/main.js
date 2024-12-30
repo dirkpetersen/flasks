@@ -398,6 +398,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Initial form data:', formData);
 
                 // Add meta fields dynamically
+                const metaFieldsDebug = [];
                 document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
                     const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
@@ -406,7 +407,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         ($(select).val()?.length ? $(select).val() : null) :
                         (select.value || null);
                     formData[fieldName] = value;
-                    console.log(`Processing meta field ${fieldName}:`, {
+                    
+                    metaFieldsDebug.push({
+                        fieldName: fieldName,
                         elementId: select.id,
                         isMulti: isMulti,
                         rawValue: $(select).val(),
@@ -414,7 +417,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                 });
                 
-                console.log('Final form data with meta fields:', formData);
+                // Show debug information in an alert
+                alert('Meta Fields Debug:\n' + 
+                      JSON.stringify(metaFieldsDebug, null, 2) + 
+                      '\n\nFinal Form Data:\n' + 
+                      JSON.stringify(formData, null, 2));
 
                 console.log('Form data:', formData); // Debug log
 
