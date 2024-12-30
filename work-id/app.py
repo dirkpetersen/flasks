@@ -123,36 +123,6 @@ def create_record():
         'creator_id': user_id
     }
     
-    # Fetch meta field definitions
-    meta_definitions = get_meta_fields()
-    record_id = data.get('id')
-    if record_id == '(ML-3A)':
-        print("\nDEBUG - Route - Available meta fields:", meta_definitions)
-        print("DEBUG - Route - Incoming data:", data)
-        print("DEBUG - Route - Initial record_data:", record_data)
-        print("DEBUG - Route - Meta fields in request:", [k for k in data.keys() if k.startswith('META_')])
-        print("DEBUG - Route - Meta field values and types:")
-        for k, v in data.items():
-            if k.startswith('META_'):
-                print(f"  {k}: {type(v)} = {v}")
-
-    # Extract meta fields
-    meta_fields = {}
-    for key, value in data.items():
-        if key.startswith('META_'):
-            # For multi-select fields, ensure we have a list
-            if key.startswith('META_MSEL_'):
-                meta_fields[key] = value if isinstance(value, list) else value.split('\t') if value else []
-            # For single-select fields, ensure we have a string
-            elif key.startswith('META_SEL_'):
-                meta_fields[key] = str(value) if value else ''
-            
-            if record_id == '(ML-3A)':
-                print(f"DEBUG - Route - Adding meta field {key}: {value} (type: {type(value)})")
-
-    # Add meta fields to record data
-    record_data.update(meta_fields)
-    
     print("DEBUG - Route - Final record data before WorkRecord creation:", record_data)
 
     record = WorkRecord(**record_data)
@@ -171,11 +141,6 @@ def update_record(id):
         
         print(f"\nDEBUG - PUT Route - Raw request data for {id}:", json.dumps(data, indent=2))
         print(f"DEBUG - PUT Route - Content-Type:", request.headers.get('Content-Type'))
-        print(f"DEBUG - PUT Route - Meta fields in request:", [k for k in data.keys() if k.startswith('META_')])
-        print("DEBUG - PUT Route - Meta field values:")
-        for k, v in data.items():
-            if k.startswith('META_'):
-                print(f"  {k}: {type(v)} = {v}")
         
         record = WorkRecord.get_by_id(id)
         if not record:
@@ -194,14 +159,6 @@ def update_record(id):
             record.end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
         record.active = data.get('active', record.active)
     
-        # Get meta fields dynamically from data
-        meta_fields = get_meta_fields()
-        for field_type in ['single_select', 'multi_select']:
-            for field_name in meta_fields[field_type]:
-                meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
-                if meta_key in data:
-                    field_value = data[meta_key]
-                    setattr(record, meta_key, field_value)
     
         record.save()
         return jsonify(record.to_dict())

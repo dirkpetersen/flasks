@@ -100,11 +100,6 @@ class WorkRecord:
                 end_date = pytz.UTC.localize(end_date)
             end_date = end_date.astimezone(pytz.UTC)
             
-        # Prepare meta fields
-        meta_fields = {}
-        for key, value in data.items():
-            if key.startswith('META_') and value is not None:
-                meta_fields[key] = value
                 
         # Create record with all fields
         record = cls(
@@ -116,7 +111,6 @@ class WorkRecord:
             active=data.get('active', True),
             creator_id=data.get('creator_id'),
             created_at=created_at,
-            **meta_fields
         )
         return record
 
@@ -125,11 +119,7 @@ class WorkRecord:
         if self._data.get('id') == '(ML-3A)':
             print("\nDEBUG - WorkRecord Validate:")
             print("Validating record data:", self._data)
-            print("\nDEBUG - WorkRecord Validate - Meta fields:")
-            for k, v in self._data.items():
-                if k.startswith('META_'):
-                    print(f"  {k}: {type(v)} = {v}")
-        
+
         
         if self.start_date and self.end_date:
             if self.end_date < self.start_date:
@@ -144,10 +134,6 @@ class WorkRecord:
     def save(self):
         try:
             print("\nDEBUG - WorkRecord save - Current _data contents:", self._data)
-            print("\nDEBUG - WorkRecord save - Meta fields before validation:")
-            for k, v in self._data.items():
-                if k.startswith('META_'):
-                    print(f"  {k}: {type(v)} = {v}")
                     
             self.validate()
             record_data = self.to_dict()
@@ -156,10 +142,6 @@ class WorkRecord:
             print(f"Key: work:{self.id}")
             print(f"Data: {json.dumps(record_data, indent=2)}")
             print(f"User works key: user_works:{self.creator_id}")
-            print("\nDEBUG - WorkRecord save - Meta fields in final record:")
-            for k, v in record_data.items():
-                if k.startswith('META_'):
-                    print(f"  {k}: {type(v)} = {v}")
             
             # Try to save and verify the data
             redis_client.set(f"work:{self.id}", json.dumps(record_data))

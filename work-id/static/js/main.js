@@ -144,28 +144,6 @@ function loadRecord(id) {
                 document.getElementById('endDateTimezone').textContent = '';
             }
             
-            // Handle meta fields
-            document.querySelectorAll('select[data-field-type]').forEach(select => {
-                const isMulti = select.getAttribute('data-field-type') === 'msel';
-                const fieldName = 'META_' + (isMulti ? 'MSEL_' : 'SEL_') + 
-                                select.getAttribute('data-field-name').toUpperCase();
-                
-                if (record[fieldName] !== undefined) {
-                    if (isMulti) {
-                        $(select).val(record[fieldName]).trigger('change');
-                    } else {
-                        select.value = record[fieldName];
-                    }
-                    console.log(`Loading ${fieldName} with value:`, record[fieldName]);
-                } else {
-                    if (isMulti) {
-                        $(select).val([]).trigger('change');
-                    } else {
-                        select.value = '';
-                    }
-                }
-                select.dispatchEvent(new Event('change'));
-            });
             
             // Handle active status with default true
             document.getElementById('active').checked = record.active !== undefined ? record.active : true;
@@ -408,18 +386,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Initial form data:', Object.fromEntries(formData));
 
 
-                // Convert FormData to JSON with proper META field handling
+                // Convert FormData to JSON 
                 const jsonData = {};
                 for (let [key, value] of formData.entries()) {
-                    // Keep original key case for META fields, lowercase others
-                    if (jsonData[key]) {
-                        if (!Array.isArray(jsonData[key])) {
-                            jsonData[key] = [jsonData[key]];
-                        }
-                        jsonData[key].push(value);
-                    } else {
-                        jsonData[key] = value;
-                    }
+                    jsonData[key] = value;
                 }
 
                 // Debug information for formData
@@ -462,15 +432,6 @@ function submitFormData(formData) {
     console.log('URL:', url);
     console.log('All form data:', formData);
     
-    // Specifically log META fields
-    const metaFields = {};
-    Object.keys(formData).forEach(key => {
-        if (key.startsWith('META_')) {
-            metaFields[key] = formData[key];
-        }
-    });
-    console.log('META fields being submitted:', metaFields);
-
     fetch(url, {
         method: method,
         headers: {
