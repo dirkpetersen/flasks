@@ -171,8 +171,8 @@ def update_record(id):
         if record.creator_id != user_id:
             return jsonify({'error': 'Unauthorized'}), 403
 
-    record.title = data.get('title', record.title)
-    record.description = data.get('description', record.description)
+        record.title = data.get('title', record.title)
+        record.description = data.get('description', record.description)
     if data.get('start_date'):
         start_date = datetime.fromisoformat(data['start_date'])
         record.start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
