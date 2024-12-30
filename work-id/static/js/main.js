@@ -427,8 +427,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add meta fields dynamically
                 document.querySelectorAll('select[id^="meta_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
-                    const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
-                                    select.id.split('_').slice(2).join('_').toUpperCase();
+                    const fieldName = ((isMulti ? 'meta_msel_' : 'meta_sel_') + 
+                                    select.id.split('_').slice(2).join('_')).toLowerCase();
             
                     if (isMulti) {
                         const values = $(select).val() || [];
@@ -443,16 +443,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
 
-                // Convert FormData to JSON
+                // Convert FormData to JSON with lowercase keys
                 const jsonData = {};
                 for (let [key, value] of formData.entries()) {
-                    if (jsonData[key]) {
-                        if (!Array.isArray(jsonData[key])) {
-                            jsonData[key] = [jsonData[key]];
+                    const lowerKey = key.toLowerCase();
+                    if (jsonData[lowerKey]) {
+                        if (!Array.isArray(jsonData[lowerKey])) {
+                            jsonData[lowerKey] = [jsonData[lowerKey]];
                         }
-                        jsonData[key].push(value);
+                        jsonData[lowerKey].push(value);
                     } else {
-                        jsonData[key] = value;
+                        jsonData[lowerKey] = value;
                     }
                 }
 
