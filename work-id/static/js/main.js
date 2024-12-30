@@ -427,8 +427,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add meta fields dynamically
                 document.querySelectorAll('select[id^="meta_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
-                    const fieldName = ((isMulti ? 'META_MSEL_' : 'META_SEL_') + 
-                                    select.id.split('_').slice(2).join('_')).toUpperCase();
+                    // Extract the original field name from the select element's data attribute
+                    const fieldName = select.getAttribute('data-field-name');
             
                     if (isMulti) {
                         const values = $(select).val() || [];

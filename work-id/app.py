@@ -35,16 +35,20 @@ def get_meta_fields():
         
         # Process single select fields
         if key.startswith('META_SEL_'):
-            meta_fields['single_select'][field_id] = {
+            field_name = label.lower().replace(' ', '_')
+            meta_fields['single_select'][field_name] = {
                 'label': label,
-                'options': options_list
+                'options': options_list,
+                'field_name': field_name  # Store the processed field name
             }
             
         # Process multi select fields
         elif key.startswith('META_MSEL_'):
-            meta_fields['multi_select'][field_id] = {
+            field_name = label.lower().replace(' ', '_')
+            meta_fields['multi_select'][field_name] = {
                 'label': label,
-                'options': options_list
+                'options': options_list,
+                'field_name': field_name  # Store the processed field name
             }
             
     print("DEBUG - Meta Fields Collected:", meta_fields)  # Debug log
