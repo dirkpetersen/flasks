@@ -177,9 +177,9 @@ def update_record(id):
             start_date = datetime.fromisoformat(data['start_date'])
             record.start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         if data.get('end_date'):
-        end_date = datetime.fromisoformat(data['end_date'])
-        record.end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
-    record.active = data.get('active', record.active)
+            end_date = datetime.fromisoformat(data['end_date'])
+            record.end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+        record.active = data.get('active', record.active)
     
     # Get meta fields dynamically from data
     meta_fields = get_meta_fields()
@@ -190,8 +190,8 @@ def update_record(id):
                 field_value = data[meta_key]
                 setattr(record, meta_key, field_value)
     
-    record.save()
-    return jsonify(record.to_dict())
+        record.save()
+        return jsonify(record.to_dict())
 
 @app.route('/api/new-id')
 def get_new_id():
