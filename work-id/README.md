@@ -1,5 +1,8 @@
 # Work_ID
 
+
+## Chat prompt 
+
 Prompt:Use the latest flask and Web 2.0 tech to create a single page and very pretty CRUD application that is called "Work-ID". All data should be stored in redis
 
 The primary goal of this application is maintain a list of projects/work records. Each record has an id based on a certain pattern from env var WORK_ID_PATTERN. 
@@ -17,7 +20,7 @@ the single page app has 2 parts, the first part is a form that defaults to a new
 
 also create a search option where it searches the entire database with all records, there must be a toggle for searching all records and only my records, I can only edit my records 
 
-# how many IDs do i get if i use XX-XX as an ID
+## how many IDs do i get if i use XX-XX as an ID
 
 Alphanumeric Set (A-Z and 0-9):
 Total originally: 26 letters + 10 digits = 36 characters
@@ -26,3 +29,37 @@ Total originally: 26 letters + 10 digits = 36 characters
 Now, with 34 possible characters for each position in a 4-character ID:
 
 34^4=1,336,336 combinations
+
+## changing a key name in a json recond in redis
+
+write lua code `redis-field-renamer.lua`, for example, if you want to rename key creator_email to creator_id
+
+```lua
+-- Scan all keys matching your desired pattern (e.g., all work:* keys)
+local cursor = "0"
+repeat
+    local result = redis.call("SCAN", cursor, "MATCH", "work:*", "COUNT", 100)
+    cursor = result[1]
+    local keys = result[2]
+    for _, key in ipairs(keys) do
+        local value = redis.call("GET", key)
+        if value then
+            -- Parse the JSON value
+            local json = cjson.decode(value)
+            if json["creator_email"] then
+                json["creator_id"] = json["creator_email"]
+                json["creator_email"] = nil
+                -- Save the updated JSON back to Redis
+                redis.call("SET", key, cjson.encode(json))
+            end
+        end
+    end
+until cursor == "0"
+
+```
+
+and start 
+
+```bash
+redis-cli --eval redis-field-renamer.lua
+```
