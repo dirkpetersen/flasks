@@ -427,20 +427,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add meta fields dynamically
                 document.querySelectorAll('select[id^="meta_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
-                    // Extract the original field name from the select element's data attribute
-                    const fieldName = select.getAttribute('data-field-name');
+                    const fieldName = select.getAttribute('data-field-name').toUpperCase();
             
                     if (isMulti) {
                         const values = $(select).val() || [];
                         if (values.length > 0) {
-                            formData.append(fieldName, values);
-                            console.log(`Processing multi-select ${fieldName}:`, values);
+                            formData.append(`META_MSEL_${fieldName}`, values);
+                            console.log(`Processing multi-select META_MSEL_${fieldName}:`, values);
                         }
                     } else {
                         const value = select.value || '';
                         if (value) {
-                            formData.append(fieldName, value);
-                            console.log(`Processing single-select ${fieldName}:`, value);
+                            formData.append(`META_SEL_${fieldName}`, value);
+                            console.log(`Processing single-select META_SEL_${fieldName}:`, value);
                         }
                     }
                 });
