@@ -76,27 +76,30 @@ def get_records():
             if record:
                 records.append(record)
     
-    # Sort by created_at timestamp, newest first
-    records.sort(key=lambda x: x.created_at, reverse=True)
+        # Sort by created_at timestamp, newest first
+        records.sort(key=lambda x: x.created_at, reverse=True)
     
-    if recent:
-        try:
-            limit = int(recent)
-            if limit < 1:
-                return jsonify({'error': 'Recent parameter must be positive'}), 400
-            # Apply limit and return just IDs
-            records = records[:limit]
-            return jsonify([record.id for record in records])
-        except ValueError:
-            return jsonify({'error': 'Invalid recent parameter'}), 400
+        if recent:
+            try:
+                limit = int(recent)
+                if limit < 1:
+                    return jsonify({'error': 'Recent parameter must be positive'}), 400
+                # Apply limit and return just IDs
+                records = records[:limit]
+                return jsonify([record.id for record in records])
+            except ValueError:
+                return jsonify({'error': 'Invalid recent parameter'}), 400
     
-    # If user_id is set, return full records for that user
-    if user_id:
-        user_records = [r for r in records if r.creator_id == user_id]
-        return jsonify([record.to_dict() for record in user_records])
+        # If user_id is set, return full records for that user
+        if user_id:
+            user_records = [r for r in records if r.creator_id == user_id]
+            return jsonify([record.to_dict() for record in user_records])
     
-    # Default behavior - return all IDs when no email is set
-    return jsonify([record.id for record in records])
+        # Default behavior - return all IDs when no email is set
+        return jsonify([record.id for record in records])
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/records', methods=['POST'])
 def create_record():
