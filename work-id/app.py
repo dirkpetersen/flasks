@@ -192,6 +192,8 @@ def update_record(id):
     
         record.save()
         return jsonify(record.to_dict())
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/api/new-id')
 def get_new_id():
