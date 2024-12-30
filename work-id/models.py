@@ -18,19 +18,21 @@ class WorkRecord:
                  start_date: datetime = None, end_date: datetime = None,
                  active: bool = True, creator_id: str = None,
                  created_at: datetime = None, **meta_fields):
-        self.id = id
-        self.title = title
-        self.description = description
-        # Ensure dates are stored in UTC
-        self.start_date = start_date.astimezone(pytz.UTC) if start_date else None
-        self.end_date = end_date.astimezone(pytz.UTC) if end_date else None
-        self.active = active
-        self.creator_id = creator_id
-        self.created_at = created_at or datetime.now(pytz.UTC)
+        self._data = {
+            'id': id,
+            'title': title,
+            'description': description,
+            'start_date': start_date.astimezone(pytz.UTC) if start_date else None,
+            'end_date': end_date.astimezone(pytz.UTC) if end_date else None,
+            'active': active,
+            'creator_id': creator_id,
+            'created_at': created_at or datetime.now(pytz.UTC)
+        }
         
         # Handle dynamic meta fields
         for field_name, value in meta_fields.items():
-            setattr(self, field_name, value)
+            if value is not None:  # Only store non-None values
+                self._data[field_name] = value
 
     @staticmethod
     def generate_id() -> str:
@@ -53,35 +55,17 @@ class WorkRecord:
         return result
 
     def to_dict(self) -> dict:
-        data = {}
-        # Handle standard fields
-        if self.id:
-            data['id'] = self.id
-        if self.title:
-            data['title'] = self.title
-        if self.description:
-            data['description'] = self.description
-        if self.start_date:
-            data['start_date'] = self.start_date.isoformat()
-        if self.end_date:
-            data['end_date'] = self.end_date.isoformat()
-        if self.active is not None:
-            data['active'] = self.active
-        if self.creator_id:
-            data['creator_id'] = self.creator_id
-        if self.created_at:
-            data['created_at'] = self.created_at.isoformat()
+        data = self._data.copy()
+        
+        # Convert datetime objects to ISO format strings
+        if data.get('start_date'):
+            data['start_date'] = data['start_date'].isoformat()
+        if data.get('end_date'):
+            data['end_date'] = data['end_date'].isoformat()
+        if data.get('created_at'):
+            data['created_at'] = data['created_at'].isoformat()
             
-        # Handle dynamic meta fields
-        for field_name in self.__dict__:
-            if field_name not in ['id', 'title', 'description', 'start_date', 
-                                'end_date', 'active', 'creator_id', 'created_at']:
-                value = getattr(self, field_name)
-                if value is not None:
-                    data[field_name] = value
-
-        #print('noooo:',self.__dict__) 
-        return data
+        return {k: v for k, v in data.items() if v is not None}
 
     @classmethod
     def from_dict(cls, data: dict) -> 'WorkRecord':
@@ -173,3 +157,11 @@ class WorkRecord:
                 results.append(record)
                 
         return sorted(results, key=lambda x: x.created_at, reverse=True)
+    def __getattr__(self, name):
+        return self._data.get(name)
+        
+    def __setattr__(self, name, value):
+        if name == '_data':
+            super().__setattr__(name, value)
+        else:
+            self._data[name] = value
