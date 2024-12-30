@@ -173,10 +173,10 @@ def update_record(id):
 
         record.title = data.get('title', record.title)
         record.description = data.get('description', record.description)
-    if data.get('start_date'):
-        start_date = datetime.fromisoformat(data['start_date'])
-        record.start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    if data.get('end_date'):
+        if data.get('start_date'):
+            start_date = datetime.fromisoformat(data['start_date'])
+            record.start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        if data.get('end_date'):
         end_date = datetime.fromisoformat(data['end_date'])
         record.end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
     record.active = data.get('active', record.active)
