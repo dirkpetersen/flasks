@@ -404,16 +404,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('select[id^="meta_sel_"]').forEach(select => {
                     const fieldName = 'META_SEL_' + select.id.split('_').slice(2).join('_').toUpperCase();
                     const value = select.value;
-                    formData[fieldName] = value || null;
+                    formData[fieldName] = value || '';  // Always include the field
                     metaFieldsDebug.push({fieldName, value});
+                    console.log(`Adding single select field ${fieldName}:`, value);
                 });
 
                 // Process multi select fields
                 document.querySelectorAll('select[id^="meta_msel_"]').forEach(select => {
                     const fieldName = 'META_MSEL_' + select.id.split('_').slice(2).join('_').toUpperCase();
                     const value = $(select).val() || [];
-                    formData[fieldName] = value.length > 0 ? value : null;
+                    formData[fieldName] = value;  // Always include the field
                     metaFieldsDebug.push({fieldName, value});
+                    console.log(`Adding multi select field ${fieldName}:`, value);
                 });
 
                 console.log('Meta fields debug:', metaFieldsDebug);

@@ -157,10 +157,15 @@ def create_record():
     # Process meta fields
     for key, value in data.items():
         if key.startswith('META_'):
-            if value is not None:  # Include even empty lists/strings
-                record_data[key] = value
-                if record_id == '(ML-3A)':
-                    print(f"DEBUG - Route - Adding meta field {key}: {value}")
+            # For multi-select fields, ensure we have a list
+            if key.startswith('META_MSEL_'):
+                record_data[key] = value if isinstance(value, list) else []
+            # For single-select fields, ensure we have a string
+            elif key.startswith('META_SEL_'):
+                record_data[key] = str(value) if value else ''
+            
+            if record_id == '(ML-3A)':
+                print(f"DEBUG - Route - Adding meta field {key}: {value} (type: {type(value)})")
     
     print("DEBUG - Route - Final record data before WorkRecord creation:", record_data)
 

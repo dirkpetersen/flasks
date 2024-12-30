@@ -46,22 +46,21 @@ class WorkRecord:
                     print(f"DEBUG - WorkRecord Init - Processing meta field {field_name} with value:", value)
                     print(f"DEBUG - WorkRecord Init - Value type:", type(value))
                 
-                # Validate multi-select fields
-                if field_name.startswith('META_MSEL_') and value is not None:
+                # Always store meta fields, with appropriate defaults
+                if field_name.startswith('META_MSEL_'):
+                    # Multi-select fields are always lists
                     if not isinstance(value, list):
                         if id == 'ML-3A':
-                            print(f"DEBUG - WorkRecord Init - Error: Multi-select field {field_name} is not a list")
-                        raise ValueError(f"Multi-select field {field_name} must be a list")
-                    self._data[field_name] = value if value else None
-                # Validate single-select fields
-                elif field_name.startswith('META_SEL_') and value is not None:
+                            print(f"DEBUG - WorkRecord Init - Converting {field_name} to list")
+                        value = [value] if value else []
+                    self._data[field_name] = value
+                elif field_name.startswith('META_SEL_'):
+                    # Single-select fields are always strings
                     if not isinstance(value, str):
                         if id == 'ML-3A':
-                            print(f"DEBUG - WorkRecord Init - Error: Single-select field {field_name} is not a string")
-                        raise ValueError(f"Single-select field {field_name} must be a string")
-                    self._data[field_name] = value if value.strip() else None
-                else:
-                    self._data[field_name] = value if value not in (None, [], '') else None
+                            print(f"DEBUG - WorkRecord Init - Converting {field_name} to string")
+                        value = str(value) if value else ''
+                    self._data[field_name] = value
                     
                 if id == 'ML-3A':
                     print(f"DEBUG - WorkRecord Init - Final value for {field_name}:", self._data.get(field_name))
