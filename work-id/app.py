@@ -181,14 +181,14 @@ def update_record(id):
             record.end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
         record.active = data.get('active', record.active)
     
-    # Get meta fields dynamically from data
-    meta_fields = get_meta_fields()
-    for field_type in ['single_select', 'multi_select']:
-        for field_name in meta_fields[field_type]:
-            meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
-            if meta_key in data:
-                field_value = data[meta_key]
-                setattr(record, meta_key, field_value)
+        # Get meta fields dynamically from data
+        meta_fields = get_meta_fields()
+        for field_type in ['single_select', 'multi_select']:
+            for field_name in meta_fields[field_type]:
+                meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
+                if meta_key in data:
+                    field_value = data[meta_key]
+                    setattr(record, meta_key, field_value)
     
         record.save()
         return jsonify(record.to_dict())
