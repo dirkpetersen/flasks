@@ -152,6 +152,7 @@ def create_record():
 
     record = WorkRecord(**record_data)
     
+    try:
         record.save()
         return jsonify(record.to_dict())
     except ValueError as e:
