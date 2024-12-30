@@ -29,10 +29,10 @@ class WorkRecord:
             'created_at': created_at or datetime.now(pytz.UTC)
         }
         
-        # Handle dynamic meta fields
+        # Handle dynamic meta fields, preserving original field names
         for field_name, value in meta_fields.items():
-            if value is not None:  # Only store non-None values
-                self._data[field_name] = value
+            if field_name.startswith('META_'):
+                self._data[field_name] = value if value not in (None, [], '') else None
 
     @staticmethod
     def generate_id() -> str:
@@ -72,36 +72,47 @@ class WorkRecord:
         if not data:
             return None
             
-        record = cls()
-        record.id = data.get('id')
-        record.title = data.get('title')
-        record.description = data.get('description')
+        # Handle created_at with default value
+        if data.get('created_at'):
+            created_at = datetime.fromisoformat(data['created_at'])
+            if not created_at.tzinfo:
+                created_at = pytz.UTC.localize(created_at)
+        else:
+            created_at = datetime.now(pytz.UTC)
+            
+        # Process dates
+        start_date = None
         if data.get('start_date'):
             start_date = datetime.fromisoformat(data['start_date'])
             if not start_date.tzinfo:
                 start_date = pytz.UTC.localize(start_date)
-            record.start_date = start_date.astimezone(pytz.UTC)
-        else:
-            record.start_date = None
+            start_date = start_date.astimezone(pytz.UTC)
             
+        end_date = None
         if data.get('end_date'):
             end_date = datetime.fromisoformat(data['end_date'])
             if not end_date.tzinfo:
                 end_date = pytz.UTC.localize(end_date)
-            record.end_date = end_date.astimezone(pytz.UTC)
-        else:
-            record.end_date = None
-        record.active = data.get('active', True)
-        record.creator_id = data.get('creator_id')
-        # Get meta fields directly from data using original field names
-        for key in data:
-            # Skip standard fields that are already handled
-            if key in ['id', 'title', 'description', 'start_date', 'end_date', 
-                      'active', 'creator_id', 'created_at']:
-                continue
-            # Set the field using the original name from .env
-            setattr(record, key, data.get(key))
-        record.created_at = datetime.fromisoformat(data['created_at']) if data.get('created_at') else None
+            end_date = end_date.astimezone(pytz.UTC)
+            
+        # Prepare meta fields
+        meta_fields = {}
+        for key, value in data.items():
+            if key.startswith('META_') and value is not None:
+                meta_fields[key] = value
+                
+        # Create record with all fields
+        record = cls(
+            id=data.get('id'),
+            title=data.get('title'),
+            description=data.get('description'),
+            start_date=start_date,
+            end_date=end_date,
+            active=data.get('active', True),
+            creator_id=data.get('creator_id'),
+            created_at=created_at,
+            **meta_fields
+        )
         return record
 
     def save(self):
