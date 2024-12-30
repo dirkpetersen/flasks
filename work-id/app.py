@@ -157,17 +157,6 @@ def create_record():
                 record_data[key] = value
                 if record_id == '(ML-3A)':
                     print(f"DEBUG - Route - Adding meta field {key}: {value}")
-        for field_name in meta_fields[field_type]:
-            # Use the original field name from .env for Redis storage
-            meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
-            if record_id == '(ML-3A)':
-                print(f"DEBUG - Route - Checking meta field {meta_key}")
-                print(f"DEBUG - Route - Field exists in data: {meta_key in data}")
-                if meta_key in data:
-                    record_data[meta_key] = data[meta_key]
-                    print(f"DEBUG - Route - Processing meta field {meta_key}: {data[meta_key]}")
-                else:
-                    print(f"DEBUG - Route - Meta field {meta_key} not found in submitted data")
     
     print("DEBUG - Route - Final record data before WorkRecord creation:", record_data)
 
