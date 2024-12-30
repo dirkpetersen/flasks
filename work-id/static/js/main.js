@@ -490,7 +490,20 @@ function submitFormData(formData) {
     const method = isNewRecord ? 'POST' : 'PUT';
     const url = method === 'POST' ? '/api/records' : `/api/records/${formData.id}`;
 
-    console.log(`Submitting ${method} request to ${url} with data:`, formData); // Debug log
+    // Detailed debug logging of form data
+    console.log('\nDEBUG - Form Submission:');
+    console.log('Method:', method);
+    console.log('URL:', url);
+    console.log('All form data:', formData);
+    
+    // Specifically log META fields
+    const metaFields = {};
+    Object.keys(formData).forEach(key => {
+        if (key.startsWith('META_')) {
+            metaFields[key] = formData[key];
+        }
+    });
+    console.log('META fields being submitted:', metaFields);
 
     fetch(url, {
         method: method,
