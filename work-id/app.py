@@ -141,7 +141,8 @@ def create_record():
         'creator_id': user_id
     }
     
-    # Add meta fields dynamically
+    # Fetch meta field definitions
+    meta_definitions = get_meta_fields()
     record_id = data.get('id')
     if record_id == '(ML-3A)':
         print("\nDEBUG - Route - Available meta fields:", meta_definitions)
