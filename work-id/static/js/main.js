@@ -424,25 +424,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 console.log('Initial form data:', Object.fromEntries(formData));
 
-                // Add meta fields dynamically
-                document.querySelectorAll('select[data-field-type]').forEach(select => {
-                    const isMulti = select.getAttribute('data-field-type') === 'msel';
-                    const fieldName = select.getAttribute('data-field-name').toUpperCase();
-            
-                    if (isMulti) {
-                        const values = $(select).val() || [];
-                        if (values.length > 0) {
-                            formData.append(`META_MSEL_${fieldName}`, values);
-                            console.log(`Processing multi-select META_MSEL_${fieldName}:`, values);
-                        }
-                    } else {
-                        const value = select.value || '';
-                        if (value) {
-                            formData.append(`META_SEL_${fieldName}`, value);
-                            console.log(`Processing single-select META_SEL_${fieldName}:`, value);
-                        }
-                    }
-                });
 
                 // Convert FormData to JSON with proper META field handling
                 const jsonData = {};

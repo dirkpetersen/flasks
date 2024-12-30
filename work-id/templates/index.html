@@ -61,30 +61,6 @@
                         </div>
                     </div>
 
-                    <!-- Single Select Fields -->
-                    {% for field_id, field_data in meta_fields.single_select.items() %}
-                    <div class="mb-3">
-                        <label class="form-label">{{ field_data.label }}</label>
-                        <select class="form-select" id="{{ field_id }}" data-field-name="{{ field_data.field_name }}" data-field-type="sel">
-                            <option value="">Select {{ field_data.label }}</option>
-                            {% for option in field_data.options %}
-                            <option value="{{ option }}">{{ option }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    {% endfor %}
-
-                    <!-- Multi Select Fields -->
-                    {% for field_id, field_data in meta_fields.multi_select.items() %}
-                    <div class="mb-3">
-                        <label class="form-label">{{ field_data.label }}</label>
-                        <select class="form-select" id="{{ field_id }}" data-field-name="{{ field_data.field_name }}" data-field-type="msel" multiple>
-                            {% for option in field_data.options %}
-                            <option value="{{ option }}">{{ option }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    {% endfor %}
 
                     <div class="mb-3">
                         <div class="form-check">

@@ -16,52 +16,13 @@ app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 1 hour session
 
-def get_meta_fields():
-    meta_fields = {'single_select': {}, 'multi_select': {}}
-    
-    # Get all environment variables
-    for key, value in os.environ.items():
-        print(f"DEBUG - Environment Variable - Key: {key}, Value: {value}")  # Debug log
-        
-        # Skip if no value or no colon in value
-        if not value or ':' not in value:
-            continue
-            
-        # Split into label and options
-        label, options = value.split(':', 1)
-        # Convert label to lowercase and replace spaces with underscores
-        field_id = label.lower().replace(' ', '_')
-        options_list = options.split(',')
-        
-        # Process single select fields
-        if key.startswith('META_SEL_'):
-            field_name = label.lower().replace(' ', '_')
-            meta_fields['single_select'][field_name] = {
-                'label': label,
-                'options': options_list,
-                'field_name': field_name  # Store the processed field name
-            }
-            
-        # Process multi select fields
-        elif key.startswith('META_MSEL_'):
-            field_name = label.lower().replace(' ', '_')
-            meta_fields['multi_select'][field_name] = {
-                'label': label,
-                'options': options_list,
-                'field_name': field_name  # Store the processed field name
-            }
-            
-    print("DEBUG - Meta Fields Collected:", meta_fields)  # Debug log
-    return meta_fields
 
 @app.route('/')
 def index():
     user_id = request.cookies.get('creator_id', '')
-    meta_definitions = get_meta_fields()
     app_name = os.getenv('APP_NAME', 'Work-ID')
     return render_template('index.html', 
                          user_id=user_id,
-                         meta_fields=meta_definitions,
                          new_id=WorkRecord.generate_id(),
                          force_captcha=force_captcha,
                          app_name=app_name)

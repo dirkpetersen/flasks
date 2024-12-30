@@ -20,7 +20,7 @@ class WorkRecord:
         
         print("\nDEBUG - WorkRecord Init - Incoming kwargs:", kwargs)
         
-        # List of known fields
+        # List of known fields and extract them
         known_fields = {
             'id', 'title', 'description', 'start_date', 'end_date',
             'active', 'creator_id', 'created_at'
@@ -28,7 +28,7 @@ class WorkRecord:
         
         # Extract known fields from kwargs
         for field in known_fields:
-            self._data[field] = kwargs.pop(field, None)
+            self._data[field] = kwargs.get(field)
             print(f"DEBUG - WorkRecord Init - Setting {field}:", self._data[field])
         
         # Convert dates to UTC timezone
@@ -37,9 +37,6 @@ class WorkRecord:
         if self._data['end_date']:
             self._data['end_date'] = self._data['end_date'].astimezone(pytz.UTC)
         self._data['created_at'] = self._data['created_at'] or datetime.now(pytz.UTC)
-        
-        # Remaining kwargs are meta fields
-        meta_fields = kwargs
         
         # Debugging output
         if self._data.get('id') == '(ML-3A)':
@@ -164,21 +161,6 @@ class WorkRecord:
                 if k.startswith('META_'):
                     print(f"  {k}: {type(v)} = {v}")
         
-        # Check meta fields
-        for key, value in self._data.items():
-            if key.startswith('META_'):
-                if self._data.get('id') == '(ML-3A)':
-                    print(f"DEBUG - Validating meta field {key}: {value}")
-                if key.startswith('META_MSEL_'):
-                    if value is not None and not isinstance(value, list):
-                        raise ValueError(f"Multi-select field {key} must be a list")
-                elif key.startswith('META_SEL_'):
-                    if value is not None and not isinstance(value, str):
-                        raise ValueError(f"Single-select field {key} must be a string")
-        
-        # Additional validation for meta fields presence
-        #if not any(key.startswith('META_') for key in self._data.keys()):
-        #    raise ValueError("At least one meta field must be provided")
         
         if self.start_date and self.end_date:
             if self.end_date < self.start_date:
