@@ -165,8 +165,7 @@ function loadRecord(id) {
                         select.value = '';
                     }
                 }
-                    select.dispatchEvent(new Event('change'));
-                }
+                select.dispatchEvent(new Event('change'));
             });
             
             // Handle active status with default true
