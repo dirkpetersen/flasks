@@ -149,8 +149,14 @@ def create_record():
         print("DEBUG - Route - Incoming data:", data)
         print("DEBUG - Route - Initial record_data:", record_data)
         print("DEBUG - Route - Meta fields in request:", [k for k in data.keys() if k.startswith('META_')])
-    
-    for field_type in ['single_select', 'multi_select']:
+
+    # Process meta fields
+    for key, value in data.items():
+        if key.startswith('META_'):
+            if value is not None:  # Include even empty lists/strings
+                record_data[key] = value
+                if record_id == '(ML-3A)':
+                    print(f"DEBUG - Route - Adding meta field {key}: {value}")
         for field_name in meta_fields[field_type]:
             # Use the original field name from .env for Redis storage
             meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
