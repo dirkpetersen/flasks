@@ -42,25 +42,24 @@ class WorkRecord:
         # Handle dynamic meta fields with validation
         for field_name, value in meta_fields.items():
             if field_name.startswith('META_'):
-                if id == 'ML-3A':
-                    print(f"DEBUG - WorkRecord Init - Processing meta field {field_name} with value:", value)
-                    print(f"DEBUG - WorkRecord Init - Value type:", type(value))
+                print(f"DEBUG - WorkRecord Init - Processing meta field {field_name} with value:", value)
+                print(f"DEBUG - WorkRecord Init - Value type:", type(value))
                 
-                # Always store meta fields, with appropriate defaults
                 if field_name.startswith('META_MSEL_'):
-                    # Multi-select fields are always lists
-                    if not isinstance(value, list):
-                        if id == 'ML-3A':
-                            print(f"DEBUG - WorkRecord Init - Converting {field_name} to list")
-                        value = [value] if value else []
+                    # Ensure multi-select fields are always lists
+                    if value is None:
+                        value = []
+                    elif not isinstance(value, list):
+                        value = [str(value)] if value else []
+                    # Convert all elements to strings
+                    value = [str(v) for v in value if v is not None]
                     self._data[field_name] = value
+                    print(f"DEBUG - Final multi-select value for {field_name}:", value)
+                    
                 elif field_name.startswith('META_SEL_'):
-                    # Single-select fields are always strings
-                    if not isinstance(value, str):
-                        if id == 'ML-3A':
-                            print(f"DEBUG - WorkRecord Init - Converting {field_name} to string")
-                        value = str(value) if value else ''
-                    self._data[field_name] = value
+                    # Ensure single-select fields are always strings
+                    self._data[field_name] = str(value) if value not in (None, '') else ''
+                    print(f"DEBUG - Final single-select value for {field_name}:", self._data[field_name])
                     
                 if id == 'ML-3A':
                     print(f"DEBUG - WorkRecord Init - Final value for {field_name}:", self._data.get(field_name))

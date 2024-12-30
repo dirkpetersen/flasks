@@ -400,22 +400,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add meta fields dynamically
                 const metaFieldsDebug = [];
                 
-                // Process single select fields
-                document.querySelectorAll('select[id^="meta_sel_"]').forEach(select => {
-                    const fieldName = 'META_SEL_' + select.id.split('_').slice(2).join('_').toUpperCase();
-                    const value = select.value;
-                    formData[fieldName] = value || '';  // Always include the field
-                    metaFieldsDebug.push({fieldName, value});
-                    console.log(`Adding single select field ${fieldName}:`, value);
-                });
-
-                // Process multi select fields
-                document.querySelectorAll('select[id^="meta_msel_"]').forEach(select => {
-                    const fieldName = 'META_MSEL_' + select.id.split('_').slice(2).join('_').toUpperCase();
-                    const value = $(select).val() || [];
-                    formData[fieldName] = value;  // Always include the field
-                    metaFieldsDebug.push({fieldName, value});
-                    console.log(`Adding multi select field ${fieldName}:`, value);
+                // Process all meta fields
+                document.querySelectorAll('select[id^="meta_"]').forEach(select => {
+                    const isMulti = select.id.startsWith('meta_msel_');
+                    const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
+                                    select.id.split('_').slice(2).join('_').toUpperCase();
+                    
+                    let value;
+                    if (isMulti) {
+                        value = $(select).val() || [];
+                        console.log(`Processing multi-select ${fieldName}:`, value);
+                    } else {
+                        value = select.value || '';
+                        console.log(`Processing single-select ${fieldName}:`, value);
+                    }
+                    
+                    formData[fieldName] = value;
+                    metaFieldsDebug.push({fieldName, value, type: isMulti ? 'multi' : 'single'});
                 });
 
                 console.log('Meta fields debug:', metaFieldsDebug);
