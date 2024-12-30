@@ -142,10 +142,30 @@ class WorkRecord:
     def save(self):
         try:
             self.validate()
-            redis_client.set(f"work:{self.id}", json.dumps(self.to_dict()))
+            record_data = self.to_dict()
+            print("\nDEBUG - Saving to Redis:")
+            print(f"Key: work:{self.id}")
+            print(f"Data: {json.dumps(record_data, indent=2)}")
+            print(f"User works key: user_works:{self.creator_id}")
+            
+            # Try to save and verify the data
+            redis_client.set(f"work:{self.id}", json.dumps(record_data))
             redis_client.sadd(f"user_works:{self.creator_id}", self.id)
+            
+            # Verify the save
+            saved_data = redis_client.get(f"work:{self.id}")
+            if saved_data:
+                print("\nDEBUG - Verification - Data in Redis:")
+                print(json.loads(saved_data))
+            else:
+                print("\nDEBUG - ERROR: Data not found in Redis after save!")
+                
         except redis.RedisError as e:
+            print(f"\nDEBUG - Redis Error: {str(e)}")
             raise RuntimeError(f"Database error: {str(e)}")
+        except Exception as e:
+            print(f"\nDEBUG - Unexpected Error: {str(e)}")
+            raise
 
     @classmethod
     def get_by_id(cls, id: str) -> Optional['WorkRecord']:
