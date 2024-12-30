@@ -406,39 +406,47 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 // Prepare form data
-                // Build form data dynamically
-                const formData = {
-                    id: document.getElementById('recordId').value,
-                    title: titleInput.value.trim(),
-                    description: document.getElementById('description').value.trim(),
-                    start_date: document.getElementById('startDate').value || null,
-                    end_date: document.getElementById('endDate').value || null,
-                    active: document.getElementById('active').checked
-                };
-                
-                console.log('Initial form data:', formData);
+                const formData = new FormData();
+                formData.append('id', document.getElementById('recordId').value);
+                formData.append('title', titleInput.value.trim());
+                formData.append('description', document.getElementById('description').value.trim());
+                formData.append('start_date', document.getElementById('startDate').value || null);
+                formData.append('end_date', document.getElementById('endDate').value || null);
+                formData.append('active', document.getElementById('active').checked);
+
+                console.log('Initial form data:', Object.fromEntries(formData));
 
                 // Add meta fields dynamically
-                const metaFieldsDebug = [];
-                
-                // Process all meta fields
                 document.querySelectorAll('select[id^="meta_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
                     const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
                                     select.id.split('_').slice(2).join('_').toUpperCase();
-                    
-                    let value;
+            
                     if (isMulti) {
-                        value = $(select).val() || [];
-                        console.log(`Processing multi-select ${fieldName}:`, value);
+                        const values = $(select).val() || [];
+                        values.forEach(value => {
+                            formData.append(fieldName, value);
+                        });
+                        console.log(`Processing multi-select ${fieldName}:`, values);
                     } else {
-                        value = select.value || '';
+                        const value = select.value || '';
+                        formData.append(fieldName, value);
                         console.log(`Processing single-select ${fieldName}:`, value);
                     }
-                    
-                    formData[fieldName] = value;
-                    metaFieldsDebug.push({fieldName, value, type: isMulti ? 'multi' : 'single'});
                 });
+
+                // Convert FormData to JSON
+                const jsonData = {};
+                for (let [key, value] of formData.entries()) {
+                    if (jsonData[key]) {
+                        if (!Array.isArray(jsonData[key])) {
+                            jsonData[key] = [jsonData[key]];
+                        }
+                        jsonData[key].push(value);
+                    } else {
+                        jsonData[key] = value;
+                    }
+                }
 
                 // Debug information for formData
                 console.log('Final Form data before submission:', formData); // Debug log
@@ -450,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     formData.captcha = captchaInput.value.trim();
                 }
 
-                await submitFormData(formData);
+                await submitFormData(jsonData);
             } catch (error) {
                 console.error('Form submission error:', error);
                 alert(error.message || 'Failed to save record');
