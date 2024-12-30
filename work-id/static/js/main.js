@@ -245,31 +245,6 @@ function searchRecords() {
         });
 }
 
-function searchRecords() {
-    const query = document.getElementById('searchInput').value;
-    const userOnly = document.getElementById('userOnlyCheck').checked;
-    
-    // If empty query and user only, use loadRecords
-    if (!query.trim() && userOnly) {
-        loadRecords();
-        return;
-    }
-
-    // Otherwise use search API
-    fetch(`/api/search?q=${encodeURIComponent(query)}&user_only=${userOnly}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Search failed');
-            }
-            return response.json();
-        })
-        .then(records => updateRecordsList(records))
-        .catch(error => {
-            console.error('Search error:', error);
-            alert('Failed to search records: ' + error.message);
-        });
-}
-
 // Form submission handler
 function loadCaptcha() {
     return fetch('/api/captcha')
@@ -295,7 +270,6 @@ function loadCaptcha() {
         });
 }
 
-// Function to handle form submission with CAPTCHA
 // Main initialization
 document.addEventListener('DOMContentLoaded', function() {
     const userOnly = document.getElementById('userOnlyCheck').checked;
@@ -428,23 +402,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     metaFieldsDebug.push({fieldName, value, type: isMulti ? 'multi' : 'single'});
                 });
 
-                // Handle meta fields dynamically
-                document.querySelectorAll('select[id^="meta_"]').forEach(select => {
-                    const isMulti = select.id.startsWith('meta_msel_');
-                    const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
-                                    select.id.split('_').slice(2).join('_').toUpperCase();
-                    
-                    let value;
-                    if (isMulti) {
-                        value = $(select).val() || [];
-                    } else {
-                        value = select.value || '';
-                    }
-                    
-                    formData[fieldName] = value;
-                    console.log(`Setting ${fieldName} to:`, value);
-                });
-                
                 // Show debug information in an alert
                 // alert('Meta Fields Debug:\n' + 
                 //        JSON.stringify(metaFieldsDebug, null, 2) + 
