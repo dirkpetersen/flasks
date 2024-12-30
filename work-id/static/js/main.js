@@ -162,10 +162,10 @@ function loadRecord(id) {
             }
             
             // Handle meta fields
-            document.querySelectorAll('select[id^="meta_"]').forEach(select => {
-                const isMulti = select.id.startsWith('meta_msel_');
-                const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
-                                select.id.split('_').slice(2).join('_').toUpperCase();
+            document.querySelectorAll('select[data-field-type]').forEach(select => {
+                const isMulti = select.getAttribute('data-field-type') === 'msel';
+                const fieldName = 'META_' + (isMulti ? 'MSEL_' : 'SEL_') + 
+                                select.getAttribute('data-field-name').toUpperCase();
                 
                 if (record[fieldName] !== undefined) {
                     if (isMulti) {
@@ -425,8 +425,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Initial form data:', Object.fromEntries(formData));
 
                 // Add meta fields dynamically
-                document.querySelectorAll('select[id^="meta_"]').forEach(select => {
-                    const isMulti = select.id.startsWith('meta_msel_');
+                document.querySelectorAll('select[data-field-type]').forEach(select => {
+                    const isMulti = select.getAttribute('data-field-type') === 'msel';
                     const fieldName = select.getAttribute('data-field-name').toUpperCase();
             
                     if (isMulti) {
