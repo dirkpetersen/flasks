@@ -51,28 +51,11 @@ function loadRecords() {
                 return;
             }
             recordsList.innerHTML = records.map(record => {
-                // Get all meta fields that have values
-                const metaBadges = Object.entries(record)
-                    .filter(([key, value]) => 
-                        value !== null && 
-                        !['id', 'title', 'description', 'start_date', 'end_date', 
-                          'active', 'creator_id', 'created_at'].includes(key)
-                    )
-                    .map(([key, value]) => {
-                        if (Array.isArray(value)) {
-                            return `<span class="badge bg-info">${key}: ${value.join(', ')}</span>`;
-                        } else {
-                            return `<span class="badge bg-secondary">${key}: ${value}</span>`;
-                        }
-                    })
-                    .join(' ');
-
                 return `
                     <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="text-truncate me-2">
                                 <strong>${record.id}</strong> - ${record.title || 'Untitled'}
-                                ${metaBadges}
                                 ${record.active ? '<span class="badge bg-success">Active</span>' : 
                                                '<span class="badge bg-danger">Inactive</span>'}
                             </div>
