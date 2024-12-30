@@ -19,7 +19,8 @@ class WorkRecord:
                  active: bool = True, creator_id: str = None,
                  created_at: datetime = None, **meta_fields):
         """Initialize a work record with validation"""
-        print("\nDEBUG - WorkRecord Init - Received meta_fields:", meta_fields)
+        if id == 'ML-3A':
+            print("\nDEBUG - WorkRecord Init - Received meta_fields:", meta_fields)
         
         self._data = {
             'id': id,
@@ -32,30 +33,35 @@ class WorkRecord:
             'created_at': created_at or datetime.now(pytz.UTC)
         }
         
-        print("DEBUG - WorkRecord Init - Base data:", self._data)
+        if id == 'ML-3A':
+            print("DEBUG - WorkRecord Init - Base data:", self._data)
         
         # Handle dynamic meta fields with validation
         for field_name, value in meta_fields.items():
             if field_name.startswith('META_'):
-                print(f"DEBUG - WorkRecord Init - Processing meta field {field_name} with value:", value)
-                print(f"DEBUG - WorkRecord Init - Value type:", type(value))
+                if id == 'ML-3A':
+                    print(f"DEBUG - WorkRecord Init - Processing meta field {field_name} with value:", value)
+                    print(f"DEBUG - WorkRecord Init - Value type:", type(value))
                 
                 # Validate multi-select fields
                 if field_name.startswith('META_MSEL_') and value is not None:
                     if not isinstance(value, list):
-                        print(f"DEBUG - WorkRecord Init - Error: Multi-select field {field_name} is not a list")
+                        if id == 'ML-3A':
+                            print(f"DEBUG - WorkRecord Init - Error: Multi-select field {field_name} is not a list")
                         raise ValueError(f"Multi-select field {field_name} must be a list")
                     self._data[field_name] = value if value else None
                 # Validate single-select fields
                 elif field_name.startswith('META_SEL_') and value is not None:
                     if not isinstance(value, str):
-                        print(f"DEBUG - WorkRecord Init - Error: Single-select field {field_name} is not a string")
+                        if id == 'ML-3A':
+                            print(f"DEBUG - WorkRecord Init - Error: Single-select field {field_name} is not a string")
                         raise ValueError(f"Single-select field {field_name} must be a string")
                     self._data[field_name] = value if value.strip() else None
                 else:
                     self._data[field_name] = value if value not in (None, [], '') else None
                     
-                print(f"DEBUG - WorkRecord Init - Final value for {field_name}:", self._data.get(field_name))
+                if id == 'ML-3A':
+                    print(f"DEBUG - WorkRecord Init - Final value for {field_name}:", self._data.get(field_name))
 
     @staticmethod
     def generate_id() -> str:
@@ -140,13 +146,15 @@ class WorkRecord:
 
     def validate(self):
         """Validate record data before saving"""
-        print("\nDEBUG - WorkRecord Validate:")
-        print("Validating record data:", self._data)
+        if self._data.get('id') == 'ML-3A':
+            print("\nDEBUG - WorkRecord Validate:")
+            print("Validating record data:", self._data)
         
         # Check meta fields
         for key, value in self._data.items():
             if key.startswith('META_'):
-                print(f"DEBUG - Validating meta field {key}: {value}")
+                if self._data.get('id') == 'ML-3A':
+                    print(f"DEBUG - Validating meta field {key}: {value}")
                 if key.startswith('META_MSEL_'):
                     if value is not None and not isinstance(value, list):
                         raise ValueError(f"Multi-select field {key} must be a list")
@@ -168,10 +176,11 @@ class WorkRecord:
         try:
             self.validate()
             record_data = self.to_dict()
-            print("\nDEBUG - Saving to Redis:")
-            print(f"Key: work:{self.id}")
-            print(f"Data: {json.dumps(record_data, indent=2)}")
-            print(f"User works key: user_works:{self.creator_id}")
+            if self.id == 'ML-3A':
+                print("\nDEBUG - Saving to Redis:")
+                print(f"Key: work:{self.id}")
+                print(f"Data: {json.dumps(record_data, indent=2)}")
+                print(f"User works key: user_works:{self.creator_id}")
             
             # Try to save and verify the data
             redis_client.set(f"work:{self.id}", json.dumps(record_data))
@@ -180,16 +189,20 @@ class WorkRecord:
             # Verify the save
             saved_data = redis_client.get(f"work:{self.id}")
             if saved_data:
-                print("\nDEBUG - Verification - Data in Redis:")
-                print(json.loads(saved_data))
+                if self.id == 'ML-3A':
+                    print("\nDEBUG - Verification - Data in Redis:")
+                    print(json.loads(saved_data))
             else:
-                print("\nDEBUG - ERROR: Data not found in Redis after save!")
+                if self.id == 'ML-3A':
+                    print("\nDEBUG - ERROR: Data not found in Redis after save!")
                 
         except redis.RedisError as e:
-            print(f"\nDEBUG - Redis Error: {str(e)}")
+            if self.id == 'ML-3A':
+                print(f"\nDEBUG - Redis Error: {str(e)}")
             raise RuntimeError(f"Database error: {str(e)}")
         except Exception as e:
-            print(f"\nDEBUG - Unexpected Error: {str(e)}")
+            if self.id == 'ML-3A':
+                print(f"\nDEBUG - Unexpected Error: {str(e)}")
             raise
 
     @classmethod

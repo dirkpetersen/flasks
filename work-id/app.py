@@ -143,21 +143,23 @@ def create_record():
     
     # Add meta fields dynamically
     meta_fields = get_meta_fields()
-    print("\nDEBUG - Route - Available meta fields:", meta_fields)
-    print("DEBUG - Route - Incoming data:", data)
-    print("DEBUG - Route - Initial record_data:", record_data)
+    if data.get('id') == 'ML-3A':
+        print("\nDEBUG - Route - Available meta fields:", meta_fields)
+        print("DEBUG - Route - Incoming data:", data)
+        print("DEBUG - Route - Initial record_data:", record_data)
     
     for field_type in ['single_select', 'multi_select']:
         for field_name in meta_fields[field_type]:
             # Use the original field name from .env for Redis storage
             meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
-            print(f"DEBUG - Route - Checking meta field {meta_key}")
-            print(f"DEBUG - Route - Field exists in data: {meta_key in data}")
-            if meta_key in data:
-                record_data[meta_key] = data[meta_key]
-                print(f"DEBUG - Route - Processing meta field {meta_key}: {data[meta_key]}")
-            else:
-                print(f"DEBUG - Route - Meta field {meta_key} not found in submitted data")
+            if data.get('id') == 'ML-3A':
+                print(f"DEBUG - Route - Checking meta field {meta_key}")
+                print(f"DEBUG - Route - Field exists in data: {meta_key in data}")
+                if meta_key in data:
+                    record_data[meta_key] = data[meta_key]
+                    print(f"DEBUG - Route - Processing meta field {meta_key}: {data[meta_key]}")
+                else:
+                    print(f"DEBUG - Route - Meta field {meta_key} not found in submitted data")
     
     print("DEBUG - Route - Final record data before WorkRecord creation:", record_data)
 
