@@ -36,7 +36,7 @@ def get_meta_fields():
 @app.route('/')
 def index():
     user_id = request.cookies.get('creator_id', '')
-    meta_fields = get_meta_fields()
+    meta_definitions = get_meta_fields()
     app_name = os.getenv('APP_NAME', 'Work-ID')
     return render_template('index.html', 
                          user_id=user_id,
@@ -142,7 +142,6 @@ def create_record():
     }
     
     # Add meta fields dynamically
-    meta_fields = get_meta_fields()
     record_id = data.get('id')
     if record_id == '(ML-3A)':
         print("\nDEBUG - Route - Available meta fields:", meta_fields)
