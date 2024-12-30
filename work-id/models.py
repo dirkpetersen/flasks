@@ -140,6 +140,20 @@ class WorkRecord:
 
     def validate(self):
         """Validate record data before saving"""
+        print("\nDEBUG - WorkRecord Validate:")
+        print("Validating record data:", self._data)
+        
+        # Check meta fields
+        for key, value in self._data.items():
+            if key.startswith('META_'):
+                print(f"DEBUG - Validating meta field {key}: {value}")
+                if key.startswith('META_MSEL_'):
+                    if value is not None and not isinstance(value, list):
+                        raise ValueError(f"Multi-select field {key} must be a list")
+                elif key.startswith('META_SEL_'):
+                    if value is not None and not isinstance(value, str):
+                        raise ValueError(f"Single-select field {key} must be a string")
+        
         if self.start_date and self.end_date:
             if self.end_date < self.start_date:
                 raise ValueError("End date cannot be before start date")
