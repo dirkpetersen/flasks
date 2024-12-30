@@ -399,25 +399,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Add meta fields dynamically
                 const metaFieldsDebug = [];
+                
                 // Process single select fields
                 document.querySelectorAll('select[id^="meta_sel_"]').forEach(select => {
-                    const fieldName = 'META_SEL_' + select.id.split('_').slice(2).join('_');
-                    const value = select.value || null;
-                    if (value) {
-                        formData[fieldName] = value;
-                        metaFieldsDebug.push({fieldName, value});
-                    }
+                    const fieldName = 'META_SEL_' + select.id.split('_').slice(2).join('_').toUpperCase();
+                    const value = select.value;
+                    formData[fieldName] = value || null;
+                    metaFieldsDebug.push({fieldName, value});
                 });
 
                 // Process multi select fields
                 document.querySelectorAll('select[id^="meta_msel_"]').forEach(select => {
-                    const fieldName = 'META_MSEL_' + select.id.split('_').slice(2).join('_');
-                    const value = $(select).val();
-                    if (value && value.length > 0) {
-                        formData[fieldName] = value;
-                        metaFieldsDebug.push({fieldName, value});
-                    }
+                    const fieldName = 'META_MSEL_' + select.id.split('_').slice(2).join('_').toUpperCase();
+                    const value = $(select).val() || [];
+                    formData[fieldName] = value.length > 0 ? value : null;
+                    metaFieldsDebug.push({fieldName, value});
                 });
+
+                console.log('Meta fields debug:', metaFieldsDebug);
+                console.log('Final form data:', formData);
                 document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
                     const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
