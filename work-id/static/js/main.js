@@ -432,28 +432,30 @@ document.addEventListener('DOMContentLoaded', function() {
             
                     if (isMulti) {
                         const values = $(select).val() || [];
-                        values.forEach(value => {
-                            formData.append(fieldName, value);
-                        });
-                        console.log(`Processing multi-select ${fieldName}:`, values);
+                        if (values.length > 0) {
+                            formData.append(fieldName, values);
+                            console.log(`Processing multi-select ${fieldName}:`, values);
+                        }
                     } else {
                         const value = select.value || '';
-                        formData.append(fieldName, value);
-                        console.log(`Processing single-select ${fieldName}:`, value);
+                        if (value) {
+                            formData.append(fieldName, value);
+                            console.log(`Processing single-select ${fieldName}:`, value);
+                        }
                     }
                 });
 
-                // Convert FormData to JSON, keeping META fields uppercase
+                // Convert FormData to JSON with proper META field handling
                 const jsonData = {};
                 for (let [key, value] of formData.entries()) {
-                    const processedKey = key.startsWith('meta_') ? key.toUpperCase() : key.toLowerCase();
-                    if (jsonData[processedKey]) {
-                        if (!Array.isArray(jsonData[processedKey])) {
-                            jsonData[processedKey] = [jsonData[processedKey]];
+                    // Keep original key case for META fields, lowercase others
+                    if (jsonData[key]) {
+                        if (!Array.isArray(jsonData[key])) {
+                            jsonData[key] = [jsonData[key]];
                         }
-                        jsonData[processedKey].push(value);
+                        jsonData[key].push(value);
                     } else {
-                        jsonData[processedKey] = value;
+                        jsonData[key] = value;
                     }
                 }
 
