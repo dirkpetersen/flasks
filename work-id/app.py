@@ -148,6 +148,7 @@ def create_record():
         print("\nDEBUG - Route - Available meta fields:", meta_fields)
         print("DEBUG - Route - Incoming data:", data)
         print("DEBUG - Route - Initial record_data:", record_data)
+        print("DEBUG - Route - Meta fields in request:", [k for k in data.keys() if k.startswith('META_')])
     
     for field_type in ['single_select', 'multi_select']:
         for field_name in meta_fields[field_type]:

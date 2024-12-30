@@ -399,6 +399,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Add meta fields dynamically
                 const metaFieldsDebug = [];
+                // Process single select fields
+                document.querySelectorAll('select[id^="meta_sel_"]').forEach(select => {
+                    const fieldName = 'META_SEL_' + select.id.split('_').slice(2).join('_');
+                    const value = select.value || null;
+                    if (value) {
+                        formData[fieldName] = value;
+                        metaFieldsDebug.push({fieldName, value});
+                    }
+                });
+
+                // Process multi select fields
+                document.querySelectorAll('select[id^="meta_msel_"]').forEach(select => {
+                    const fieldName = 'META_MSEL_' + select.id.split('_').slice(2).join('_');
+                    const value = $(select).val();
+                    if (value && value.length > 0) {
+                        formData[fieldName] = value;
+                        metaFieldsDebug.push({fieldName, value});
+                    }
+                });
                 document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
                     const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
