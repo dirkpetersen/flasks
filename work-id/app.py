@@ -143,7 +143,8 @@ def create_record():
         for field_name in meta_fields[field_type]:
             # Use the original field name from .env for Redis storage
             meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
-            record_data[meta_key] = data.get(meta_key)
+            if meta_key in data:
+                record_data[meta_key] = data[meta_key]
 
     record = WorkRecord(**record_data)
     
@@ -177,8 +178,9 @@ def update_record(id):
     for field_type in ['single_select', 'multi_select']:
         for field_name in meta_fields[field_type]:
             meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
-            field_value = data.get(meta_key)
-            setattr(record, meta_key, field_value)
+            if meta_key in data:
+                field_value = data[meta_key]
+                setattr(record, meta_key, field_value)
     
     record.save()
     return jsonify(record.to_dict())

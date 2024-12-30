@@ -147,7 +147,9 @@ function loadRecord(id) {
             
             // Handle meta fields dynamically
             document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
-                const fieldName = select.id.split('_').slice(2).join('_');
+                const isMulti = select.id.startsWith('meta_msel_');
+                const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
+                                select.id.split('_').slice(2).join('_');
                 const value = record[fieldName];
                 if (select.multiple) {
                     $(select).val(Array.isArray(value) ? value : []).trigger('change');
@@ -425,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
                     const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
-                                    select.id.split('_').slice(2).join('_').toUpperCase();
+                                    select.id.split('_').slice(2).join('_');
                     const value = isMulti ? 
                         ($(select).val()?.length ? $(select).val() : null) :
                         (select.value || null);
