@@ -21,6 +21,7 @@ def get_meta_fields():
     
     # Get all environment variables
     for key, value in os.environ.items():
+        print(f"DEBUG - Environment Variable - Key: {key}, Value: {value}")  # Debug log
         # Process single select fields
         if key.startswith('META_SEL_'):
             field_name = key[9:]  # Remove 'META_SEL_' prefix
@@ -31,6 +32,7 @@ def get_meta_fields():
             field_name = key[10:]  # Remove 'META_MSEL_' prefix
             meta_fields['multi_select'][field_name] = value.split(',')
             
+    print("DEBUG - Meta Fields Collected:", meta_fields)  # Debug log
     return meta_fields
 
 @app.route('/')
