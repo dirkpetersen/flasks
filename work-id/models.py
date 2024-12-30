@@ -170,8 +170,8 @@ class WorkRecord:
                         raise ValueError(f"Single-select field {key} must be a string")
         
         # Additional validation for meta fields presence
-        if not any(key.startswith('META_') for key in self._data.keys()):
-            raise ValueError("At least one meta field must be provided")
+        #if not any(key.startswith('META_') for key in self._data.keys()):
+        #    raise ValueError("At least one meta field must be provided")
         
         if self.start_date and self.end_date:
             if self.end_date < self.start_date:
