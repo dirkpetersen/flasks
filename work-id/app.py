@@ -144,7 +144,7 @@ def create_record():
     # Add meta fields dynamically
     meta_fields = get_meta_fields()
     record_id = data.get('id')
-    if record_id == 'ML-3A':
+    if record_id == '(ML-3A)':
         print("\nDEBUG - Route - Available meta fields:", meta_fields)
         print("DEBUG - Route - Incoming data:", data)
         print("DEBUG - Route - Initial record_data:", record_data)
@@ -153,7 +153,7 @@ def create_record():
         for field_name in meta_fields[field_type]:
             # Use the original field name from .env for Redis storage
             meta_key = f"META_{'SEL' if field_type == 'single_select' else 'MSEL'}_{field_name}"
-            if record_id == 'ML-3A':
+            if record_id == '(ML-3A)':
                 print(f"DEBUG - Route - Checking meta field {meta_key}")
                 print(f"DEBUG - Route - Field exists in data: {meta_key in data}")
                 if meta_key in data:

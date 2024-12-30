@@ -19,7 +19,7 @@ class WorkRecord:
                  active: bool = True, creator_id: str = None,
                  created_at: datetime = None, **meta_fields):
         """Initialize a work record with validation"""
-        if id == 'ML-3A':
+        if id == '(ML-3A)':
             print("\nDEBUG - WorkRecord Init - Received meta_fields:", meta_fields)
         
         self._data = {
@@ -146,7 +146,7 @@ class WorkRecord:
 
     def validate(self):
         """Validate record data before saving"""
-        if self._data.get('id') == 'ML-3A':
+        if self._data.get('id') == '(ML-3A)':
             print("\nDEBUG - WorkRecord Validate:")
             print("Validating record data:", self._data)
         
@@ -176,7 +176,7 @@ class WorkRecord:
         try:
             self.validate()
             record_data = self.to_dict()
-            if self.id == 'ML-3A':
+            if self.id == '(ML-3A)':
                 print("\nDEBUG - Saving to Redis:")
                 print(f"Key: work:{self.id}")
                 print(f"Data: {json.dumps(record_data, indent=2)}")
