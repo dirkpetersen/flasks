@@ -149,6 +149,10 @@ def create_record():
         print("DEBUG - Route - Incoming data:", data)
         print("DEBUG - Route - Initial record_data:", record_data)
         print("DEBUG - Route - Meta fields in request:", [k for k in data.keys() if k.startswith('META_')])
+        print("DEBUG - Route - Meta field values and types:")
+        for k, v in data.items():
+            if k.startswith('META_'):
+                print(f"  {k}: {type(v)} = {v}")
 
     # Process meta fields
     for key, value in data.items():

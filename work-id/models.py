@@ -21,6 +21,9 @@ class WorkRecord:
         """Initialize a work record with validation"""
         if id == '(ML-3A)':
             print("\nDEBUG - WorkRecord Init - Received meta_fields:", meta_fields)
+            print("DEBUG - WorkRecord Init - Meta fields types:")
+            for key, value in meta_fields.items():
+                print(f"  {key}: {type(value)} = {value}")
         
         self._data = {
             'id': id,
