@@ -160,7 +160,7 @@ class WorkRecord:
         # Check meta fields
         for key, value in self._data.items():
             if key.startswith('META_'):
-                if self._data.get('id') == 'ML-3A':
+                if self._data.get('id') == '(ML-3A)':
                     print(f"DEBUG - Validating meta field {key}: {value}")
                 if key.startswith('META_MSEL_'):
                     if value is not None and not isinstance(value, list):
@@ -168,6 +168,10 @@ class WorkRecord:
                 elif key.startswith('META_SEL_'):
                     if value is not None and not isinstance(value, str):
                         raise ValueError(f"Single-select field {key} must be a string")
+        
+        # Additional validation for meta fields presence
+        if not any(key.startswith('META_') for key in self._data.keys()):
+            raise ValueError("At least one meta field must be provided")
         
         if self.start_date and self.end_date:
             if self.end_date < self.start_date:
@@ -196,19 +200,19 @@ class WorkRecord:
             # Verify the save
             saved_data = redis_client.get(f"work:{self.id}")
             if saved_data:
-                if self.id == 'ML-3A':
+                if self.id == '(ML-3A)':
                     print("\nDEBUG - Verification - Data in Redis:")
                     print(json.loads(saved_data))
             else:
-                if self.id == 'ML-3A':
+                if self.id == '(ML-3A)':
                     print("\nDEBUG - ERROR: Data not found in Redis after save!")
                 
         except redis.RedisError as e:
-            if self.id == 'ML-3A':
+            if self.id == '(ML-3A)':
                 print(f"\nDEBUG - Redis Error: {str(e)}")
             raise RuntimeError(f"Database error: {str(e)}")
         except Exception as e:
-            if self.id == 'ML-3A':
+            if self.id == '(ML-3A)':
                 print(f"\nDEBUG - Unexpected Error: {str(e)}")
             raise
 
