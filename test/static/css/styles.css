@@ -1,0 +1,119 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f5f5f5;
+}
+
+body {
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+}
+
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.dark-mode .card {
+    background-color: #2d2d2d;
+    border-color: #404040;
+}
+
+.dark-mode .table {
+    color: #ffffff;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    transition: all 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
+    border-color: var(--primary-color);
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 10px 20px;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+}
+
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: var(--secondary-color);
+    border-bottom: 2px solid #ddd;
+}
+
+.dark-mode .table thead th {
+    background-color: #404040;
+    border-bottom-color: #505050;
+}
+
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.dark-mode .loading {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.select2-container--bootstrap-5 .select2-selection {
+    border-radius: 8px;
+}
+
+.dark-mode .select2-container--bootstrap-5 .select2-selection {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #ffffff;
+}
