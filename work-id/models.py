@@ -14,30 +14,36 @@ redis_client = redis.Redis(
 )
 
 class WorkRecord:
-    def __init__(self, id: str = None, title: str = None, description: str = None,
-                 start_date: datetime = None, end_date: datetime = None,
-                 active: bool = True, creator_id: str = None,
-                 created_at: datetime = None, **meta_fields):
+    def __init__(self, **kwargs):
         """Initialize a work record with validation"""
-        if id == '(ML-3A)':
+        self._data = {}
+        
+        # List of known fields
+        known_fields = {
+            'id', 'title', 'description', 'start_date', 'end_date',
+            'active', 'creator_id', 'created_at'
+        }
+        
+        # Extract known fields from kwargs
+        for field in known_fields:
+            self._data[field] = kwargs.pop(field, None)
+        
+        # Convert dates to UTC timezone
+        if self._data['start_date']:
+            self._data['start_date'] = self._data['start_date'].astimezone(pytz.UTC)
+        if self._data['end_date']:
+            self._data['end_date'] = self._data['end_date'].astimezone(pytz.UTC)
+        self._data['created_at'] = self._data['created_at'] or datetime.now(pytz.UTC)
+        
+        # Remaining kwargs are meta fields
+        meta_fields = kwargs
+        
+        # Debugging output
+        if self._data.get('id') == '(ML-3A)':
             print("\nDEBUG - WorkRecord Init - Received meta_fields:", meta_fields)
             print("DEBUG - WorkRecord Init - Meta fields types:")
             for key, value in meta_fields.items():
                 print(f"  {key}: {type(value)} = {value}")
-        
-        self._data = {
-            'id': id,
-            'title': title,
-            'description': description,
-            'start_date': start_date.astimezone(pytz.UTC) if start_date else None,
-            'end_date': end_date.astimezone(pytz.UTC) if end_date else None,
-            'active': active,
-            'creator_id': creator_id,
-            'created_at': created_at or datetime.now(pytz.UTC)
-        }
-        
-        if id == 'ML-3A':
-            print("DEBUG - WorkRecord Init - Base data:", self._data)
         
         # Handle dynamic meta fields with validation
         for field_name, value in meta_fields.items():
@@ -61,7 +67,7 @@ class WorkRecord:
                     self._data[field_name] = str(value) if value not in (None, '') else ''
                     print(f"DEBUG - Final single-select value for {field_name}:", self._data[field_name])
                     
-                if id == 'ML-3A':
+                if self._data.get('id') == '(ML-3A)':
                     print(f"DEBUG - WorkRecord Init - Final value for {field_name}:", self._data.get(field_name))
 
     @staticmethod
