@@ -38,37 +38,6 @@ class WorkRecord:
             self._data['end_date'] = self._data['end_date'].astimezone(pytz.UTC)
         self._data['created_at'] = self._data['created_at'] or datetime.now(pytz.UTC)
         
-        # Debugging output
-        if self._data.get('id') == '(ML-3A)':
-            print("\nDEBUG - WorkRecord Init - Received meta_fields:", meta_fields)
-            print("DEBUG - WorkRecord Init - Meta fields types:")
-            for key, value in meta_fields.items():
-                print(f"  {key}: {type(value)} = {value}")
-        
-        # Handle dynamic meta fields with validation
-        for field_name, value in meta_fields.items():
-            if field_name.startswith('META_'):
-                print(f"DEBUG - WorkRecord Init - Processing meta field {field_name} with value:", value)
-                print(f"DEBUG - WorkRecord Init - Value type:", type(value))
-                
-                if field_name.startswith('META_MSEL_'):
-                    # Ensure multi-select fields are always lists
-                    if value is None:
-                        value = []
-                    elif not isinstance(value, list):
-                        value = [str(value)] if value else []
-                    # Convert all elements to strings
-                    value = [str(v) for v in value if v is not None]
-                    self._data[field_name] = value
-                    print(f"DEBUG - Final multi-select value for {field_name}:", value)
-                    
-                elif field_name.startswith('META_SEL_'):
-                    # Ensure single-select fields are always strings
-                    self._data[field_name] = str(value) if value not in (None, '') else ''
-                    print(f"DEBUG - Final single-select value for {field_name}:", self._data[field_name])
-                    
-                if self._data.get('id') == '(ML-3A)':
-                    print(f"DEBUG - WorkRecord Init - Final value for {field_name}:", self._data.get(field_name))
 
     @staticmethod
     def generate_id() -> str:
