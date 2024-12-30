@@ -95,7 +95,14 @@ function loadRecords() {
 function loadRecord(id) {
     document.body.classList.add('loading');
     console.log('Loading record with ID:', id);
-    fetch('/api/records')
+    
+    // Set longer timeout for the fetch operation
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    
+    fetch('/api/records', {
+        signal: controller.signal
+    })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to fetch records: ' + response.statusText);
@@ -185,6 +192,7 @@ function loadRecord(id) {
             alert(`Failed to load record: ${error.message}`);
         })
         .finally(() => {
+            clearTimeout(timeoutId);
             document.body.classList.remove('loading');
         });
 }
