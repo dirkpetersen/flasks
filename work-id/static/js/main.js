@@ -402,13 +402,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     metaFieldsDebug.push({fieldName, value, type: isMulti ? 'multi' : 'single'});
                 });
 
-                // Show debug information in an alert
+                // // Show debug information in an alert
+                // alert('\n\nFinal Form Data:\n' + 
+                //        JSON.stringify(formData, null, 2));
+
                 // alert('Meta Fields Debug:\n' + 
                 //        JSON.stringify(metaFieldsDebug, null, 2) + 
                 //        '\n\nFinal Form Data:\n' + 
-                //        JSON.stringify(formData, null, 2));
+                //        JSON.stringify(formData, null, 2));                
 
-                // console.log('Form data:', formData); // Debug log
+                console.log('Final Form data:', formData); // Debug log
 
                 // Add CAPTCHA only if section exists (force_captcha is true)
                 const captchaSection = document.getElementById('captchaSection');
