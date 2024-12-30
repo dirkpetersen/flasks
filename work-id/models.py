@@ -18,6 +18,7 @@ class WorkRecord:
                  start_date: datetime = None, end_date: datetime = None,
                  active: bool = True, creator_id: str = None,
                  created_at: datetime = None, **meta_fields):
+        """Initialize a work record with validation"""
         self._data = {
             'id': id,
             'title': title,
@@ -29,10 +30,21 @@ class WorkRecord:
             'created_at': created_at or datetime.now(pytz.UTC)
         }
         
-        # Handle dynamic meta fields, preserving original field names
+        # Handle dynamic meta fields with validation
         for field_name, value in meta_fields.items():
             if field_name.startswith('META_'):
-                self._data[field_name] = value if value not in (None, [], '') else None
+                # Validate multi-select fields
+                if field_name.startswith('META_MSEL_') and value is not None:
+                    if not isinstance(value, list):
+                        raise ValueError(f"Multi-select field {field_name} must be a list")
+                    self._data[field_name] = value if value else None
+                # Validate single-select fields
+                elif field_name.startswith('META_SEL_') and value is not None:
+                    if not isinstance(value, str):
+                        raise ValueError(f"Single-select field {field_name} must be a string")
+                    self._data[field_name] = value if value.strip() else None
+                else:
+                    self._data[field_name] = value if value not in (None, [], '') else None
 
     @staticmethod
     def generate_id() -> str:
@@ -115,9 +127,25 @@ class WorkRecord:
         )
         return record
 
+    def validate(self):
+        """Validate record data before saving"""
+        if self.start_date and self.end_date:
+            if self.end_date < self.start_date:
+                raise ValueError("End date cannot be before start date")
+                
+        if not self.title:
+            raise ValueError("Title is required")
+            
+        if not self.creator_id:
+            raise ValueError("Creator ID is required")
+
     def save(self):
-        redis_client.set(f"work:{self.id}", json.dumps(self.to_dict()))
-        redis_client.sadd(f"user_works:{self.creator_id}", self.id)
+        try:
+            self.validate()
+            redis_client.set(f"work:{self.id}", json.dumps(self.to_dict()))
+            redis_client.sadd(f"user_works:{self.creator_id}", self.id)
+        except redis.RedisError as e:
+            raise RuntimeError(f"Database error: {str(e)}")
 
     @classmethod
     def get_by_id(cls, id: str) -> Optional['WorkRecord']:

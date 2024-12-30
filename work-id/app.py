@@ -63,12 +63,13 @@ def get_captcha():
 
 @app.route('/api/records', methods=['GET'])
 def get_records():
-    recent = request.args.get('recent', None)
-    user_id = request.cookies.get('creator_id')
-    
-    # Get all records
-    all_keys = redis_client.keys("work:*")
-    records = []
+    try:
+        recent = request.args.get('recent', None)
+        user_id = request.cookies.get('creator_id')
+        
+        # Get all records
+        all_keys = redis_client.keys("work:*")
+        records = []
     
     for key in all_keys:
         record = WorkRecord.get_by_id(key.decode().split(':')[1])

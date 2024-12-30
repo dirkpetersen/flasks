@@ -240,21 +240,13 @@ function searchRecords() {
     const query = document.getElementById('searchInput').value;
     const userOnly = document.getElementById('userOnlyCheck').checked;
     
-    if (!query.trim()) {
-        if (userOnly) {
-            loadRecords();
-        } else {
-            fetch('/api/search?q=&user_only=false')
-                .then(response => response.json())
-                .then(records => updateRecordsList(records))
-                .catch(error => {
-                    console.error('Search error:', error);
-                    alert('Failed to load records: ' + error.message);
-                });
-        }
+    // If empty query and user only, use loadRecords
+    if (!query.trim() && userOnly) {
+        loadRecords();
         return;
     }
 
+    // Otherwise use search API
     fetch(`/api/search?q=${encodeURIComponent(query)}&user_only=${userOnly}`)
         .then(response => {
             if (!response.ok) {
@@ -262,27 +254,7 @@ function searchRecords() {
             }
             return response.json();
         })
-        .then(records => {
-            const recordsList = document.getElementById('recordsList');
-            if (records.length === 0) {
-                recordsList.innerHTML = '<div class="list-group-item">No records found</div>';
-                return;
-            }
-            recordsList.innerHTML = records.map(record => `
-                <div class="list-group-item record-item py-2" onclick="loadRecord('${record.id}')">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-truncate me-2">
-                            <strong>${record.id}</strong> - ${record.title}
-                            ${record.work_type ? `<span class="badge bg-secondary">${record.work_type}</span>` : ''}
-                            ${record.required_apps ? `<span class="badge bg-info">Apps: ${record.required_apps.join(', ')}</span>` : ''}
-                            ${record.active ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>'}
-                        </div>
-                        <small class="text-muted">${new Date(record.created_at).toLocaleDateString()}</small>
-                    </div>
-                    <div class="small text-muted text-truncate mt-1">${record.description || 'No description'}</div>
-                </div>
-            `).join('');
-        })
+        .then(records => updateRecordsList(records))
         .catch(error => {
             console.error('Search error:', error);
             alert('Failed to search records: ' + error.message);
