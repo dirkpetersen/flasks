@@ -22,15 +22,30 @@ def get_meta_fields():
     # Get all environment variables
     for key, value in os.environ.items():
         print(f"DEBUG - Environment Variable - Key: {key}, Value: {value}")  # Debug log
+        
+        # Skip if no value or no colon in value
+        if not value or ':' not in value:
+            continue
+            
+        # Split into label and options
+        label, options = value.split(':', 1)
+        # Convert label to lowercase and replace spaces with underscores
+        field_id = label.lower().replace(' ', '_')
+        options_list = options.split(',')
+        
         # Process single select fields
         if key.startswith('META_SEL_'):
-            field_name = key[9:]  # Remove 'META_SEL_' prefix
-            meta_fields['single_select'][field_name] = value.split(',')
+            meta_fields['single_select'][field_id] = {
+                'label': label,
+                'options': options_list
+            }
             
         # Process multi select fields
         elif key.startswith('META_MSEL_'):
-            field_name = key[10:]  # Remove 'META_MSEL_' prefix
-            meta_fields['multi_select'][field_name] = value.split(',')
+            meta_fields['multi_select'][field_id] = {
+                'label': label,
+                'options': options_list
+            }
             
     print("DEBUG - Meta Fields Collected:", meta_fields)  # Debug log
     return meta_fields
