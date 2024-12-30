@@ -19,6 +19,8 @@ class WorkRecord:
                  active: bool = True, creator_id: str = None,
                  created_at: datetime = None, **meta_fields):
         """Initialize a work record with validation"""
+        print("\nDEBUG - WorkRecord Init - Received meta_fields:", meta_fields)
+        
         self._data = {
             'id': id,
             'title': title,
@@ -30,21 +32,30 @@ class WorkRecord:
             'created_at': created_at or datetime.now(pytz.UTC)
         }
         
+        print("DEBUG - WorkRecord Init - Base data:", self._data)
+        
         # Handle dynamic meta fields with validation
         for field_name, value in meta_fields.items():
             if field_name.startswith('META_'):
+                print(f"DEBUG - WorkRecord Init - Processing meta field {field_name} with value:", value)
+                print(f"DEBUG - WorkRecord Init - Value type:", type(value))
+                
                 # Validate multi-select fields
                 if field_name.startswith('META_MSEL_') and value is not None:
                     if not isinstance(value, list):
+                        print(f"DEBUG - WorkRecord Init - Error: Multi-select field {field_name} is not a list")
                         raise ValueError(f"Multi-select field {field_name} must be a list")
                     self._data[field_name] = value if value else None
                 # Validate single-select fields
                 elif field_name.startswith('META_SEL_') and value is not None:
                     if not isinstance(value, str):
+                        print(f"DEBUG - WorkRecord Init - Error: Single-select field {field_name} is not a string")
                         raise ValueError(f"Single-select field {field_name} must be a string")
                     self._data[field_name] = value if value.strip() else None
                 else:
                     self._data[field_name] = value if value not in (None, [], '') else None
+                    
+                print(f"DEBUG - WorkRecord Init - Final value for {field_name}:", self._data.get(field_name))
 
     @staticmethod
     def generate_id() -> str:
