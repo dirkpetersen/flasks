@@ -145,16 +145,26 @@ function loadRecord(id) {
                 document.getElementById('endDateTimezone').textContent = '';
             }
             
-            // Handle meta fields dynamically
-            document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
+            // Handle meta fields
+            document.querySelectorAll('select[id^="meta_"]').forEach(select => {
                 const isMulti = select.id.startsWith('meta_msel_');
                 const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
-                                select.id.split('_').slice(2).join('_');
-                const value = record[fieldName];
-                if (select.multiple) {
-                    $(select).val(Array.isArray(value) ? value : []).trigger('change');
+                                select.id.split('_').slice(2).join('_').toUpperCase();
+                
+                if (record[fieldName] !== undefined) {
+                    if (isMulti) {
+                        $(select).val(record[fieldName]).trigger('change');
+                    } else {
+                        select.value = record[fieldName];
+                    }
+                    console.log(`Loading ${fieldName} with value:`, record[fieldName]);
                 } else {
-                    select.value = value || '';
+                    if (isMulti) {
+                        $(select).val([]).trigger('change');
+                    } else {
+                        select.value = '';
+                    }
+                }
                     select.dispatchEvent(new Event('change'));
                 }
             });
@@ -419,24 +429,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     metaFieldsDebug.push({fieldName, value, type: isMulti ? 'multi' : 'single'});
                 });
 
-                console.log('Meta fields debug:', metaFieldsDebug);
-                console.log('Final form data:', formData);
-                document.querySelectorAll('select[id^="meta_sel_"], select[id^="meta_msel_"]').forEach(select => {
+                // Handle meta fields dynamically
+                document.querySelectorAll('select[id^="meta_"]').forEach(select => {
                     const isMulti = select.id.startsWith('meta_msel_');
                     const fieldName = (isMulti ? 'META_MSEL_' : 'META_SEL_') + 
-                                    select.id.split('_').slice(2).join('_');
-                    const value = isMulti ? 
-                        ($(select).val()?.length ? $(select).val() : null) :
-                        (select.value || null);
-                    formData[fieldName] = value;
+                                    select.id.split('_').slice(2).join('_').toUpperCase();
                     
-                    metaFieldsDebug.push({
-                        fieldName: fieldName,
-                        elementId: select.id,
-                        isMulti: isMulti,
-                        rawValue: $(select).val(),
-                        processedValue: value
-                    });
+                    let value;
+                    if (isMulti) {
+                        value = $(select).val() || [];
+                    } else {
+                        value = select.value || '';
+                    }
+                    
+                    formData[fieldName] = value;
+                    console.log(`Setting ${fieldName} to:`, value);
                 });
                 
                 // Show debug information in an alert
