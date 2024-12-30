@@ -159,7 +159,7 @@ def create_record():
         if key.startswith('META_'):
             # For multi-select fields, ensure we have a list
             if key.startswith('META_MSEL_'):
-                record_data[key] = value if isinstance(value, list) else []
+                record_data[key] = value if isinstance(value, list) else value.split('\t') if value else []
             # For single-select fields, ensure we have a string
             elif key.startswith('META_SEL_'):
                 record_data[key] = str(value) if value else ''
