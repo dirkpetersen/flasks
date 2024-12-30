@@ -79,7 +79,8 @@ class WorkRecord:
                 value = getattr(self, field_name)
                 if value is not None:
                     data[field_name] = value
-                    
+
+        #print('noooo:',self.__dict__) 
         return data
 
     @classmethod
