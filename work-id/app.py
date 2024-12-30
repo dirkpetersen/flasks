@@ -40,7 +40,7 @@ def index():
     app_name = os.getenv('APP_NAME', 'Work-ID')
     return render_template('index.html', 
                          user_id=user_id,
-                         meta_fields=meta_fields,
+                         meta_fields=meta_definitions,
                          new_id=WorkRecord.generate_id(),
                          force_captcha=force_captcha,
                          app_name=app_name)
@@ -144,7 +144,7 @@ def create_record():
     # Add meta fields dynamically
     record_id = data.get('id')
     if record_id == '(ML-3A)':
-        print("\nDEBUG - Route - Available meta fields:", meta_fields)
+        print("\nDEBUG - Route - Available meta fields:", meta_definitions)
         print("DEBUG - Route - Incoming data:", data)
         print("DEBUG - Route - Initial record_data:", record_data)
         print("DEBUG - Route - Meta fields in request:", [k for k in data.keys() if k.startswith('META_')])
