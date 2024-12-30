@@ -470,9 +470,15 @@ function submitFormData(formData) {
         alert('Record saved successfully!');
     })
     .catch(error => {
-        alert(error.message);
-        if (error.message.includes('CAPTCHA')) {
-            loadCaptcha();  // Reload CAPTCHA if invalid
+        const errorMessage = error.message || 'An error occurred';
+        if (errorMessage.includes('End date cannot be before start date')) {
+            alert('Error: End date cannot be before start date. Please check your dates.');
+            document.getElementById('endDate').focus();
+        } else {
+            alert(errorMessage);
+            if (errorMessage.includes('CAPTCHA')) {
+                loadCaptcha();  // Reload CAPTCHA if invalid
+            }
         }
     })
     .finally(() => {

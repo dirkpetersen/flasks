@@ -152,20 +152,23 @@ def create_record():
 
     record = WorkRecord(**record_data)
     
-    record.save()
-    return jsonify(record.to_dict())
+        record.save()
+        return jsonify(record.to_dict())
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
 
 @app.route('/api/records/<id>', methods=['PUT'])
 def update_record(id):
-    data = request.json
-    user_id = request.cookies.get('creator_id')
-    
-    record = WorkRecord.get_by_id(id)
-    if not record:
-        return jsonify({'error': 'Record not found'}), 404
-    
-    if record.creator_id != user_id:
-        return jsonify({'error': 'Unauthorized'}), 403
+    try:
+        data = request.json
+        user_id = request.cookies.get('creator_id')
+        
+        record = WorkRecord.get_by_id(id)
+        if not record:
+            return jsonify({'error': 'Record not found'}), 404
+        
+        if record.creator_id != user_id:
+            return jsonify({'error': 'Unauthorized'}), 403
 
     record.title = data.get('title', record.title)
     record.description = data.get('description', record.description)
