@@ -204,6 +204,9 @@ def update_record(id):
         data = request.json
         user_id = request.cookies.get('creator_id')
         
+        print(f"\nDEBUG - PUT Route - Raw request data for {id}:", json.dumps(data, indent=2))
+        print(f"DEBUG - PUT Route - Content-Type:", request.headers.get('Content-Type'))
+        
         record = WorkRecord.get_by_id(id)
         if not record:
             return jsonify({'error': 'Record not found'}), 404

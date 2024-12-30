@@ -18,6 +18,8 @@ class WorkRecord:
         """Initialize a work record with validation"""
         self._data = {}
         
+        print("\nDEBUG - WorkRecord Init - Incoming kwargs:", kwargs)
+        
         # List of known fields
         known_fields = {
             'id', 'title', 'description', 'start_date', 'end_date',
@@ -27,6 +29,7 @@ class WorkRecord:
         # Extract known fields from kwargs
         for field in known_fields:
             self._data[field] = kwargs.pop(field, None)
+            print(f"DEBUG - WorkRecord Init - Setting {field}:", self._data[field])
         
         # Convert dates to UTC timezone
         if self._data['start_date']:
@@ -185,13 +188,13 @@ class WorkRecord:
 
     def save(self):
         try:
+            print("\nDEBUG - WorkRecord save - Current _data contents:", self._data)
             self.validate()
             record_data = self.to_dict()
-            if self.id == '(ML-3A)':
-                print("\nDEBUG - Saving to Redis:")
-                print(f"Key: work:{self.id}")
-                print(f"Data: {json.dumps(record_data, indent=2)}")
-                print(f"User works key: user_works:{self.creator_id}")
+            print("\nDEBUG - WorkRecord save - Data being saved:")
+            print(f"Key: work:{self.id}")
+            print(f"Data: {json.dumps(record_data, indent=2)}")
+            print(f"User works key: user_works:{self.creator_id}")
             
             # Try to save and verify the data
             redis_client.set(f"work:{self.id}", json.dumps(record_data))
@@ -272,4 +275,6 @@ class WorkRecord:
         if name == '_data':
             super().__setattr__(name, value)
         else:
+            print(f"DEBUG - WorkRecord __setattr__ - Setting {name} to:", value)
+            print(f"DEBUG - WorkRecord __setattr__ - Value type:", type(value))
             self._data[name] = value
