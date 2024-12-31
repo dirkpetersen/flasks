@@ -54,7 +54,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Update active state
                 contactsList.querySelectorAll('.list-group-item').forEach(item => {
-                    item.classList.toggle('active', item.dataset.id === id);
+                    item.classList.remove('active');
+                    if (item.dataset.id === id) {
+                        item.classList.add('active');
+                    }
                 });
             });
     }
