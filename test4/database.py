@@ -71,16 +71,24 @@ class RedisDB:
             # Sort records by created_at
             records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
             
+            # Debug logging
+            current_app.logger.debug(f"Found {len(records)} total records")
+            current_app.logger.debug(f"Records before pagination: {json.dumps(records, indent=2)}")
+            
             # Apply pagination
             start = (page - 1) * per_page
             end = start + per_page
             paginated_records = records[start:end]
             
-            return {
+            current_app.logger.debug(f"Records after pagination: {json.dumps(paginated_records, indent=2)}")
+            
+            result = {
                 'records': paginated_records,
                 'total': total,
                 'pages': (total + per_page - 1) // per_page
             }
+            current_app.logger.debug(f"Returning result: {json.dumps(result, indent=2)}")
+            return result
         except Exception as e:
             current_app.logger.error(f"Error getting records: {e}")
             return {'records': [], 'total': 0, 'pages': 0}

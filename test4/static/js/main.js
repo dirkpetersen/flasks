@@ -107,6 +107,11 @@ const loadRecords = async (page = 1) => {
         const response = await fetch(`/api/records?page=${page}&show_all=${showAll}&user_id=${userId}`);
         if (!response.ok) throw new Error('Failed to load records');
         const data = await response.json();
+        console.log('Received records data:', data);
+        if (!data.records) {
+            console.error('No records array in response:', data);
+            throw new Error('Invalid response format');
+        }
         updateRecordsList(data.records);
         updatePagination(data.pages, page);
     } catch (error) {
@@ -118,7 +123,19 @@ const loadRecords = async (page = 1) => {
 const updateRecordsList = (records) => {
     const recordsList = document.getElementById('recordsList');
     
-    if (!Array.isArray(records) || records.length === 0) {
+    console.log('Updating records list with:', records);
+    
+    if (!Array.isArray(records)) {
+        console.error('Records is not an array:', records);
+        recordsList.innerHTML = `
+            <div class="list-group-item text-center text-muted py-4">
+                <i class="bi bi-exclamation-triangle fs-2 mb-2"></i><br>
+                Error: Invalid records format
+            </div>`;
+        return;
+    }
+    
+    if (records.length === 0) {
         recordsList.innerHTML = `
             <div class="list-group-item text-center text-muted py-4">
                 <i class="bi bi-inbox fs-2 mb-2"></i><br>
