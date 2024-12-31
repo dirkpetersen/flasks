@@ -1,10 +1,10 @@
-from typing import Optional, Dict, List, Any
-import json
+from typing import Optional, Dict, List, Any, Union
 import random
 import string
 import time
 from datetime import datetime
 import redis
+from redis.commands.json.path import Path
 from flask import current_app
 
 class RedisDB:
@@ -93,24 +93,45 @@ class RedisDB:
             return {'records': [], 'total': 0, 'pages': 0}
 
     def search_records(self, query: str, creator_id: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Search records with optional creator filter"""
+        """Search records with improved JSON handling"""
         try:
-            # Use Redis Search for text search
-            search_query = f'(@title:{query} | @description:{query})'
-            if creator_id:
-                search_query = f'({search_query}) @creator_id:{{{creator_id}}}'
+            # Escape special characters in query
+            escaped_query = query.replace('"', '\\"').replace("'", "\\'")
             
+            # Build search query using JSON path syntax
+            search_parts = []
+            if query:
+                search_parts.append(f'(@title:"{escaped_query}" | @description:"{escaped_query}")')
+            if creator_id:
+                search_parts.append(f'@creator_id:{{{creator_id}}}')
+            
+            final_query = ' '.join(search_parts) if search_parts else '*'
+            
+            # Execute search with JSON-aware parameters
             res = self.client.ft(self.INDEX_NAME).search(
-                search_query,
+                final_query,
                 sort_by="created_at",
                 sort_desc=True
             )
             
+            # Process results maintaining JSON structure
             records = []
             for doc in res.docs:
-                data = json.loads(doc.json)
-                data['id'] = doc.id.split(':')[1]
-                records.append(data)
+                try:
+                    # Handle both string and direct JSON responses
+                    if hasattr(doc, 'json'):
+                        data = self.client.json().get(doc.id, Path.root_path())
+                    else:
+                        data = doc.__dict__
+                    
+                    if isinstance(data, list):
+                        data = data[0]
+                    
+                    data['id'] = doc.id.split(':')[1]
+                    records.append(data)
+                except Exception as e:
+                    current_app.logger.error(f"Error processing search result: {e}")
+                    continue
             
             return records
         except Exception as e:
@@ -118,12 +139,14 @@ class RedisDB:
             return []
 
     def get_record(self, record_id: str) -> Optional[Dict[str, Any]]:
-        """Get a single record by ID"""
+        """Get a single record by ID using RedisJSON path"""
         try:
             key = f'record:{record_id}'
-            # Use RedisJSON to get the data
-            data = self.client.json().get(key)
+            # Use RedisJSON path to get specific fields
+            data = self.client.json().get(key, Path.root_path())
             if data:
+                if isinstance(data, list):
+                    data = data[0]  # Handle case where root path returns list
                 data['id'] = record_id
                 return data
             return None
@@ -132,32 +155,35 @@ class RedisDB:
             return None
 
     def save_record(self, record_id: str, data: Dict[str, Any]) -> bool:
-        """Save or update a record"""
+        """Save or update a record using RedisJSON paths"""
         key = f'record:{record_id}'
         try:
-            # Ensure timestamps are integers
+            # Process timestamps
             if 'created_at' not in data:
                 data['created_at'] = int(time.time())
-            if 'time_start' in data and data['time_start']:
-                data['time_start'] = int(datetime.fromisoformat(data['time_start']).timestamp())
-            if 'time_end' in data and data['time_end']:
-                data['time_end'] = int(datetime.fromisoformat(data['time_end']).timestamp())
-                
-            # Remove empty fields, including nested dictionaries
-            def clean_dict(d):
-                if not isinstance(d, dict):
-                    return d
-                return {k: clean_dict(v) for k, v in d.items() 
-                       if v not in (None, "", [], {}) 
-                       and not (isinstance(v, dict) and not clean_dict(v))
-                       and not (isinstance(v, list) and not v)}
             
-            data = clean_dict(data)
+            # Convert ISO timestamps to Unix timestamps
+            for field in ['time_start', 'time_end']:
+                if data.get(field):
+                    data[field] = int(datetime.fromisoformat(data[field]).timestamp())
             
-            # Use RedisJSON to set the data
-            success = self.client.json().set(key, '$', data)
-            if not success:
-                raise Exception("RedisJSON SET returned False")
+            # Initialize record if it doesn't exist
+            if not self.client.exists(key):
+                self.client.json().set(key, Path.root_path(), {})
+            
+            # Update fields using JSON path operations
+            for field, value in data.items():
+                if value not in (None, "", [], {}):
+                    if isinstance(value, dict):
+                        # Merge nested dictionaries
+                        self.client.json().merge(key, f"$.{field}", value)
+                    else:
+                        # Set non-dictionary values
+                        self.client.json().set(key, f"$.{field}", value)
+                elif field in ['meta']:
+                    # Preserve empty meta field as dictionary
+                    self.client.json().set(key, f"$.{field}", {})
+            
             return True
         except Exception as e:
             current_app.logger.error(f"Error saving record {record_id}: {e}")
