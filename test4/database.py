@@ -146,8 +146,16 @@ class RedisDB:
             if 'time_end' in data and data['time_end']:
                 data['time_end'] = int(datetime.fromisoformat(data['time_end']).timestamp())
                 
-            # Remove empty fields
-            data = {k: v for k, v in data.items() if v not in (None, "")}
+            # Remove empty fields, including nested dictionaries
+            def clean_dict(d):
+                if not isinstance(d, dict):
+                    return d
+                return {k: clean_dict(v) for k, v in d.items() 
+                       if v not in (None, "", [], {}) 
+                       and not (isinstance(v, dict) and not clean_dict(v))
+                       and not (isinstance(v, list) and not v)}
+            
+            data = clean_dict(data)
             
             # Try JSON.SET first
             try:
