@@ -116,10 +116,19 @@ class RedisDB:
 
     def get_record(self, record_id: str) -> Optional[Dict[str, Any]]:
         """Get a single record by ID"""
-        data = self.client.json().get(f'record:{record_id}')
-        if data:
-            data['id'] = record_id
-            return data
+        try:
+            key = f'record:{record_id}'
+            # Try JSON.GET first
+            try:
+                data = self.client.json().get(key)
+            except redis.exceptions.ResponseError:
+                # Fallback to regular GET and JSON parsing
+                data_str = self.client.get(key)
+                data = json.loads(data_str) if data_str else None
+            
+            if data:
+                data['id'] = record_id
+                return data
         return None
 
     def save_record(self, record_id: str, data: Dict[str, Any]) -> bool:
@@ -137,7 +146,12 @@ class RedisDB:
             # Remove empty fields
             data = {k: v for k, v in data.items() if v not in (None, "")}
             
-            return bool(self.client.json().set(key, '$', data))
+            # Try JSON.SET first
+            try:
+                return bool(self.client.json().set(key, '$', data))
+            except redis.exceptions.ResponseError:
+                # Fallback to regular SET with JSON string
+                return bool(self.client.set(key, json.dumps(data)))
         except Exception as e:
             current_app.logger.error(f"Error saving record: {e}")
             return False
