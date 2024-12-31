@@ -309,6 +309,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize user ID validation
     const userIdInput = document.getElementById('userIdInput');
+    
+    // Load creator ID from cookie
+    const savedCreatorId = document.cookie.split('; ').find(row => row.startsWith('creatorId='));
+    if (savedCreatorId) {
+        userIdInput.value = decodeURIComponent(savedCreatorId.split('=')[1]);
+        loadRecords(1);
+    }
+
     userIdInput.addEventListener('change', () => {
         const email = userIdInput.value.trim();
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -317,12 +325,18 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('Please enter a valid email address', 'danger');
         } else {
             userIdInput.classList.remove('is-invalid');
-            if (email) loadRecords(1);
+            if (email) {
+                // Save creator ID in cookie (expires in 30 days)
+                const expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + 30);
+                document.cookie = `creatorId=${encodeURIComponent(email)};expires=${expiryDate.toUTCString()};path=/`;
+                loadRecords(1);
+            } else {
+                // Clear cookie if email is empty
+                document.cookie = 'creatorId=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+            }
         }
     });
-
-    // Load initial records if user ID is present
-    if (userIdInput.value) loadRecords(1);
 
     // Initialize meta fields
     fetch('/api/meta-fields')
