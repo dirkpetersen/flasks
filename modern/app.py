@@ -15,7 +15,7 @@ load_dotenv()
 
 def create_app(config_class: type = Config) -> Flask:
     """Create and configure the Flask application"""
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/static')
     app.config.from_object(config_class)
     
     # Initialize extensions
