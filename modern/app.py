@@ -20,7 +20,11 @@ def create_app(config_class: type = Config) -> Flask:
     
     # Initialize extensions
     CORS(app)
-    init_redis(app)
+    
+    # Initialize Redis before registering blueprints
+    redis_client = init_redis(app)
+    if not redis_client:
+        raise RuntimeError("Failed to initialize Redis connection")
     
     # Register blueprints
     app.register_blueprint(contacts_bp)
