@@ -56,19 +56,22 @@ $(document).ready(function() {
         $.get('/get_record/' + recordId)
             .done(function(record) {
                 console.log('Received record:', record);
+                
+                // Clear all form fields first
+                $('#createForm')[0].reset();
+                $('.select2-single, .select2-multiple').val(null).trigger('change');
+                
                 // Populate the name field
                 $('#name').val(record.name);
                 
                 // Populate select fields
                 Object.keys(record).forEach(key => {
-                    if (key !== 'name' && key !== 'created_at') {
+                    if (key !== 'name' && key !== 'created_at' && key !== '_id') {
                         const $select = $(`#${key}`);
                         if ($select.length) {
-                            if (Array.isArray(record[key])) {
-                                $select.val(record[key]).trigger('change');
-                            } else {
-                                $select.val(record[key]).trigger('change');
-                            }
+                            // Handle both single and multiple select fields
+                            const value = record[key];
+                            $select.val(value).trigger('change');
                         }
                     }
                 });
