@@ -53,8 +53,8 @@ class RedisDB:
             try:
                 res = self.client.ft(self.INDEX_NAME).search(
                     query,
-                    sort_by="created_at",
-                    sort_desc=True,
+                    sortby="created_at",
+                    desc=True,
                     offset=(page - 1) * per_page,
                     num=per_page
                 )
@@ -113,8 +113,8 @@ class RedisDB:
             # Execute search with JSON-aware parameters
             res = self.client.ft(self.INDEX_NAME).search(
                 final_query,
-                sort_by="created_at",
-                sort_desc=True
+                sortby="created_at",
+                desc=True
             )
             
             # Process results maintaining JSON structure
