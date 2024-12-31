@@ -24,6 +24,14 @@ $(document).ready(function() {
         $('#loading').fadeIn();
     });
 
+    // Reset form handler
+    $('#resetForm').click(function() {
+        $('#recordForm')[0].reset();
+        $('#record_id').val('');
+        $('.select2-single, .select2-multiple').val(null).trigger('change');
+        $('#formTitle').text('Create New Record');
+    });
+
     // Animate new elements
     $('.card').addClass('animate__animated animate__fadeIn');
     
@@ -58,7 +66,8 @@ $(document).ready(function() {
                 console.log('Received record:', record);
                 
                 // Clear all form fields first
-                $('#createForm')[0].reset();
+                $('#recordForm')[0].reset();
+                $('#record_id').val(record._id);
                 $('.select2-single, .select2-multiple').val(null).trigger('change');
                 
                 // Populate the name field

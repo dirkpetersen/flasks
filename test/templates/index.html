@@ -25,10 +25,11 @@
         <!-- Create Form -->
         <div class="card mb-4">
             <div class="card-header">
-                <h2>Create New Record</h2>
+                <h2 id="formTitle">Create New Record</h2>
             </div>
             <div class="card-body">
-                <form id="createForm" action="{{ url_for('create_record') }}" method="POST">
+                <form id="recordForm" action="{{ url_for('save_record') }}" method="POST">
+                    <input type="hidden" id="record_id" name="record_id">
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -52,7 +53,10 @@
                     </div>
                     {% endfor %}
 
-                    <button type="submit" class="btn btn-primary">Create Record</button>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Save Record</button>
+                        <button type="button" id="resetForm" class="btn btn-secondary">New Record</button>
+                    </div>
                 </form>
             </div>
         </div>

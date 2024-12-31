@@ -47,10 +47,15 @@ def index():
                          meta_fields=meta_fields,
                          records=records)
 
-@app.route('/create', methods=['POST'])
-def create_record():
+@app.route('/save_record', methods=['POST'])
+def save_record():
     data = request.form.to_dict(flat=False)
-    record_id = f"record:{uuid.uuid4()}"
+    record_id = data.get('record_id', [None])[0]
+    
+    if not record_id:
+        record_id = str(uuid.uuid4())
+    
+    redis_key = f"record:{record_id}"
     
     # Convert single items from lists to single values
     processed_data = {}
@@ -65,10 +70,17 @@ def create_record():
     
     # Add basic fields
     processed_data['name'] = data['name'][0]
-    processed_data['created_at'] = datetime.now().isoformat()
-    processed_data['_id'] = record_id.split(':')[1]  # Store UUID without 'record:' prefix
+    processed_data['_id'] = record_id
     
-    redis_client.set(record_id, json.dumps(processed_data))
+    # Only set created_at for new records
+    existing_record = redis_client.get(redis_key)
+    if existing_record:
+        existing_data = json.loads(existing_record)
+        processed_data['created_at'] = existing_data['created_at']
+    else:
+        processed_data['created_at'] = datetime.now().isoformat()
+    
+    redis_client.set(redis_key, json.dumps(processed_data))
     return redirect(url_for('index'))
 
 @app.route('/get_record/<record_id>')
