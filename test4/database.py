@@ -39,13 +39,13 @@ class RedisDB:
             try:
                 self.client.ft(self.INDEX_NAME).create_index(
                     fields=[
-                        TextField("$.title", as_name="title"),
-                        TextField("$.description", as_name="description"),
-                        TagField("$.creator_id", as_name="creator_id"),
-                        NumericField("$.created_at", as_name="created_at"),
-                        NumericField("$.time_start", as_name="time_start"),
-                        NumericField("$.time_end", as_name="time_end"),
-                        TagField("$.active", as_name="active")
+                        TextField("title"),
+                        TextField("description"),
+                        TagField("creator_id"),
+                        NumericField("created_at"),
+                        NumericField("time_start"),
+                        NumericField("time_end"),
+                        TagField("active")
                     ],
                     definition=IndexDefinition(
                         prefix=["record:"],
@@ -80,8 +80,7 @@ class RedisDB:
             try:
                 res = self.client.ft(self.INDEX_NAME).search(
                     query,
-                    sort_by="created_at",
-                    sort_desc=True,
+                    sortby=("created_at", True),
                     offset=(page - 1) * per_page,
                     num=per_page
                 )
@@ -130,8 +129,7 @@ class RedisDB:
             
             res = self.client.ft(self.INDEX_NAME).search(
                 search_query,
-                sort_by="created_at",
-                sort_desc=True
+                sortby=("created_at", True)
             )
             
             records = []
