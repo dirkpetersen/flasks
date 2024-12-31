@@ -60,19 +60,14 @@ if __name__ == '__main__':
                 return (cert_path, key_path)
             print(" * Warning: SSL certificate files specified but not found - starting without SSL")
         return None
-    """Parse META_SEL and META_MSEL environment variables"""
-    meta_fields = {}
-    for key, value in os.environ.items():
-        if key.startswith(('META_SEL_', 'META_MSEL_')):
-            field_name, options = value.split(':', 1)
-            field_id = field_name.lower().replace(' ', '_')
-            meta_fields[field_id] = {
-                'name': field_name,
-                'options': options.split(','),
-                'multiple': key.startswith('META_MSEL_'),
-                'id': field_id
-            }
-    return meta_fields
+    
+    ssl_context = get_ssl_context()
+    app.run(
+        host='0.0.0.0',
+        port=int(os.getenv('FLASK_PORT', 5000)),
+        debug=debug_mode,
+        ssl_context=ssl_context
+    )
 
 @app.route('/')
 def index():
