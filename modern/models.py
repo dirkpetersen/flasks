@@ -1,16 +1,18 @@
 from datetime import datetime
 import json
 from typing import Dict, Any, List, Optional
-from .redis_store import redis_client, init_redis
+from flask import current_app
+from .redis_store import get_redis
 
 class Contact:
     @staticmethod
     def _get_redis():
-        """Ensure Redis client is initialized"""
-        if redis_client is None:
-            if not init_redis():
-                raise RuntimeError("Redis connection not available")
-        return redis_client
+        """Get Redis client with connection check"""
+        redis = get_redis()
+        if redis is None:
+            current_app.logger.error("Redis connection not available")
+            raise RuntimeError("Redis connection not available")
+        return redis
     """Contact model for storing contact information in Redis"""
     
     @staticmethod

@@ -24,7 +24,8 @@ def create_app(config_class: type = Config) -> Flask:
     # Initialize Redis before registering blueprints
     redis_client = init_redis(app)
     if not redis_client:
-        raise RuntimeError("Failed to initialize Redis connection")
+        app.logger.error("Failed to initialize Redis connection")
+        raise RuntimeError("Failed to initialize Redis connection. Please check Redis server is running and configuration is correct.")
     
     # Register blueprints
     app.register_blueprint(contacts_bp)
