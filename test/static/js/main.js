@@ -48,8 +48,8 @@ $(document).ready(function() {
     // Hide loading animation on page load
     $('#loading').fadeOut();
 
-    // Handle record click to load into editor
-    $('.record-row').click(function(e) {
+    // Handle edit button click to load record into editor
+    $('.edit-btn').click(function(e) {
         e.preventDefault();
         const recordId = $(this).data('record-id');
         console.log('Clicked record ID:', recordId);
