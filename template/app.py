@@ -4,9 +4,7 @@ from typing import Optional, Tuple
 import os
 from flask import Flask
 from flask_cors import CORS
-
 from .config import Config
-from .blueprints.contacts import contacts_bp
 from .blueprints.errors import errors_bp
 
 def create_app(config_class: type = Config) -> Flask:
@@ -18,7 +16,6 @@ def create_app(config_class: type = Config) -> Flask:
     CORS(app)
 
     # Register blueprints
-    app.register_blueprint(contacts_bp)
     app.register_blueprint(errors_bp)
 
     return app

@@ -219,7 +219,7 @@ def get_record_details(id):
 
 if __name__ == '__main__':
     ssl_cert = os.getenv('SSL_CERT')
-    ssl_key = os.getenv('SSL_KEY')    
+    ssl_key = os.getenv('SSL_KEY')
     ssl_context = None
     if ssl_cert and ssl_key:
         if os.path.exists(os.path.expanduser(ssl_cert)) and os.path.exists(os.path.expanduser(ssl_key)):
