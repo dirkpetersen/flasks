@@ -37,8 +37,15 @@ def create_app(config_class: type = Config) -> Flask:
                 raise ValueError("Failed to generate a valid ID")
             return jsonify({'id': new_id})
         except Exception as e:
-            app.logger.error(f"Error generating new ID: {e}")
+            app.logger.error(f"Error generating new ID: {e}", exc_info=True)
             return jsonify({'error': str(e)}), 500
+
+    @app.errorhandler(Exception)
+    def handle_error(error):
+        app.logger.error(f"Unhandled error: {error}", exc_info=True)
+        if hasattr(error, 'code') and error.code:
+            return jsonify({'error': str(error)}), error.code
+        return jsonify({'error': str(error)}), 500
 
     return app
 

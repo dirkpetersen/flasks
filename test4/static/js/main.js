@@ -276,7 +276,10 @@ const submitForm = async (event) => {
             body: JSON.stringify(formData)
         });
 
-        if (!response.ok) throw new Error('Failed to save record');
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Failed to save record: ${response.status} ${response.statusText}`);
+        }
 
         showToast('Record saved successfully');
         loadRecords(); // Refresh the list

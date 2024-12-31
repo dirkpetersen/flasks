@@ -141,9 +141,9 @@ class RedisDB:
             # Ensure timestamps are integers
             if 'created_at' not in data:
                 data['created_at'] = int(time.time())
-            if 'time_start' in data:
+            if 'time_start' in data and data['time_start']:
                 data['time_start'] = int(datetime.fromisoformat(data['time_start']).timestamp())
-            if 'time_end' in data:
+            if 'time_end' in data and data['time_end']:
                 data['time_end'] = int(datetime.fromisoformat(data['time_end']).timestamp())
                 
             # Remove empty fields
@@ -151,13 +151,20 @@ class RedisDB:
             
             # Try JSON.SET first
             try:
-                return bool(self.client.json().set(key, '$', data))
-            except redis.exceptions.ResponseError:
+                success = bool(self.client.json().set(key, '$', data))
+                if not success:
+                    raise Exception("Redis JSON.SET returned False")
+                return True
+            except redis.exceptions.ResponseError as e:
+                current_app.logger.warning(f"JSON.SET failed, falling back to regular SET: {e}")
                 # Fallback to regular SET with JSON string
-                return bool(self.client.set(key, json.dumps(data)))
+                success = bool(self.client.set(key, json.dumps(data)))
+                if not success:
+                    raise Exception("Redis SET returned False")
+                return True
         except Exception as e:
-            current_app.logger.error(f"Error saving record: {e}")
-            return False
+            current_app.logger.error(f"Error saving record {record_id}: {e}")
+            raise RuntimeError(f"Failed to save record: {str(e)}")
 
     def delete_record(self, record_id: str) -> bool:
         """Delete a record"""
