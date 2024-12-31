@@ -92,9 +92,10 @@ class RedisDB:
                     records.append(data)
                 
                 total = res.total
-            
-            # Sort records by created_at
-            records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
+            except redis.ResponseError as e:
+                current_app.logger.error(f"Search error: {e}")
+                records = []
+                total = 0
             
             # Debug logging
             current_app.logger.debug(f"Found {len(records)} total records")
@@ -126,18 +127,17 @@ class RedisDB:
             if creator_id:
                 search_query = f'({search_query}) @creator_id:{{{creator_id}}}'
             
-            try:
-                res = self.client.ft(self.INDEX_NAME).search(
-                    search_query,
-                    sort_by="created_at",
-                    sort_desc=True
-                )
-                
-                records = []
-                for doc in res.docs:
-                    data = json.loads(doc.json)
-                    data['id'] = doc.id.split(':')[1]
-                    records.append(data)
+            res = self.client.ft(self.INDEX_NAME).search(
+                search_query,
+                sort_by="created_at",
+                sort_desc=True
+            )
+            
+            records = []
+            for doc in res.docs:
+                data = json.loads(doc.json)
+                data['id'] = doc.id.split(':')[1]
+                records.append(data)
             
             return records
         except Exception as e:
