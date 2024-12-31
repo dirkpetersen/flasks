@@ -66,6 +66,7 @@ def create_record():
     # Add basic fields
     processed_data['name'] = data['name'][0]
     processed_data['created_at'] = datetime.now().isoformat()
+    processed_data['_id'] = record_id.split(':')[1]  # Store UUID without 'record:' prefix
     
     redis_client.set(record_id, json.dumps(processed_data))
     return redirect(url_for('index'))
