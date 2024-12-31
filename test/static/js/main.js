@@ -41,12 +41,19 @@ $(document).ready(function() {
     $('#loading').fadeOut();
 
     // Handle record click to load into editor
-    $('.record-row').click(function() {
+    $('.record-row').click(function(e) {
+        e.preventDefault(); // Prevent any default behavior
         const recordId = $(this).data('record-id');
         console.log('Clicked record ID:', recordId);
+        
+        if (!recordId) {
+            console.error('No record ID found');
+            return;
+        }
+        
         $('#loading').fadeIn();
         
-        $.get(`/get_record/${recordId}`)
+        $.get('/get_record/' + recordId)
             .done(function(record) {
                 console.log('Received record:', record);
                 // Populate the name field
