@@ -23,7 +23,9 @@ def create_contact() -> Tuple[Dict[str, Any], int]:
     try:
         contact = Contact(**data)
         contact.save()
-    return jsonify(contact.to_dict()), HTTPStatus.CREATED
+        return jsonify(contact.to_dict()), HTTPStatus.CREATED
+    except ValueError as e:
+        return jsonify({'error': str(e)}), HTTPStatus.BAD_REQUEST
 
 @contacts_bp.route('/api/contacts/<int:contact_id>', methods=['PUT'])
 def update_contact(contact_id: int) -> Tuple[Dict[str, Any], int]:
