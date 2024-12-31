@@ -1,20 +1,27 @@
 from datetime import datetime
 import json
 from typing import Dict, Any, List, Optional
-from .redis_store import redis_client
+from .redis_store import redis_client, init_redis
 
 class Contact:
+    @staticmethod
+    def _get_redis():
+        """Ensure Redis client is initialized"""
+        if redis_client is None:
+            if not init_redis():
+                raise RuntimeError("Redis connection not available")
+        return redis_client
     """Contact model for storing contact information in Redis"""
     
     @staticmethod
     def _generate_id() -> int:
         """Generate a new ID using Redis counter"""
-        return int(redis_client.incr('contact:id:counter'))
+        return int(Contact._get_redis().incr('contact:id:counter'))
 
     @staticmethod
     def _get_email_index(email: str) -> Optional[str]:
         """Get contact ID by email"""
-        return redis_client.get(f'contact:email:{email}')
+        return Contact._get_redis().get(f'contact:email:{email}')
 
     def __init__(self, first_name: str, last_name: str, email: str, phone: str = None, 
                  id: int = None, created_at: str = None, updated_at: str = None):
@@ -34,7 +41,7 @@ class Contact:
             raise ValueError("Email already exists")
 
         # Save contact data
-        redis_client.hset(
+        Contact._get_redis().hset(
             f'contact:{self.id}',
             mapping={
                 'first_name': self.first_name,
@@ -46,12 +53,13 @@ class Contact:
             }
         )
         # Update email index
-        redis_client.set(f'contact:email:{self.email}', self.id)
+        Contact._get_redis().set(f'contact:email:{self.email}', self.id)
 
     def delete(self) -> None:
         """Delete contact from Redis"""
-        redis_client.delete(f'contact:{self.id}')
-        redis_client.delete(f'contact:email:{self.email}')
+        redis = Contact._get_redis()
+        redis.delete(f'contact:{self.id}')
+        redis.delete(f'contact:email:{self.email}')
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert contact to dictionary"""
@@ -68,7 +76,7 @@ class Contact:
     @classmethod
     def get(cls, contact_id: int) -> Optional['Contact']:
         """Get contact by ID"""
-        data = redis_client.hgetall(f'contact:{contact_id}')
+        data = Contact._get_redis().hgetall(f'contact:{contact_id}')
         if not data:
             return None
         return cls(id=contact_id, **data)
@@ -77,7 +85,7 @@ class Contact:
     def get_all(cls) -> List['Contact']:
         """Get all contacts"""
         contacts = []
-        for key in redis_client.keys('contact:[0-9]*'):
+        for key in Contact._get_redis().keys('contact:[0-9]*'):
             contact_id = int(key.decode().split(':')[1])
             contact = cls.get(contact_id)
             if contact:
