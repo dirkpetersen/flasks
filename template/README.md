@@ -8,15 +8,15 @@ Write me the most ultramodern flask app that you can imagine. It should look cle
 It stores all info in Redis6 as JSON structures (REDIS_HOST, REDIS_PORT and REDIS_DB are defined as environment vars in .env). 
 The app should work also on a cell phone and there should be 2 rest API functions /api/records that should give a simple list of record IDs and and /api/record/<record_id> that gives the entire json structure of a single record. There should be a search field that triggers a full text search over the json structure in redis after confirming the search terms with enter. Use redis searchas much as possible. A few more requirements: 
 
- 1 Implement Flask blueprints for better code organization
- 2 Add type hints throughout the code
- 3 Move database connection to separate module database.py
- 4 Add proper error handling with custom error pages
- 5 Use Flask-CORS for cross-origin support
- 6 Implement factory pattern with create_app()
- 7 Separate config.py functions
- 8 Use modern response handling with make_response
- 9 Improve code organization and maintainability
+ 1. Implement Flask blueprints for better code organization
+ 2. Add type hints throughout the code
+ 3. Move database connection to separate module database.py
+ 4. Add proper error handling with custom error pages
+ 5. Use Flask-CORS for cross-origin support
+ 6. Implement factory pattern with create_app()
+ 7. Separate config.py functions
+ 8. Use modern response handling with make_response
+ 9. Improve code organization and maintainability
 
 --  
 
