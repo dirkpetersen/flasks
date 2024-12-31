@@ -49,7 +49,6 @@ $(document).ready(function() {
         $.get(`/get_record/${recordId}`)
             .done(function(record) {
                 console.log('Received record:', record);
-            .done(function(record) {
                 // Populate the name field
                 $('#name').val(record.name);
                 
