@@ -23,6 +23,7 @@ class RedisDB:
                 db=current_app.config.get('REDIS_DB', 0),
                 decode_responses=True
             )
+            current_app.logger.debug("Redis client initialized")
 
 
     def generate_work_id(self) -> str:
