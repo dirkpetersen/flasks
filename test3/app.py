@@ -4,10 +4,10 @@ from typing import Optional, Tuple
 import os
 from flask import Flask
 from flask_cors import CORS
-from dotenv import load_dotenv
 
-
-load_dotenv()
+from .config import Config
+from .blueprints.contacts import contacts_bp
+from .blueprints.errors import errors_bp
 
 def create_app(config_class: type = Config) -> Flask:
     """Create and configure the Flask application"""
@@ -16,12 +16,6 @@ def create_app(config_class: type = Config) -> Flask:
 
     # Initialize extensions
     CORS(app)
-
-    # Initialize Redis before registering blueprints
-    redis_client = init_redis(app)
-    if not redis_client:
-        app.logger.error("Failed to initialize Redis connection")
-        raise RuntimeError("Failed to initialize Redis connection. Please check Redis server is running and configuration is correct.")
 
     # Register blueprints
     app.register_blueprint(contacts_bp)
