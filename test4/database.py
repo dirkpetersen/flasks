@@ -129,7 +129,10 @@ class RedisDB:
             if data:
                 data['id'] = record_id
                 return data
-        return None
+            return None
+        except Exception as e:
+            current_app.logger.error(f"Error getting record: {e}")
+            return None
 
     def save_record(self, record_id: str, data: Dict[str, Any]) -> bool:
         """Save or update a record"""
