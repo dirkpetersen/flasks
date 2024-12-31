@@ -31,9 +31,29 @@ class RedisDB:
     def _ensure_search_index(self) -> None:
         """Create search index if it doesn't exist"""
         try:
+            # Try to get index info first
             self.client.ft(self.INDEX_NAME).info()
-        except (redis.ResponseError, redis.exceptions.ModuleError):
-            current_app.logger.warning("Redis Search module not available - search functionality will be limited")
+        except redis.ResponseError:
+            # Index doesn't exist, create it with auto-detected schema
+            try:
+                self.client.ft(self.INDEX_NAME).create_index(
+                    fields=[
+                        TextField("$.title", as_name="title"),
+                        TextField("$.description", as_name="description"),
+                        TagField("$.creator_id", as_name="creator_id"),
+                        NumericField("$.created_at", as_name="created_at"),
+                        NumericField("$.time_start", as_name="time_start"),
+                        NumericField("$.time_end", as_name="time_end"),
+                        TagField("$.active", as_name="active")
+                    ],
+                    definition=IndexDefinition(
+                        prefix=["record:"],
+                        index_type=IndexType.JSON
+                    )
+                )
+                current_app.logger.info("Created Redis Search index with auto-detected schema")
+            except redis.ResponseError as e:
+                current_app.logger.error(f"Failed to create Redis Search index: {e}")
 
     def generate_work_id(self) -> str:
         """Generate a unique work ID based on pattern"""
@@ -50,23 +70,28 @@ class RedisDB:
                        page: int = 1, per_page: int = 10) -> Dict[str, Any]:
         """Get paginated records, optionally filtered by creator"""
         try:
-            # Fallback to scanning when search is not available
-            records = []
-            total = 0
-            scan_pattern = "record:*"
-            cursor = "0"
+            # Use Redis Search to get records
+            query = "*"
+            if creator_id:
+                query = f"@creator_id:{{{creator_id}}}"
             
-            while cursor != 0:
-                cursor, keys = self.client.scan(cursor=cursor, match=scan_pattern)
-                for key in keys:
-                    data = self.client.json().get(key)
-                    if data:
-                        record_id = key.split(':')[1]
-                        if not creator_id or data.get('creator_id') == creator_id:
-                            data['id'] = record_id
-                            records.append(data)
-                            total += 1
-                cursor = int(cursor)
+            # Execute search with pagination
+            try:
+                res = self.client.ft(self.INDEX_NAME).search(
+                    query,
+                    sort_by="created_at",
+                    sort_desc=True,
+                    offset=(page - 1) * per_page,
+                    num=per_page
+                )
+                
+                records = []
+                for doc in res.docs:
+                    data = json.loads(doc.json)
+                    data['id'] = doc.id.split(':')[1]
+                    records.append(data)
+                
+                total = res.total
             
             # Sort records by created_at
             records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
@@ -96,26 +121,23 @@ class RedisDB:
     def search_records(self, query: str, creator_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Search records with optional creator filter"""
         try:
-            # Fallback to basic filtering when search is not available
-            records = []
-            scan_pattern = "record:*"
-            cursor = "0"
-            query = query.lower()
+            # Use Redis Search for text search
+            search_query = f'(@title:{query} | @description:{query})'
+            if creator_id:
+                search_query = f'({search_query}) @creator_id:{{{creator_id}}}'
             
-            while cursor != 0:
-                cursor, keys = self.client.scan(cursor=cursor, match=scan_pattern)
-                for key in keys:
-                    data = self.client.json().get(key)
-                    if data:
-                        # Basic text search in title and description
-                        title = str(data.get('title', '')).lower()
-                        description = str(data.get('description', '')).lower()
-                        if (query in title or query in description) and \
-                           (not creator_id or data.get('creator_id') == creator_id):
-                            record_id = key.split(':')[1]
-                            data['id'] = record_id
-                            records.append(data)
-                cursor = int(cursor)
+            try:
+                res = self.client.ft(self.INDEX_NAME).search(
+                    search_query,
+                    sort_by="created_at",
+                    sort_desc=True
+                )
+                
+                records = []
+                for doc in res.docs:
+                    data = json.loads(doc.json)
+                    data['id'] = doc.id.split(':')[1]
+                    records.append(data)
             
             return records
         except Exception as e:
@@ -126,13 +148,9 @@ class RedisDB:
         """Get a single record by ID"""
         try:
             key = f'record:{record_id}'
-            # Try JSON.GET first
-            try:
-                data = self.client.json().get(key)
-            except redis.exceptions.ResponseError:
-                # Fallback to regular GET and JSON parsing
-                data_str = self.client.get(key)
-                data = json.loads(data_str) if data_str else None
+            # Use regular GET and JSON parsing since RedisJSON is not available
+            data_str = self.client.get(key)
+            data = json.loads(data_str) if data_str else None
             
             if data:
                 data['id'] = record_id
@@ -165,19 +183,11 @@ class RedisDB:
             
             data = clean_dict(data)
             
-            # Try JSON.SET first
-            try:
-                success = bool(self.client.json().set(key, '$', data))
-                if not success:
-                    raise Exception("Redis JSON.SET returned False")
-                return True
-            except redis.exceptions.ResponseError as e:
-                current_app.logger.warning(f"JSON.SET failed, falling back to regular SET: {e}")
-                # Fallback to regular SET with JSON string
-                success = bool(self.client.set(key, json.dumps(data)))
-                if not success:
-                    raise Exception("Redis SET returned False")
-                return True
+            # Use regular SET with JSON string since RedisJSON is not available
+            success = bool(self.client.set(key, json.dumps(data)))
+            if not success:
+                raise Exception("Redis SET returned False")
+            return True
         except Exception as e:
             current_app.logger.error(f"Error saving record {record_id}: {e}")
             raise RuntimeError(f"Failed to save record: {str(e)}")
