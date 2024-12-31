@@ -88,7 +88,7 @@ class Contact:
         """Get all contacts"""
         contacts = []
         for key in Contact._get_redis().keys('contact:[0-9]*'):
-            contact_id = int(key.decode().split(':')[1])
+            contact_id = int(key.split(':')[1])
             contact = cls.get(contact_id)
             if contact:
                 contacts.append(contact)
