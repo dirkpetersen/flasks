@@ -32,25 +32,8 @@ class RedisDB:
         """Create search index if it doesn't exist"""
         try:
             self.client.ft(self.INDEX_NAME).info()
-        except redis.ResponseError:
-            # Create the index
-            schema = (
-                TextField("$.title", as_name="title"),
-                TextField("$.description", as_name="description"),
-                TagField("$.creator_id", as_name="creator_id"),
-                NumericField("$.created_at", as_name="created_at"),
-                NumericField("$.time_start", as_name="time_start"),
-                NumericField("$.time_end", as_name="time_end"),
-                TagField("$.active", as_name="active")
-            )
-            
-            self.client.ft(self.INDEX_NAME).create_index(
-                schema,
-                definition=IndexDefinition(
-                    prefix=["record:"],
-                    index_type=IndexType.JSON
-                )
-            )
+        except (redis.ResponseError, redis.exceptions.ModuleError):
+            current_app.logger.warning("Redis Search module not available - search functionality will be limited")
 
     def generate_work_id(self) -> str:
         """Generate a unique work ID based on pattern"""
@@ -66,46 +49,69 @@ class RedisDB:
     def get_all_records(self, creator_id: Optional[str] = None, 
                        page: int = 1, per_page: int = 10) -> Dict[str, Any]:
         """Get paginated records, optionally filtered by creator"""
-        query = "@creator_id:{}".format(creator_id) if creator_id else "*"
-        
         try:
-            result = self.client.ft(self.INDEX_NAME).search(
-                query,
-                sort_by="created_at",
-                sort_desc=True,
-                offset=(page-1)*per_page,
-                num=per_page
-            )
-            
+            # Fallback to scanning when search is not available
             records = []
-            for doc in result.docs:
-                record = json.loads(doc.json)
-                record['id'] = doc.id.split(':')[1]
-                records.append(record)
-                
+            total = 0
+            scan_pattern = "record:*"
+            cursor = "0"
+            
+            while cursor != 0:
+                cursor, keys = self.client.scan(cursor=cursor, match=scan_pattern)
+                for key in keys:
+                    data = self.client.json().get(key)
+                    if data:
+                        record_id = key.split(':')[1]
+                        if not creator_id or data.get('creator_id') == creator_id:
+                            data['id'] = record_id
+                            records.append(data)
+                            total += 1
+                cursor = int(cursor)
+            
+            # Sort records by created_at
+            records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
+            
+            # Apply pagination
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_records = records[start:end]
+            
             return {
-                'records': records,
-                'total': result.total,
-                'pages': (result.total + per_page - 1) // per_page
+                'records': paginated_records,
+                'total': total,
+                'pages': (total + per_page - 1) // per_page
             }
-        except redis.ResponseError:
+        except Exception as e:
+            current_app.logger.error(f"Error getting records: {e}")
             return {'records': [], 'total': 0, 'pages': 0}
 
     def search_records(self, query: str, creator_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Search records with optional creator filter"""
-        search_query = f'(@title|description:{query})'
-        if creator_id:
-            search_query += f' @creator_id:{creator_id}'
-            
         try:
-            result = self.client.ft(self.INDEX_NAME).search(search_query)
+            # Fallback to basic filtering when search is not available
             records = []
-            for doc in result.docs:
-                record = json.loads(doc.json)
-                record['id'] = doc.id.split(':')[1]
-                records.append(record)
+            scan_pattern = "record:*"
+            cursor = "0"
+            query = query.lower()
+            
+            while cursor != 0:
+                cursor, keys = self.client.scan(cursor=cursor, match=scan_pattern)
+                for key in keys:
+                    data = self.client.json().get(key)
+                    if data:
+                        # Basic text search in title and description
+                        title = str(data.get('title', '')).lower()
+                        description = str(data.get('description', '')).lower()
+                        if (query in title or query in description) and \
+                           (not creator_id or data.get('creator_id') == creator_id):
+                            record_id = key.split(':')[1]
+                            data['id'] = record_id
+                            records.append(data)
+                cursor = int(cursor)
+            
             return records
-        except redis.ResponseError:
+        except Exception as e:
+            current_app.logger.error(f"Error searching records: {e}")
             return []
 
     def get_record(self, record_id: str) -> Optional[Dict[str, Any]]:
