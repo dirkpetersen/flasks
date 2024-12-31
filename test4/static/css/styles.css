@@ -41,10 +41,18 @@ select[multiple] {
 }
 
 .list-group-item.active {
-    background-color: #e9ecef;
+    background-color: #f0f7ff;
     border-color: #dee2e6;
     border-left-color: #0d6efd;
     color: inherit;
+}
+
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Search Box */

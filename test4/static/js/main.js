@@ -147,17 +147,25 @@ const updateRecordsList = (records) => {
     recordsList.innerHTML = records.map(record => `
         <div class="list-group-item ${currentRecord?.id === record.id ? 'active' : ''}"
              onclick="loadRecord(${JSON.stringify(record).replace(/"/g, '&quot;')})">
-            <div class="d-flex w-100 justify-content-between">
-                <h5 class="mb-1">${record.title}</h5>
+            <div class="d-flex w-100 justify-content-between mb-1">
+                <div>
+                    <span class="fw-bold me-2">#${record.id}</span>
+                    <span class="text-primary">${record.title}</span>
+                </div>
                 <small>${formatDateTime(record.created_at)}</small>
             </div>
-            <p class="mb-1">${record.description || ''}</p>
-            <small>
-                <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'}">
-                    ${record.active ? 'Active' : 'Inactive'}
-                </span>
-                ${record.creator_id ? `<span class="ms-2">${record.creator_id}</span>` : ''}
-            </small>
+            <div class="d-flex w-100 justify-content-between mb-1">
+                <div class="small text-muted">
+                    ${record.time_start ? `Start: ${formatDateTime(record.time_start)}` : ''}
+                    ${record.time_end ? ` | End: ${formatDateTime(record.time_end)}` : ''}
+                </div>
+                <div>
+                    <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'}">
+                        ${record.active ? 'Active' : 'Inactive'}
+                    </span>
+                </div>
+            </div>
+            <p class="mb-0 small text-truncate-2">${record.description || ''}</p>
         </div>
     `).join('');
 };
