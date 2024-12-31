@@ -80,7 +80,8 @@ class RedisDB:
             try:
                 res = self.client.ft(self.INDEX_NAME).search(
                     query,
-                    sortby=("created_at", True),
+                    sort_by="created_at",
+                    sort_desc=True,
                     offset=(page - 1) * per_page,
                     num=per_page
                 )
@@ -129,7 +130,8 @@ class RedisDB:
             
             res = self.client.ft(self.INDEX_NAME).search(
                 search_query,
-                sortby=("created_at", True)
+                sort_by="created_at",
+                sort_desc=True
             )
             
             records = []
