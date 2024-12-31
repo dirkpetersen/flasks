@@ -5,8 +5,6 @@ import string
 import time
 from datetime import datetime
 import redis
-from redis.commands.search.field import TextField, NumericField, TagField
-from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from flask import current_app
 
 class RedisDB:
@@ -29,32 +27,6 @@ class RedisDB:
             )
             self._ensure_search_index()
 
-    def _ensure_search_index(self) -> None:
-        """Create search index if it doesn't exist"""
-        try:
-            # Try to get index info first
-            self.client.ft(self.INDEX_NAME).info()
-        except redis.ResponseError:
-            # Index doesn't exist, create it with auto-detected schema
-            try:
-                self.client.ft(self.INDEX_NAME).create_index(
-                    fields=[
-                        TextField("title"),
-                        TextField("description"),
-                        TagField("creator_id"),
-                        NumericField("created_at"),
-                        NumericField("time_start"),
-                        NumericField("time_end"),
-                        TagField("active")
-                    ],
-                    definition=IndexDefinition(
-                        prefix=["record:"],
-                        index_type=IndexType.JSON
-                    )
-                )
-                current_app.logger.info("Created Redis Search index with auto-detected schema")
-            except redis.ResponseError as e:
-                current_app.logger.error(f"Failed to create Redis Search index: {e}")
 
     def generate_work_id(self) -> str:
         """Generate a unique work ID based on pattern"""
@@ -149,10 +121,8 @@ class RedisDB:
         """Get a single record by ID"""
         try:
             key = f'record:{record_id}'
-            # Use regular GET and JSON parsing since RedisJSON is not available
-            data_str = self.client.get(key)
-            data = json.loads(data_str) if data_str else None
-            
+            # Use RedisJSON to get the data
+            data = self.client.json().get(key)
             if data:
                 data['id'] = record_id
                 return data
@@ -184,10 +154,10 @@ class RedisDB:
             
             data = clean_dict(data)
             
-            # Use regular SET with JSON string since RedisJSON is not available
-            success = bool(self.client.set(key, json.dumps(data)))
+            # Use RedisJSON to set the data
+            success = self.client.json().set(key, '$', data)
             if not success:
-                raise Exception("Redis SET returned False")
+                raise Exception("RedisJSON SET returned False")
             return True
         except Exception as e:
             current_app.logger.error(f"Error saving record {record_id}: {e}")
