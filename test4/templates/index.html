@@ -1,4 +1,97 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="row">
+    <!-- Form Column -->
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Work Record</h5>
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="resetForm()">
+                    <i class="bi bi-plus-circle"></i> New
+                </button>
+            </div>
+            <div class="card-body">
+                <form id="recordForm">
+                    <div class="mb-3">
+                        <label class="form-label">ID</label>
+                        <div class="fw-bold" id="recordId" data-new-id="true"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" required maxlength="100">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="time_start" class="form-label">Start Time</label>
+                            <input type="datetime-local" class="form-control" id="time_start" name="time_start">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="time_end" class="form-label">End Time</label>
+                            <input type="datetime-local" class="form-control" id="time_end" name="time_end">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="active" name="active" checked>
+                            <label class="form-check-label" for="active">Active</label>
+                        </div>
+                    </div>
+                    
+                    <div id="metaFields">
+                        <!-- Dynamic meta fields will be inserted here -->
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Record
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Records List Column -->
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Records</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="showAllRecords">
+                        <label class="form-check-label" for="showAllRecords">Show All Records</label>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" 
+                               placeholder="Search records...">
+                        <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="list-group list-group-flush" id="recordsList">
+                <!-- Records will be dynamically inserted here -->
+            </div>
+            <div class="card-footer">
+                <nav aria-label="Record navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                        <!-- Pagination will be dynamically inserted here -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
