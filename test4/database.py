@@ -20,10 +20,11 @@ class RedisDB:
 
     def __init__(self):
         if not hasattr(self, 'client'):
+            # Redis Search only works on DB 0
             self.client = redis.Redis(
                 host=current_app.config['REDIS_HOST'],
                 port=current_app.config['REDIS_PORT'],
-                db=current_app.config['REDIS_DB'],
+                db=0,  # Force DB 0 for Redis Search compatibility
                 decode_responses=True
             )
             self._ensure_search_index()
