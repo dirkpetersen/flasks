@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, render_template
 from http import HTTPStatus
 from typing import Tuple, Dict, Any, Union
 from ..models import Contact
