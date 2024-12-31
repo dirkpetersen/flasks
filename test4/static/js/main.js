@@ -75,16 +75,10 @@ const loadRecord = (record) => {
     Object.entries(metaFields).forEach(([fieldId, config]) => {
         const field = document.getElementById(fieldId);
         if (field && record.meta && record.meta[fieldId]) {
-            if (config.multiple) {
-                const values = Array.isArray(record.meta[fieldId]) 
-                    ? record.meta[fieldId] 
-                    : [record.meta[fieldId]];
-                Array.from(field.options).forEach(opt => {
-                    opt.selected = values.includes(opt.value);
-                });
-            } else {
-                field.value = record.meta[fieldId];
-            }
+            const values = Array.isArray(record.meta[fieldId])
+                ? record.meta[fieldId]
+                : [record.meta[fieldId]];
+            document.querySelector(`#${fieldId}`).setValue(values);
         }
     });
 };
@@ -284,12 +278,14 @@ const submitForm = async (event) => {
         Object.entries(metaFields).forEach(([fieldId, config]) => {
             const field = document.getElementById(fieldId);
             if (field) {
-                if (config.multiple) {
-                    formData.meta[fieldId] = Array.from(field.selectedOptions).map(opt => opt.value);
-                } else if (field.type === 'checkbox') {
-                    formData.meta[fieldId] = field.checked;
-                } else {
-                    formData.meta[fieldId] = field.value;
+                if (field) {
+                    if (config.multiple) {
+                        formData.meta[fieldId] = field.value;
+                    } else if (field.type === 'checkbox') {
+                        formData.meta[fieldId] = field.checked;
+                    } else {
+                        formData.meta[fieldId] = field.value;
+                    }
                 }
             }
         });
@@ -400,26 +396,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 const fieldDiv = document.createElement('div');
                 fieldDiv.className = 'mb-3';
-                if (config.multiple) {
-                    fieldDiv.innerHTML = `
-                        <label for="${fieldId}" class="form-label">${config.name}</label>
-                        <select class="form-select" id="${fieldId}" name="${fieldId}" multiple>
-                            ${config.options.map(opt => `
-                                <option value="${opt}">${opt}</option>
-                            `).join('')}
-                        </select>
-                    `;
-                } else {
-                    fieldDiv.innerHTML = `
-                        <label for="${fieldId}" class="form-label">${config.name}</label>
-                        <select class="form-select" id="${fieldId}" name="${fieldId}">
-                            <option value="">Select ${config.name}</option>
-                            ${config.options.map(opt => `
-                                <option value="${opt}">${opt}</option>
-                            `).join('')}
-                        </select>
-                    `;
-                }
+                fieldDiv.innerHTML = `
+                    <label for="${fieldId}" class="form-label">${config.name}</label>
+                    <div id="${fieldId}"></div>
+                `;
+                container.appendChild(fieldDiv);
+                
+                VirtualSelect.init({
+                    ele: `#${fieldId}`,
+                    options: config.options.map(opt => ({ label: opt, value: opt })),
+                    placeholder: `Select ${config.name}`,
+                    multiple: config.multiple,
+                    search: true,
+                    maxWidth: '100%',
+                    showSelectedOptionsFirst: true,
+                    hideClearButton: false,
+                    markSearchResults: true
+                });
                 container.appendChild(fieldDiv);
             });
         })

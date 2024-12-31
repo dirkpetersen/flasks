@@ -14,9 +14,23 @@ body {
     margin-bottom: 1rem;
 }
 
-/* Multi-select styling */
-select[multiple] {
-    height: 4rem !important;
+/* Virtual Select styling */
+.vscomp-wrapper {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+
+.vscomp-wrapper.has-focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
+}
+
+.vscomp-value {
+    padding: 0.375rem 0.75rem;
+}
+
+.vscomp-toggle-button {
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
 }
 
 .card-header {
