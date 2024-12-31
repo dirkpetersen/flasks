@@ -10,8 +10,6 @@ from flask import current_app
 
 class RedisDB:
     _instance = None
-    INDEX_NAME = "records-idx"
-
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -19,14 +17,12 @@ class RedisDB:
 
     def __init__(self):
         if not hasattr(self, 'client'):
-            # Redis Search only works on DB 0
             self.client = redis.Redis(
                 host=current_app.config['REDIS_HOST'],
                 port=current_app.config['REDIS_PORT'],
-                db=0,  # Force DB 0 for Redis Search compatibility
+                db=current_app.config.get('REDIS_DB', 0),
                 decode_responses=True
             )
-            self._ensure_search_index()
 
 
     def generate_work_id(self) -> str:
@@ -44,34 +40,25 @@ class RedisDB:
                        page: int = 1, per_page: int = 10) -> Dict[str, Any]:
         """Get paginated records, optionally filtered by creator"""
         try:
-            # Use Redis Search to get records
-            query = "*"
-            if creator_id:
-                query = f"@creator_id:{{{creator_id}}}"
+            # Get all records
+            keys = self.client.keys('record:*')
+            records = []
             
-            # Execute search with pagination
-            try:
-                res = self.client.ft(self.INDEX_NAME).search(
-                    query,
-                    sortby="created_at",
-                    desc=True,
-                    offset=(page - 1) * per_page,
-                    num=per_page
-                )
+            for key in keys:
+                data = self.client.json().get(key, Path.root_path())
+                if isinstance(data, list):
+                    data = data[0]
                 
-                records = []
-                for doc in res.docs:
-                    data = self.client.json().get(doc.id, Path.root_path())
-                    if isinstance(data, list):
-                        data = data[0]
-                    data['id'] = doc.id.split(':')[1]
-                    records.append(data)
-                
-                total = res.total
-            except redis.ResponseError as e:
-                current_app.logger.error(f"Search error: {e}")
-                records = []
-                total = 0
+                # Filter by creator_id if specified
+                if creator_id and data.get('creator_id') != creator_id:
+                    continue
+                    
+                data['id'] = key.split(':')[1]
+                records.append(data)
+            
+            # Sort by created_at
+            records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
+            total = len(records)
             
             # Debug logging
             current_app.logger.debug(f"Found {len(records)} total records")
@@ -98,43 +85,36 @@ class RedisDB:
     def search_records(self, query: str, creator_id: Optional[str] = None) -> List[Dict[str, Any]]:
         """Search records with improved JSON handling"""
         try:
-            # Escape special characters in query
-            escaped_query = query.replace('"', '\\"').replace("'", "\\'")
-            
-            # Build search query using JSON path syntax
-            search_parts = []
-            if query:
-                search_parts.append(f'(@title:"{escaped_query}" | @description:"{escaped_query}")')
-            if creator_id:
-                search_parts.append(f'@creator_id:{{{creator_id}}}')
-            
-            final_query = ' '.join(search_parts) if search_parts else '*'
-            
-            # Execute search with JSON-aware parameters
-            res = self.client.ft(self.INDEX_NAME).search(
-                final_query,
-                sortby="created_at",
-                desc=True
-            )
-            
-            # Process results maintaining JSON structure
+            # Get all records
+            keys = self.client.keys('record:*')
             records = []
-            for doc in res.docs:
+            
+            query = query.lower()
+            for key in keys:
                 try:
-                    # Handle both string and direct JSON responses
-                    if hasattr(doc, 'json'):
-                        data = self.client.json().get(doc.id, Path.root_path())
-                    else:
-                        data = doc.__dict__
-                    
+                    data = self.client.json().get(key, Path.root_path())
                     if isinstance(data, list):
                         data = data[0]
                     
-                    data['id'] = doc.id.split(':')[1]
+                    # Filter by creator_id if specified
+                    if creator_id and data.get('creator_id') != creator_id:
+                        continue
+                    
+                    # Simple text search in title and description
+                    if query:
+                        title = str(data.get('title', '')).lower()
+                        description = str(data.get('description', '')).lower()
+                        if query not in title and query not in description:
+                            continue
+                    
+                    data['id'] = key.split(':')[1]
                     records.append(data)
                 except Exception as e:
-                    current_app.logger.error(f"Error processing search result: {e}")
+                    current_app.logger.error(f"Error processing record {key}: {e}")
                     continue
+                    
+            # Sort by created_at
+            records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
             
             return records
         except Exception as e:
