@@ -26,12 +26,17 @@ class RedisDB:
 
     def get_record(self, record_id: str) -> Optional[Dict[str, Any]]:
         """Get a single record by ID"""
-        data = self.client.get(f'contact:{record_id}')
-        return json.loads(data) if data else None
+        data = self.client.hgetall(f'contact:{record_id}')
+        return data if data else None
 
     def save_record(self, record_id: str, data: Dict[str, Any]) -> bool:
         """Save or update a record"""
-        return self.client.set(f'contact:{record_id}', json.dumps(data))
+        key = f'contact:{record_id}'
+        try:
+            self.client.delete(key)  # Clear any existing data
+            return self.client.hset(key, mapping=data)
+        except Exception:
+            return False
 
     def delete_record(self, record_id: str) -> bool:
         """Delete a record"""
@@ -42,12 +47,12 @@ class RedisDB:
         all_records = self.get_all_records()
         matching_records = []
         
-        for record_id in all_records:
-            record = self.get_record(record_id.replace('contact:', ''))
+        for record_key in all_records:
+            record = self.client.hgetall(record_key)
             if record and all(
                 any(term.lower() in str(v).lower() for v in record.values())
                 for term in terms
             ):
-                matching_records.append(record_id)
+                matching_records.append(record_key)
         
         return matching_records
