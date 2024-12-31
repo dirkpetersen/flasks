@@ -28,7 +28,7 @@
                 <h2 id="formTitle">Create New Record</h2>
             </div>
             <div class="card-body">
-                <form id="recordForm" action="{{ url_for('save_record') }}" method="POST">
+                <form id="recordForm" action="{{ url_for('records.save_record') }}" method="POST">
                     <input type="hidden" id="record_id" name="record_id">
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
@@ -100,7 +100,7 @@
                                                 data-record-id="{{ record._id }}">
                                             Edit
                                         </button>
-                                        <a href="{{ url_for('delete_record', record_id=record._id) }}" 
+                                        <a href="{{ url_for('records.delete_record', record_id=record._id) }}" 
                                            class="btn btn-danger btn-sm delete-btn"
                                            onclick="return confirm('Are you sure you want to delete this record?')">
                                             Delete
