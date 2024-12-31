@@ -28,15 +28,14 @@ class RedisDB:
 
     def get_record(self, record_id: str) -> Optional[Dict[str, Any]]:
         """Get a single record by ID"""
-        data = self.client.hgetall(f'{table}:{record_id}')
-        return data if data else None
+        data = self.client.get(f'{table}:{record_id}')
+        return json.loads(data) if data else None
 
     def save_record(self, record_id: str, data: Dict[str, Any]) -> bool:
         """Save or update a record"""
         key = f'{table}:{record_id}'
         try:
-            self.client.delete(key)  # Clear any existing data
-            return self.client.hset(key, mapping=data)
+            return bool(self.client.set(key, json.dumps(data)))
         except Exception:
             return False
 
