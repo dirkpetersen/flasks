@@ -17,28 +17,8 @@ def create_app(config_class: type = Config) -> Flask:
 
     # Register blueprints
     app.register_blueprint(errors_bp)
-
-    # Register main routes
-    @app.route('/')
-    def index():
-        return render_template('index.html')
-
-    @app.route('/api/meta-fields')
-    def get_meta_fields():
-        return jsonify(app.config.get('META_FIELDS', {}))
-
-    @app.route('/api/new-id')
-    def get_new_id():
-        from test4.database import RedisDB
-        try:
-            db = RedisDB()
-            new_id = db.generate_work_id()
-            if not new_id:
-                raise ValueError("Failed to generate a valid ID")
-            return jsonify({'id': new_id})
-        except Exception as e:
-            app.logger.error(f"Error generating new ID: {e}", exc_info=True)
-            return jsonify({'error': str(e)}), 500
+    from .blueprints.work_id import work_id_bp
+    app.register_blueprint(work_id_bp)
 
     @app.errorhandler(Exception)
     def handle_error(error):
