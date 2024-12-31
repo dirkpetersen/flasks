@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 from .config import Config
 from .blueprints.errors import errors_bp
@@ -17,6 +17,11 @@ def create_app(config_class: type = Config) -> Flask:
 
     # Register blueprints
     app.register_blueprint(errors_bp)
+
+    # Register main routes
+    @app.route('/')
+    def index():
+        return render_template('index.html')
 
     return app
 
