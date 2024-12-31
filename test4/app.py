@@ -27,6 +27,12 @@ def create_app(config_class: type = Config) -> Flask:
     def get_meta_fields():
         return jsonify(app.config.get('META_FIELDS', {}))
 
+    @app.route('/api/new-id')
+    def get_new_id():
+        from .database import RedisDB
+        db = RedisDB()
+        return jsonify({'id': db.generate_work_id()})
+
     return app
 
 def get_ssl_context() -> Optional[Tuple[str, str]]:
