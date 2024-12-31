@@ -30,8 +30,10 @@ const showToast = (message, type = 'success') => {
 const resetForm = async () => {
     try {
         const response = await fetch('/api/new-id');
-        if (!response.ok) throw new Error('Failed to get new ID');
         const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Failed to get new ID');
+        }
         
         document.getElementById('recordForm').reset();
         document.getElementById('recordId').textContent = data.id;

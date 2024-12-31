@@ -30,13 +30,15 @@ def create_app(config_class: type = Config) -> Flask:
     @app.route('/api/new-id')
     def get_new_id():
         from test4.database import RedisDB
-        db = RedisDB()
         try:
+            db = RedisDB()
             new_id = db.generate_work_id()
+            if not new_id:
+                raise ValueError("Failed to generate a valid ID")
             return jsonify({'id': new_id})
         except Exception as e:
             app.logger.error(f"Error generating new ID: {e}")
-            return jsonify({'error': 'Failed to generate ID'}), 500
+            return jsonify({'error': str(e)}), 500
 
     return app
 
