@@ -141,25 +141,27 @@ const updateRecordsList = (records) => {
     recordsList.innerHTML = records.map(record => `
         <div class="list-group-item ${currentRecord?.id === record.id ? 'active' : ''}"
              onclick="loadRecord(${JSON.stringify(record).replace(/"/g, '&quot;')})">
-            <div class="d-flex w-100 justify-content-between mb-1">
-                <div>
-                    <span class="fw-bold me-2">#${record.id}</span>
-                    <span class="text-primary">${record.title}</span>
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <div class="overflow-hidden">
+                    <div class="d-flex align-items-center">
+                        <span class="fw-bold me-2">#${record.id}</span>
+                        <span class="text-primary text-truncate">${record.title}</span>
+                        <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'} ms-2">
+                            ${record.active ? 'Active' : 'Inactive'}
+                        </span>
+                    </div>
+                    <div class="small text-muted text-truncate">
+                        ${record.description || ''}
+                    </div>
                 </div>
-                <small>${formatDateTime(record.created_at)}</small>
+                <div class="text-end ms-2" style="min-width: 140px">
+                    <div class="small">${formatDateTime(record.created_at)}</div>
+                    <div class="small text-muted">
+                        ${record.time_start ? formatDateTime(record.time_start) : ''}
+                        ${record.time_end ? ' - ' + formatDateTime(record.time_end) : ''}
+                    </div>
+                </div>
             </div>
-            <div class="d-flex w-100 justify-content-between mb-1">
-                <div class="small text-muted">
-                    ${record.time_start ? `Start: ${formatDateTime(record.time_start)}` : ''}
-                    ${record.time_end ? ` | End: ${formatDateTime(record.time_end)}` : ''}
-                </div>
-                <div>
-                    <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'}">
-                        ${record.active ? 'Active' : 'Inactive'}
-                    </span>
-                </div>
-            </div>
-            <p class="mb-0 small text-truncate-2">${record.description || ''}</p>
         </div>
     `).join('');
 };

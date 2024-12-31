@@ -47,6 +47,7 @@ body {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     border-left: 3px solid transparent;
+    padding: 0.5rem 1rem;
 }
 
 .list-group-item:hover {
@@ -61,12 +62,13 @@ body {
     color: inherit;
 }
 
-.text-truncate-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.list-group-item .text-truncate {
+    max-width: 300px;
+}
+
+.list-group-item .badge {
+    font-size: 0.75em;
+    padding: 0.25em 0.5em;
 }
 
 /* Search Box */
