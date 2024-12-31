@@ -39,4 +39,41 @@ $(document).ready(function() {
 
     // Hide loading animation on page load
     $('#loading').fadeOut();
+
+    // Handle record click to load into editor
+    $('.record-row').click(function() {
+        const recordId = $(this).data('record-id');
+        $('#loading').fadeIn();
+        
+        $.get(`/get_record/${recordId}`)
+            .done(function(record) {
+                // Populate the name field
+                $('#name').val(record.name);
+                
+                // Populate select fields
+                Object.keys(record).forEach(key => {
+                    if (key !== 'name' && key !== 'created_at') {
+                        const $select = $(`#${key}`);
+                        if ($select.length) {
+                            if (Array.isArray(record[key])) {
+                                $select.val(record[key]).trigger('change');
+                            } else {
+                                $select.val(record[key]).trigger('change');
+                            }
+                        }
+                    }
+                });
+
+                // Scroll to form
+                $('html, body').animate({
+                    scrollTop: $("#createForm").offset().top - 20
+                }, 'slow');
+            })
+            .fail(function() {
+                alert('Failed to load record');
+            })
+            .always(function() {
+                $('#loading').fadeOut();
+            });
+    });
 });

@@ -70,6 +70,13 @@ def create_record():
     redis_client.set(record_id, json.dumps(processed_data))
     return redirect(url_for('index'))
 
+@app.route('/get_record/<record_id>')
+def get_record(record_id):
+    record = redis_client.get(f"record:{record_id}")
+    if record:
+        return jsonify(json.loads(record))
+    return jsonify({"error": "Record not found"}), 404
+
 @app.route('/delete/<record_id>')
 def delete_record(record_id):
     redis_client.delete(f"record:{record_id}")

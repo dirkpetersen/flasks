@@ -28,7 +28,7 @@
                 <h2>Create New Record</h2>
             </div>
             <div class="card-body">
-                <form action="{{ url_for('create_record') }}" method="POST">
+                <form id="createForm" action="{{ url_for('create_record') }}" method="POST">
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" id="name" name="name" required>
@@ -66,7 +66,7 @@
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
-                            <tr>
+                            <tr class="record-row" style="cursor: pointer;" data-record-id="{{ record._id }}">
                                 <th>Name</th>
                                 {% for field_id, field in meta_fields.items() %}
                                 <th>{{ field.name }}</th>
