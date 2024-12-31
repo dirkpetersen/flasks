@@ -2,7 +2,7 @@
 
 from typing import Optional, Tuple
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask_cors import CORS
 from .config import Config
 from .blueprints.errors import errors_bp
@@ -22,6 +22,10 @@ def create_app(config_class: type = Config) -> Flask:
     @app.route('/')
     def index():
         return render_template('index.html')
+
+    @app.route('/api/meta-fields')
+    def get_meta_fields():
+        return jsonify(app.config.get('META_FIELDS', {}))
 
     return app
 

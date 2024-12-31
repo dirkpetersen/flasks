@@ -324,7 +324,15 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(fields => {
             metaFields = fields;
             const container = document.getElementById('metaFields');
+            if (!fields) {
+                console.warn('No meta fields configuration received');
+                return;
+            }
             Object.entries(fields).forEach(([fieldId, config]) => {
+                if (!config || !config.options) {
+                    console.warn(`Invalid config for field ${fieldId}`);
+                    return;
+                }
                 const fieldDiv = document.createElement('div');
                 fieldDiv.className = 'mb-3';
                 if (config.multiple) {
