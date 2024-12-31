@@ -43,9 +43,12 @@ $(document).ready(function() {
     // Handle record click to load into editor
     $('.record-row').click(function() {
         const recordId = $(this).data('record-id');
+        console.log('Clicked record ID:', recordId);
         $('#loading').fadeIn();
         
         $.get(`/get_record/${recordId}`)
+            .done(function(record) {
+                console.log('Received record:', record);
             .done(function(record) {
                 // Populate the name field
                 $('#name').val(record.name);

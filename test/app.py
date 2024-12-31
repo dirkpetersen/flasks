@@ -73,9 +73,13 @@ def create_record():
 
 @app.route('/get_record/<record_id>')
 def get_record(record_id):
-    record = redis_client.get(f"record:{record_id}")
+    key = f"record:{record_id}"
+    print(f"Fetching record with key: {key}")
+    record = redis_client.get(key)
     if record:
+        print(f"Found record: {record}")
         return jsonify(json.loads(record))
+    print(f"Record not found for key: {key}")
     return jsonify({"error": "Record not found"}), 404
 
 @app.route('/delete/<record_id>')

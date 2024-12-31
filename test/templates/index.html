@@ -77,7 +77,7 @@
                         </thead>
                         <tbody>
                             {% for record in records %}
-                            <tr class="record-row" style="cursor: pointer;" data-record-id="{{ record._id }}">
+                            <tr class="record-row" style="cursor: pointer;" data-record-id="{{ record._id }}" onclick="console.log('Row clicked, ID:', '{{ record._id }}')">
                                 <td>{{ record.name }}</td>
                                 {% for field_id, field in meta_fields.items() %}
                                 <td>
