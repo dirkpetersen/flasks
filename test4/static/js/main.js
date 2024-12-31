@@ -234,6 +234,11 @@ const submitForm = async (event) => {
     submitButton.disabled = true;
     submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
 
+    // Set a timeout for the request
+    const timeout = 10000; // 10 seconds
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
     try {
         const formData = {
             id: document.getElementById('recordId').textContent,
@@ -273,7 +278,8 @@ const submitForm = async (event) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(formData),
+            signal: controller.signal
         });
 
         if (!response.ok) {
@@ -281,10 +287,12 @@ const submitForm = async (event) => {
             throw new Error(errorData.error || `Failed to save record: ${response.status} ${response.statusText}`);
         }
 
+        clearTimeout(timeoutId);
         showToast('Record saved successfully');
-        loadRecords(); // Refresh the list
-        if (isNewRecord) resetForm();
+        await loadRecords(); // Refresh the list
+        if (isNewRecord) await resetForm();
     } catch (error) {
+        clearTimeout(timeoutId);
         console.error('Form submission error:', error);
         showToast(error.message, 'danger');
     } finally {
