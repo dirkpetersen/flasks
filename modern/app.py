@@ -6,7 +6,7 @@ from flask import Flask
 from flask_cors import CORS
 from dotenv import load_dotenv
 
-from .extensions import db
+from .redis_store import init_redis
 from .routes.contacts import contacts_bp
 from .routes.errors import errors_bp
 from .config import Config
@@ -20,7 +20,7 @@ def create_app(config_class: type = Config) -> Flask:
     
     # Initialize extensions
     CORS(app)
-    db.init_app(app)
+    init_redis(app)
     
     # Register blueprints
     app.register_blueprint(contacts_bp)

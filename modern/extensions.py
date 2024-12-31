@@ -1,3 +1,1 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+# This file is kept for potential future extensions
