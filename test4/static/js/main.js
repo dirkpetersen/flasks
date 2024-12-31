@@ -319,7 +319,9 @@ const submitForm = async (event) => {
 };
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Start with a new record
+    await resetForm();
     // Initialize form submission
     document.getElementById('recordForm').addEventListener('submit', submitForm);
 
