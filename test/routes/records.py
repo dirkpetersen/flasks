@@ -3,8 +3,8 @@ from typing import Dict, Any, Optional
 import json
 from datetime import datetime
 import uuid
-from test.database import redis_client
-from test.utils import parse_meta_fields
+from ..database import redis_client
+from ..utils import parse_meta_fields
 
 records = Blueprint('records', __name__)
 
