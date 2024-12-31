@@ -44,15 +44,28 @@ class RedisDB:
 
     def search_records(self, terms: List[str]) -> List[str]:
         """Search records for all terms (AND operation)"""
-        all_records = self.get_all_records()
         matching_records = []
+        cursor = '0'
+        pattern = 'contact:*'
         
-        for record_key in all_records:
-            record = self.client.hgetall(record_key)
-            if record and all(
-                any(term.lower() in str(v).lower() for v in record.values())
-                for term in terms
-            ):
-                matching_records.append(record_key)
-        
+        while True:
+            cursor, keys = self.client.scan(cursor=cursor, match=pattern, count=100)
+            if keys:
+                # Use pipeline to get all records in batch
+                pipe = self.client.pipeline()
+                for key in keys:
+                    pipe.hgetall(key)
+                records = pipe.execute()
+                
+                # Check each record against search terms
+                for key, record in zip(keys, records):
+                    if record and all(
+                        any(term.lower() in str(v).lower() for v in record.values())
+                        for term in terms
+                    ):
+                        matching_records.append(key)
+            
+            if cursor == '0':
+                break
+                
         return matching_records
