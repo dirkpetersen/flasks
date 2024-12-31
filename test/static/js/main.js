@@ -50,7 +50,7 @@ $(document).ready(function() {
 
     // Handle record click to load into editor
     $('.record-row').click(function(e) {
-        e.preventDefault(); // Prevent any default behavior
+        e.preventDefault();
         const recordId = $(this).data('record-id');
         console.log('Clicked record ID:', recordId);
         
@@ -65,6 +65,9 @@ $(document).ready(function() {
             .done(function(record) {
                 console.log('Received record:', record);
                 
+                // Update form title
+                $('#formTitle').text('Edit Record');
+                
                 // Clear all form fields first
                 $('#recordForm')[0].reset();
                 $('#record_id').val(record._id);
@@ -78,16 +81,20 @@ $(document).ready(function() {
                     if (key !== 'name' && key !== 'created_at' && key !== '_id') {
                         const $select = $(`#${key}`);
                         if ($select.length) {
-                            // Handle both single and multiple select fields
-                            const value = record[key];
-                            $select.val(value).trigger('change');
+                            if (Array.isArray(record[key])) {
+                                // Handle multiple select fields
+                                $select.val(record[key]).trigger('change');
+                            } else {
+                                // Handle single select fields
+                                $select.val(record[key]).trigger('change');
+                            }
                         }
                     }
                 });
 
                 // Scroll to form
                 $('html, body').animate({
-                    scrollTop: $("#createForm").offset().top - 20
+                    scrollTop: $("#recordForm").offset().top - 20
                 }, 'slow');
             })
             .fail(function() {
