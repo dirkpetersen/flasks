@@ -334,9 +334,10 @@ const handleDateTimeChange = (type) => {
 
     const selectedDate = luxon.DateTime.fromISO(input.value);
     const today = luxon.DateTime.now().startOf('day');
+    const previousValue = input._previousValue;
     
-    // Only modify times if the selected date is different from today
-    if (!selectedDate.hasSame(today, 'day')) {
+    // Only modify times if the date was changed and there was no previous value
+    if (!selectedDate.hasSame(today, 'day') && !previousValue) {
         if (type === 'start') {
             // Set to beginning of day (00:00)
             input.value = selectedDate.startOf('day').toFormat("yyyy-MM-dd'T'HH:mm");
@@ -345,6 +346,9 @@ const handleDateTimeChange = (type) => {
             input.value = selectedDate.set({hour: 23, minute: 59}).toFormat("yyyy-MM-dd'T'HH:mm");
         }
     }
+    
+    // Store the current value for future reference
+    input._previousValue = input.value;
 };
 
 // Event Listeners
