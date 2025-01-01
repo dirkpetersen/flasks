@@ -286,10 +286,8 @@ const submitForm = async (event) => {
             id: document.getElementById('recordId').textContent,
             title: document.getElementById('title').value,
             description: document.getElementById('description').value,
-            time_start: document.getElementById('time_start').value ? 
-                luxon.DateTime.fromISO(document.getElementById('time_start').value).toUTC().toISO() : null,
-            time_end: document.getElementById('time_end').value ? 
-                luxon.DateTime.fromISO(document.getElementById('time_end').value).toUTC().toISO() : null,
+            time_start: document.getElementById('time_start').value || null,
+            time_end: document.getElementById('time_end').value || null,
             active: document.getElementById('active').checked,
             creator_id: document.getElementById('userIdInput').value,
             meta: {}
