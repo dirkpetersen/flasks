@@ -151,16 +151,25 @@ const updateRecordsList = (records) => {
                         <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'} ms-2">
                             ${record.active ? 'Active' : 'Inactive'}
                         </span>
-                        ${Object.keys(record.meta || {}).length > 0 ? `
-                            <span class="badge bg-info ms-2 metadata-badge" 
-                                  data-bs-toggle="tooltip" 
-                                  data-bs-html="true"
-                                  title="${Object.entries(record.meta || {}).map(([key, value]) => 
-                                    `<strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}`
-                                  ).join('<br>')}">
-                                Metadata
-                            </span>
-                        ` : ''}
+                        ${(() => {
+                            const nonEmptyMeta = Object.entries(record.meta || {})
+                                .filter(([_, value]) => {
+                                    if (Array.isArray(value)) return value.length > 0;
+                                    if (typeof value === 'boolean') return true;
+                                    return value !== null && value !== undefined && value !== '';
+                                });
+                            
+                            return nonEmptyMeta.length > 0 ? `
+                                <span class="badge bg-info ms-2 metadata-badge" 
+                                      data-bs-toggle="tooltip" 
+                                      data-bs-html="true"
+                                      title="${nonEmptyMeta.map(([key, value]) => 
+                                        `<strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}`
+                                      ).join('<br>')}">
+                                    Metadata
+                                </span>
+                            ` : '';
+                        })()}
                     </div>
                 </div>
                 <div class="text-end ms-2" style="min-width: 140px">
