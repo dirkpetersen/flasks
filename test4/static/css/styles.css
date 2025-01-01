@@ -25,9 +25,12 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(13,110,253,.25);
 }
 
+
+/*  j and g were cut off at the bottom, reduced the padding  */
 .vscomp-value {
-    padding: 0.375rem 0.75rem;
+    padding: 0.15rem 0.3rem;
 }
+
 
 .vscomp-toggle-button {
     padding: 0.375rem 2.25rem 0.375rem 0.75rem;
