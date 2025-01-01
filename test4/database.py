@@ -142,15 +142,21 @@ class RedisDB:
         """Save or update a record using RedisJSON paths"""
         key = f'record:{record_id}'
         try:
-            # Process timestamps
-            if 'created_at' not in data:
+            # Only set created_at for new records
+            if not self.client.exists(key):
                 data['created_at'] = int(datetime.utcnow().timestamp())
+            else:
+                # Remove created_at if it was sent in update
+                data.pop('created_at', None)
             
             # Convert ISO timestamps to UTC Unix timestamps
             for field in ['time_start', 'time_end']:
                 if data.get(field):
-                    # Parse ISO string to datetime, ensuring UTC
+                    # Parse ISO string to datetime
                     dt = datetime.fromisoformat(data[field].replace('Z', '+00:00'))
+                    # Ensure UTC
+                    if dt.tzinfo is None:
+                        dt = dt.replace(tzinfo=timezone.utc)
                     # Convert to UTC timestamp
                     data[field] = int(dt.timestamp())
             

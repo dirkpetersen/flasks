@@ -7,8 +7,8 @@ const formatDateTime = (timestamp) => {
     if (!timestamp) return '';
     return luxon.DateTime
         .fromSeconds(parseInt(timestamp))
-        .toUTC()
-        .toFormat("yyyy-MM-dd'T'HH:mm");
+        .setZone('local')
+        .toFormat("yyyy-MM-dd HH:mm");
 };
 
 const showToast = (message, type = 'success') => {
