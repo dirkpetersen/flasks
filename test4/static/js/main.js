@@ -140,6 +140,7 @@ const updateRecordsList = (records) => {
     }
 
     recordsList.innerHTML = records.map(record => `
+    
         <div class="list-group-item ${currentRecord?.id === record.id ? 'active' : ''}"
              onclick="loadRecord(${JSON.stringify(record).replace(/"/g, '&quot;')})">
             <div class="d-flex w-100 justify-content-between align-items-center">
@@ -150,11 +151,16 @@ const updateRecordsList = (records) => {
                         <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'} ms-2">
                             ${record.active ? 'Active' : 'Inactive'}
                         </span>
-                        <span class="small text-muted ms-2">
-                            ${Object.entries(record.meta || {}).map(([key, value]) => 
-                                `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
-                            ).join(' | ')}
-                        </span>
+                        ${Object.keys(record.meta || {}).length > 0 ? `
+                            <span class="badge bg-info ms-2 metadata-badge" 
+                                  data-bs-toggle="tooltip" 
+                                  data-bs-html="true"
+                                  title="${Object.entries(record.meta || {}).map(([key, value]) => 
+                                    `<strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}`
+                                  ).join('<br>')}">
+                                Metadata
+                            </span>
+                        ` : ''}
                     </div>
                 </div>
                 <div class="text-end ms-2" style="min-width: 140px">
@@ -166,6 +172,10 @@ const updateRecordsList = (records) => {
             </div>
         </div>
     `).join('');
+    
+    // Initialize tooltips
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
 };
 
 const updatePagination = (totalPages, currentPage) => {

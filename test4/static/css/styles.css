@@ -71,6 +71,15 @@ body {
     padding: 0.25em 0.5em;
 }
 
+.metadata-badge {
+    cursor: help;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+    text-align: left;
+}
+
 /* Search Box */
 .search-box {
     width: 300px;
