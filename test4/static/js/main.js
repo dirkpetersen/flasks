@@ -144,52 +144,50 @@ const updateRecordsList = (records) => {
     
         <div class="list-group-item ${currentRecord?.id === record.id ? 'active' : ''}"
              onclick="loadRecord(${JSON.stringify(record).replace(/"/g, '&quot;')})">
-            <div class="d-flex w-100 justify-content-between align-items-center">
-                <div class="overflow-hidden">
-                    <div class="d-flex align-items-center flex-wrap">
-                        <span class="fw-bold me-2">#${record.id}</span>
-                        <span class="text-primary text-truncate">${record.title}</span>
-                        <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'} ms-2">
-                            ${record.active ? 'Active' : 'Inactive'}
-                        </span>
-                        ${(() => {
-                            const nonEmptyMeta = Object.entries(record.meta || {})
-                                .filter(([_, value]) => {
-                                    if (Array.isArray(value)) return value.length > 0;
-                                    if (typeof value === 'boolean') return true;
-                                    return value !== null && value !== undefined && value !== '';
-                                });
-                            
-                            return nonEmptyMeta.length > 0 ? `
-                                <span class="badge bg-info ms-2 metadata-badge" 
-                                      data-bs-toggle="tooltip" 
-                                      data-bs-html="true"
-                                      title="${nonEmptyMeta.map(([key, value]) => 
-                                        `<strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}`
-                                      ).join('<br>')}">
-                                    Metadata
-                                </span>
-                            ` : '';
-                        })()}
-                        ${(record.time_start || record.time_end) ? `
-                        <span class="badge bg-brown-subtle text-dark ms-2 dates-badge" 
-                              data-bs-toggle="tooltip" 
-                              data-bs-html="true"
-                              title="${[
-                                ['Created', record.created_at],
-                                ['Modified', record.changed_at],
-                                ['Starts', record.time_start],
-                                ['Ends', record.time_end]
-                              ].filter(([_, time]) => time)
-                                .map(([label, time]) => 
-                                  `<strong>${label}:</strong> ${formatDateTime(time)}`
-                                ).join('<br>')}">
-                            Dates
-                        </span>
-                        ` : ''}
-                    </div>
+            <div class="record-header">
+                <span class="fw-bold">#${record.id}</span>
+                <span class="text-primary record-title">${record.title}</span>
+                <div class="record-badges">
+                    <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'}">
+                        ${record.active ? 'Active' : 'Inactive'}
+                    </span>
+                    ${(() => {
+                        const nonEmptyMeta = Object.entries(record.meta || {})
+                            .filter(([_, value]) => {
+                                if (Array.isArray(value)) return value.length > 0;
+                                if (typeof value === 'boolean') return true;
+                                return value !== null && value !== undefined && value !== '';
+                            });
+                        
+                        return nonEmptyMeta.length > 0 ? `
+                            <span class="badge bg-info metadata-badge" 
+                                  data-bs-toggle="tooltip" 
+                                  data-bs-html="true"
+                                  title="${nonEmptyMeta.map(([key, value]) => 
+                                    `<strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}`
+                                  ).join('<br>')}">
+                                Metadata
+                            </span>
+                        ` : '';
+                    })()}
+                    ${(record.time_start || record.time_end) ? `
+                    <span class="badge bg-brown-subtle text-dark dates-badge" 
+                          data-bs-toggle="tooltip" 
+                          data-bs-html="true"
+                          title="${[
+                            ['Created', record.created_at],
+                            ['Modified', record.changed_at],
+                            ['Starts', record.time_start],
+                            ['Ends', record.time_end]
+                          ].filter(([_, time]) => time)
+                            .map(([label, time]) => 
+                              `<strong>${label}:</strong> ${formatDateTime(time)}`
+                            ).join('<br>')}">
+                        Dates
+                    </span>
+                    ` : ''}
                 </div>
-                <div class="text-end ms-2" style="min-width: 140px">
+                <div class="record-date">
                     <div class="small text-muted text-nowrap">
                         ${formatDateTime(record.changed_at || record.created_at)}
                     </div>

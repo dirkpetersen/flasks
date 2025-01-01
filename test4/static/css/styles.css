@@ -62,8 +62,29 @@ body {
     color: inherit;
 }
 
-.list-group-item .text-truncate {
-    max-width: 300px;
+.record-header {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    gap: 0.5rem;
+}
+
+.record-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.record-badges {
+    flex-shrink: 0;
+}
+
+.record-date {
+    flex-shrink: 0;
+    min-width: 140px;
+    text-align: right;
 }
 
 .record-description {
