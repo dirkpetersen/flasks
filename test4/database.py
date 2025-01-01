@@ -144,12 +144,15 @@ class RedisDB:
         try:
             # Process timestamps
             if 'created_at' not in data:
-                data['created_at'] = int(time.time())
+                data['created_at'] = int(datetime.utcnow().timestamp())
             
-            # Convert ISO timestamps to Unix timestamps
+            # Convert ISO timestamps to UTC Unix timestamps
             for field in ['time_start', 'time_end']:
                 if data.get(field):
-                    data[field] = int(datetime.fromisoformat(data[field]).timestamp())
+                    # Parse ISO string to datetime, ensuring UTC
+                    dt = datetime.fromisoformat(data[field].replace('Z', '+00:00'))
+                    # Convert to UTC timestamp
+                    data[field] = int(dt.timestamp())
             
             # Initialize record if it doesn't exist
             if not self.client.exists(key):
