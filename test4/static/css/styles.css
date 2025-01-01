@@ -141,7 +141,7 @@ body {
 
 /* Column Splitter */
 .column-splitter {
-    width: 4px;
+    width: 8px;
     background-color: #e9ecef;
     cursor: col-resize;
     position: absolute;
