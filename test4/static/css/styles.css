@@ -139,6 +139,24 @@ body {
     background-color: #e6d5c5;
 }
 
+/* Column Splitter */
+.column-splitter {
+    width: 8px;
+    background-color: #e9ecef;
+    cursor: col-resize;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 41.666667%;
+    z-index: 100;
+    transition: background-color 0.2s;
+}
+
+.column-splitter:hover,
+.column-splitter.dragging {
+    background-color: #0d6efd;
+}
+
 /* Loading States */
 .loading {
     opacity: 0.7;
