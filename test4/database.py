@@ -3,7 +3,7 @@ import random
 import string
 import time
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 import redis
 from redis.commands.json.path import Path
 from flask import current_app
