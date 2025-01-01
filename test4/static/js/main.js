@@ -389,49 +389,8 @@ const handleDateTimeChange = (type) => {
 };
 
 // Event Listeners
-// Column splitter functionality
-const initSplitter = () => {
-    const splitter = document.getElementById('splitter');
-    const formColumn = document.getElementById('formColumn');
-    const listColumn = document.getElementById('listColumn');
-    let isDragging = false;
-    
-    const startDragging = (e) => {
-        isDragging = true;
-        splitter.classList.add('dragging');
-        document.addEventListener('mousemove', handleDrag);
-        document.addEventListener('mouseup', stopDragging);
-        e.preventDefault();
-    };
-    
-    const handleDrag = (e) => {
-        if (!isDragging) return;
-        
-        const containerWidth = splitter.parentElement.offsetWidth;
-        const newPosition = (e.clientX / containerWidth) * 100;
-        
-        // Limit the range (between 30% and 70%)
-        const limitedPosition = Math.min(Math.max(newPosition, 30), 70);
-        
-        formColumn.style.width = `${limitedPosition}%`;
-        listColumn.style.width = `${100 - limitedPosition}%`;
-        splitter.style.left = `${limitedPosition}%`;
-    };
-    
-    const stopDragging = () => {
-        isDragging = false;
-        splitter.classList.remove('dragging');
-        document.removeEventListener('mousemove', handleDrag);
-        document.removeEventListener('mouseup', stopDragging);
-    };
-    
-    splitter.addEventListener('mousedown', startDragging);
-};
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Initialize the splitter
-    initSplitter();
-    
     // Start with a new record
     await resetForm();
     // Initialize form submission
