@@ -477,7 +477,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     maxWidth: '100%',
                     showSelectedOptionsFirst: true,
                     hideClearButton: false,
-                    markSearchResults: true
+                    markSearchResults: true,
+                    usePassiveEventListener: true
                 });
                 container.appendChild(fieldDiv);
             });
