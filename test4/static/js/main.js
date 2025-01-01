@@ -172,7 +172,7 @@ const updateRecordsList = (records) => {
                             ` : '';
                         })()}
                         ${(record.time_start || record.time_end) ? `
-                        <span class="badge bg-warning-subtle text-dark ms-2 dates-badge" 
+                        <span class="badge bg-brown-subtle text-dark ms-2 dates-badge" 
                               data-bs-toggle="tooltip" 
                               data-bs-html="true"
                               title="${[
