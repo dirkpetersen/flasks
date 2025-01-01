@@ -157,10 +157,13 @@ const updateRecordsList = (records) => {
                 </div>
                 <div class="text-end ms-2" style="min-width: 140px">
                     <div class="small">${formatDateTime(record.created_at)}</div>
-                    <div class="small text-muted">
-                        ${record.time_start ? formatDateTime(record.time_start) : ''}
-                        ${record.time_end ? ' - ' + formatDateTime(record.time_end) : ''}
-                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="small text-muted text-truncate me-2">
+                    ${Object.entries(record.meta || {}).map(([key, value]) => 
+                        `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
+                    ).join(' | ')}
                 </div>
             </div>
         </div>
