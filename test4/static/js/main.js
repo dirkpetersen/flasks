@@ -171,7 +171,8 @@ const updateRecordsList = (records) => {
                                 </span>
                             ` : '';
                         })()}
-                        <span class="badge bg-secondary ms-2 dates-badge" 
+                        ${(record.time_start || record.time_end) ? `
+                        <span class="badge bg-warning-subtle text-dark ms-2 dates-badge" 
                               data-bs-toggle="tooltip" 
                               data-bs-html="true"
                               title="${[
@@ -185,6 +186,7 @@ const updateRecordsList = (records) => {
                                 ).join('<br>')}">
                             Dates
                         </span>
+                        ` : ''}
                     </div>
                 </div>
                 <div class="text-end ms-2" style="min-width: 140px">
