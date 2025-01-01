@@ -190,13 +190,12 @@ const updateRecordsList = (records) => {
                     </div>
                 </div>
                 <div class="text-end ms-2" style="min-width: 140px">
-                    <div class="small">
-                        <div>Modified: ${formatDateTime(record.changed_at || record.created_at)}</div>
-                        <div class="text-muted">Created: ${formatDateTime(record.created_at)}</div>
+                    <div class="small text-muted text-nowrap">
+                        ${formatDateTime(record.changed_at || record.created_at)}
                     </div>
                 </div>
             </div>
-            <div class="small text-muted mt-1 record-description">
+            <div class="small text-muted mt-1 record-description text-nowrap">
                 ${record.description || ''}
             </div>
         </div>
