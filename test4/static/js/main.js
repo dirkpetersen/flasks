@@ -176,8 +176,8 @@ const updateRecordsList = (records) => {
                     <div class="small">${formatDateTime(record.created_at)}</div>
                 </div>
             </div>
-            <div class="small text-muted mt-1">
-                ${record.description ? record.description.slice(0, 120) + (record.description.length > 120 ? '...' : '') : ''}
+            <div class="small text-muted mt-1 record-description">
+                ${record.description || ''}
             </div>
         </div>
     `).join('');

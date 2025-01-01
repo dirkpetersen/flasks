@@ -66,6 +66,21 @@ body {
     max-width: 300px;
 }
 
+.record-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.5;
+    max-height: 1.5em;
+}
+
+@media (max-width: 768px) {
+    .record-description {
+        max-width: 200px;
+    }
+}
+
 .list-group-item .badge {
     font-size: 0.75em;
     padding: 0.25em 0.5em;
