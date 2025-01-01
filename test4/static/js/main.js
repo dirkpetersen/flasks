@@ -5,11 +5,11 @@ let metaFields = {};
 // Utility functions
 const formatDateTime = (timestamp) => {
     if (!timestamp) return '';
-    // Convert UTC timestamp to local time
+    // Convert UTC timestamp to local time with locale-aware format
     return luxon.DateTime
         .fromSeconds(parseInt(timestamp))
         .toLocal()
-        .toFormat("yyyy-MM-dd HH:mm");
+        .toLocaleString(luxon.DateTime.DATETIME_SHORT);
 };
 
 const showToast = (message, type = 'success') => {
@@ -174,7 +174,10 @@ const updateRecordsList = (records) => {
                     </div>
                 </div>
                 <div class="text-end ms-2" style="min-width: 140px">
-                    <div class="small">${formatDateTime(record.created_at)}</div>
+                    <div class="small">
+                        <div>Modified: ${formatDateTime(record.changed_at || record.created_at)}</div>
+                        <div class="text-muted">Created: ${formatDateTime(record.created_at)}</div>
+                    </div>
                 </div>
             </div>
             <div class="small text-muted mt-1 record-description">

@@ -57,8 +57,8 @@ class RedisDB:
                 data['id'] = key.split(':')[1]
                 records.append(data)
             
-            # Sort by created_at
-            records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
+            # Sort by changed_at, falling back to created_at
+            records.sort(key=lambda x: x.get('changed_at', x.get('created_at', 0)), reverse=True)
             total = len(records)
             
             # Debug logging
@@ -144,11 +144,15 @@ class RedisDB:
         try:
             # Only set created_at for new records
             if not self.client.exists(key):
-                # Store UTC timestamp without timezone offset
-                data['created_at'] = int(datetime.now(timezone.utc).timestamp())
+                # Store UTC timestamp without timezone offset for new records
+                now = datetime.now(timezone.utc)
+                data['created_at'] = int(now.timestamp())
+                data['changed_at'] = int(now.timestamp())
             else:
                 # Remove created_at if it was sent in update
                 data.pop('created_at', None)
+                # Always update changed_at on modifications
+                data['changed_at'] = int(datetime.now(timezone.utc).timestamp())
             
             # Convert ISO timestamps to UTC Unix timestamps
             for field in ['time_start', 'time_end']:
