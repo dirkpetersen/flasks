@@ -144,7 +144,8 @@ class RedisDB:
         try:
             # Only set created_at for new records
             if not self.client.exists(key):
-                data['created_at'] = int(datetime.utcnow().timestamp())
+                # Store UTC timestamp without timezone offset
+                data['created_at'] = int(datetime.now(timezone.utc).timestamp())
             else:
                 # Remove created_at if it was sent in update
                 data.pop('created_at', None)

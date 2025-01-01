@@ -5,9 +5,10 @@ let metaFields = {};
 // Utility functions
 const formatDateTime = (timestamp) => {
     if (!timestamp) return '';
+    // Convert UTC timestamp to local time
     return luxon.DateTime
         .fromSeconds(parseInt(timestamp))
-        .setZone('local')
+        .toLocal()
         .toFormat("yyyy-MM-dd HH:mm");
 };
 
