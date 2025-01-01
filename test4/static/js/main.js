@@ -144,27 +144,25 @@ const updateRecordsList = (records) => {
              onclick="loadRecord(${JSON.stringify(record).replace(/"/g, '&quot;')})">
             <div class="d-flex w-100 justify-content-between align-items-center">
                 <div class="overflow-hidden">
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center flex-wrap">
                         <span class="fw-bold me-2">#${record.id}</span>
                         <span class="text-primary text-truncate">${record.title}</span>
                         <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'} ms-2">
                             ${record.active ? 'Active' : 'Inactive'}
                         </span>
-                    </div>
-                    <div class="small text-muted text-truncate">
-                        ${record.description || ''}
+                        <span class="small text-muted ms-2">
+                            ${Object.entries(record.meta || {}).map(([key, value]) => 
+                                `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
+                            ).join(' | ')}
+                        </span>
                     </div>
                 </div>
                 <div class="text-end ms-2" style="min-width: 140px">
                     <div class="small">${formatDateTime(record.created_at)}</div>
                 </div>
             </div>
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="small text-muted text-truncate me-2">
-                    ${Object.entries(record.meta || {}).map(([key, value]) => 
-                        `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
-                    ).join(' | ')}
-                </div>
+            <div class="small text-muted mt-1">
+                ${record.description || ''}
             </div>
         </div>
     `).join('');
