@@ -171,6 +171,20 @@ const updateRecordsList = (records) => {
                                 </span>
                             ` : '';
                         })()}
+                        <span class="badge bg-secondary ms-2 dates-badge" 
+                              data-bs-toggle="tooltip" 
+                              data-bs-html="true"
+                              title="${[
+                                ['Created', record.created_at],
+                                ['Modified', record.changed_at],
+                                ['Starts', record.time_start],
+                                ['Ends', record.time_end]
+                              ].filter(([_, time]) => time)
+                                .map(([label, time]) => 
+                                  `<strong>${label}:</strong> ${formatDateTime(time)}`
+                                ).join('<br>')}">
+                            Dates
+                        </span>
                     </div>
                 </div>
                 <div class="text-end ms-2" style="min-width: 140px">
