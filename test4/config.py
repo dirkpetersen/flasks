@@ -21,6 +21,7 @@ def parse_meta_fields() -> Dict[str, List[str]]:
 
 class Config:
     """Application configuration class"""
+    APP_NAME = os.getenv('APP_NAME', 'Work-ID')
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-key-please-change')
     REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
     REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
