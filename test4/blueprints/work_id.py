@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, render_template, jsonify, request, current_app
 from test4.database import RedisDB
 
 work_id_bp = Blueprint('work_id', __name__)
@@ -64,7 +64,7 @@ def search_records():
 
 @work_id_bp.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', app_name=current_app.config['APP_NAME'])
 
 @work_id_bp.route('/api/meta-fields')
 def get_meta_fields():
