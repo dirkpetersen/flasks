@@ -32,11 +32,11 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="time_start" class="form-label">Start Time</label>
-                            <input type="datetime-local" class="form-control" id="time_start" name="time_start">
+                            <input type="datetime-local" class="form-control" id="time_start" name="time_start" onchange="handleDateTimeChange('start')">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="time_end" class="form-label">End Time</label>
-                            <input type="datetime-local" class="form-control" id="time_end" name="time_end">
+                            <input type="datetime-local" class="form-control" id="time_end" name="time_end" onchange="handleDateTimeChange('end')">
                         </div>
                     </div>
                     

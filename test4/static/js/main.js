@@ -327,6 +327,26 @@ const submitForm = async (event) => {
     }
 };
 
+// Date handling functions
+const handleDateTimeChange = (type) => {
+    const input = document.getElementById(`time_${type}`);
+    if (!input.value) return;
+
+    const selectedDate = luxon.DateTime.fromISO(input.value);
+    const today = luxon.DateTime.now().startOf('day');
+    
+    // Only modify times if the selected date is different from today
+    if (!selectedDate.hasSame(today, 'day')) {
+        if (type === 'start') {
+            // Set to beginning of day (00:00)
+            input.value = selectedDate.startOf('day').toFormat("yyyy-MM-dd'T'HH:mm");
+        } else if (type === 'end') {
+            // Set to end of day (23:59)
+            input.value = selectedDate.set({hour: 23, minute: 59}).toFormat("yyyy-MM-dd'T'HH:mm");
+        }
+    }
+};
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', async () => {
     // Start with a new record
