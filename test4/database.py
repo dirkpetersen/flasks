@@ -188,16 +188,14 @@ class RedisDB:
                 # Always update changed_at on modifications
                 data['changed_at'] = int(datetime.now(timezone.utc).timestamp())
             
-            # Convert ISO timestamps to UTC Unix timestamps
+            # Handle time fields - they should already be UTC timestamps from frontend
             for field in ['time_start', 'time_end']:
                 if data.get(field):
-                    # Parse ISO string to datetime
-                    dt = datetime.fromisoformat(data[field].replace('Z', '+00:00'))
-                    # Ensure UTC
-                    if dt.tzinfo is None:
-                        dt = dt.replace(tzinfo=timezone.utc)
-                    # Convert to UTC timestamp
-                    data[field] = int(dt.timestamp())
+                    # Ensure the value is an integer
+                    try:
+                        data[field] = int(data[field])
+                    except (TypeError, ValueError) as e:
+                        raise ValueError(f"Invalid timestamp for {field}: {data[field]}")
             
             # Initialize record if it doesn't exist
             if not self.client.exists(key):
