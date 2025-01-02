@@ -145,7 +145,7 @@ const updateRecordsList = (records) => {
         <div class="list-group-item ${currentRecord?.id === record.id ? 'active' : ''}"
              onclick="loadRecord(${JSON.stringify(record).replace(/"/g, '&quot;')})">
             <div class="record-header">
-                <span class="fw-bold">#${record.id}</span>
+                <span class="fw-bold">${record.id}</span>
                 <span class="text-primary record-title">${record.title}</span>
                 <div class="record-badges">
                     <span class="badge ${record.active ? 'bg-success' : 'bg-secondary'}">
