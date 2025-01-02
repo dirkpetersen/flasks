@@ -261,7 +261,7 @@ const updatePagination = (totalPages, currentPage) => {
 // Search functionality
 const searchRecords = async () => {
     const userId = document.getElementById('userIdInput').value;
-    let query = document.getElementById('searchInput').value;
+    let query = document.getElementById('searchInput').value.trim();
     const showAll = document.getElementById('showAllRecords').checked;
 
     if (!userId) {
@@ -273,8 +273,8 @@ const searchRecords = async () => {
         return;
     }
 
-    // Preserve quotes in the query
-    query = query.replace(/"/g, '%22').replace(/'/g, '%27');
+    // Preserve both single and double quotes in the query
+    query = encodeURIComponent(query);
 
     try {
         const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&show_all=${showAll}&user_id=${userId}`);

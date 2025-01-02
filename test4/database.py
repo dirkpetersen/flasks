@@ -84,13 +84,44 @@ class RedisDB:
             return {'records': [], 'total': 0, 'pages': 0}
 
     def search_records(self, query: str, creator_id: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Search records with improved JSON handling"""
+        """Search records with Boolean AND and quoted string support"""
         try:
             # Get all records
             keys = self.client.keys('record:*')
             records = []
             
-            query = query.lower()
+            # Parse search terms, respecting quotes
+            terms = []
+            current_term = []
+            in_quotes = False
+            quote_char = None
+            
+            # Split query into terms, preserving quoted strings
+            for char in query:
+                if char in ['"', "'"]:
+                    if not in_quotes:
+                        in_quotes = True
+                        quote_char = char
+                    elif quote_char == char:
+                        in_quotes = False
+                        if current_term:
+                            terms.append(''.join(current_term).lower())
+                            current_term = []
+                    else:
+                        current_term.append(char)
+                elif char.isspace() and not in_quotes:
+                    if current_term:
+                        terms.append(''.join(current_term).lower())
+                        current_term = []
+                else:
+                    current_term.append(char)
+            
+            if current_term:
+                terms.append(''.join(current_term).lower())
+            
+            # Remove empty terms
+            terms = [term for term in terms if term]
+            
             for key in keys:
                 try:
                     data = self.client.json().get(key, Path.root_path())
@@ -101,11 +132,14 @@ class RedisDB:
                     if creator_id and data.get('creator_id') != creator_id:
                         continue
                     
-                    # Simple text search in title and description
-                    if query:
+                    # Boolean AND search in title and description
+                    if terms:
                         title = str(data.get('title', '')).lower()
                         description = str(data.get('description', '')).lower()
-                        if query not in title and query not in description:
+                        searchable_text = f"{title} {description}"
+                        
+                        # All terms must match for the record to be included
+                        if not all(term in searchable_text for term in terms):
                             continue
                     
                     data['id'] = key.split(':')[1]
