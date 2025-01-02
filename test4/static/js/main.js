@@ -273,8 +273,8 @@ const searchRecords = async () => {
         return;
     }
 
-    // Preserve both single and double quotes in the query
-    query = encodeURIComponent(query);
+    // No need to encode here since fetch will encode the URL parameters
+    // Just pass the raw query string
 
     try {
         const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&show_all=${showAll}&user_id=${userId}`);

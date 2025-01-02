@@ -51,7 +51,9 @@ def update_record(record_id):
 @work_id_bp.route('/api/search')
 def search_records():
     db = RedisDB()
-    query = request.args.get('q', '')
+    # Decode the query parameter since it may be URL encoded
+    query = request.args.get('q', '', type=str)
+    query = query.strip()
     show_all = request.args.get('show_all', 'false').lower() == 'true'
     user_id = request.args.get('user_id')
     
