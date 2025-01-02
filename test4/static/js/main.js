@@ -3,13 +3,15 @@ let currentRecord = null;
 let metaFields = {};
 
 // Utility functions
-const formatDateTime = (timestamp) => {
+const formatDateTime = (timestamp, forInput = false) => {
     if (!timestamp) return '';
-    // Convert UTC timestamp to local time with locale-aware format
-    return luxon.DateTime
-        .fromSeconds(parseInt(timestamp))
-        .toLocal()
-        .toLocaleString(luxon.DateTime.DATETIME_SHORT);
+    const dt = luxon.DateTime.fromSeconds(parseInt(timestamp)).toLocal();
+    if (forInput) {
+        // Format for datetime-local input: "yyyy-MM-ddTHH:mm"
+        return dt.toFormat("yyyy-MM-dd'T'HH:mm");
+    }
+    // Format for display
+    return dt.toLocaleString(luxon.DateTime.DATETIME_SHORT);
 };
 
 const showToast = (message, type = 'success') => {
@@ -69,8 +71,8 @@ const loadRecord = (record) => {
     document.getElementById('recordId').setAttribute('data-new-id', 'false');
     document.getElementById('title').value = record.title || '';
     document.getElementById('description').value = record.description || '';
-    document.getElementById('time_start').value = formatDateTime(record.time_start);
-    document.getElementById('time_end').value = formatDateTime(record.time_end);
+    document.getElementById('time_start').value = formatDateTime(record.time_start, true);
+    document.getElementById('time_end').value = formatDateTime(record.time_end, true);
     document.getElementById('active').checked = record.active !== false;
 
     // Load meta fields
