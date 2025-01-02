@@ -28,7 +28,7 @@ class Config:
     REDIS_DB = int(os.getenv('REDIS_DB', 0))
     JSON_SORT_KEYS = False
     JSON_AS_ASCII = False
-    
+        
     # Work ID Pattern
     WORK_ID_PATTERN = os.getenv('WORK_ID_PATTERN', 'XXXX-XXXX')
     
