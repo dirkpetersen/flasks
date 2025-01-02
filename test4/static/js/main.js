@@ -471,10 +471,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const fieldDiv = document.createElement('div');
                 fieldDiv.className = 'mb-3';
                 fieldDiv.innerHTML = `
-                    <label for="${fieldId}" class="form-label">${config.name}</label>
-                    <div id="${fieldId}"></div>
+                    <div id="${fieldId}" 
+                         data-bs-toggle="tooltip" 
+                         data-bs-placement="top" 
+                         title="${config.name}">
+                    </div>
                 `;
                 container.appendChild(fieldDiv);
+                
+                // Initialize tooltip for the field
+                new bootstrap.Tooltip(fieldDiv);
                 
                 VirtualSelect.init({
                     ele: `#${fieldId}`,
