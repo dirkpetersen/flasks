@@ -107,7 +107,7 @@ const loadRecords = async (page = 1) => {
         const response = await fetch(`/api/records?page=${page}&show_all=${showAll}&user_id=${userId}`);
         if (!response.ok) throw new Error('Failed to load records');
         const data = await response.json();
-        console.log('Received records data:', data);
+        // console.log('Received records data:', data);
         if (!data.records) {
             console.error('No records array in response:', data);
             throw new Error('Invalid response format');
@@ -123,7 +123,7 @@ const loadRecords = async (page = 1) => {
 const updateRecordsList = (records) => {
     const recordsList = document.getElementById('recordsList');
     
-    console.log('Updating records list with:', records);
+    // console.log('Updating records list with:', records);
     
     if (!Array.isArray(records)) {
         console.error('Records is not an array:', records);
