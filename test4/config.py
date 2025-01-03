@@ -42,7 +42,7 @@ class Config:
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'False').lower() == 'true'
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'noreply@localhost')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'peterdir+ses@oregonstate.edu')
     
     # Meta fields
     META_FIELDS = parse_meta_fields()
