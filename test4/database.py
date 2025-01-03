@@ -8,6 +8,8 @@ import redis
 from redis.commands.json.path import Path
 from flask import current_app
 
+records_per_page = 6
+
 class RedisDB:
     _instance = None
     def __new__(cls):
@@ -38,7 +40,7 @@ class RedisDB:
                 return work_id
 
     def get_all_records(self, creator_id: Optional[str] = None, 
-                       page: int = 1, per_page: int = 6) -> Dict[str, Any]:
+                       page: int = 1, per_page: int = records_per_page) -> Dict[str, Any]:
         """Get paginated records, optionally filtered by creator"""
         try:
             # Get all records
@@ -151,8 +153,8 @@ class RedisDB:
             # Sort by created_at
             records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
             
-            # Return only the first 6 records
-            return records[:6]
+            # Return only the first N records
+            return records[:records_per_page]
         except Exception as e:
             current_app.logger.error(f"Error searching records: {e}")
             return []
