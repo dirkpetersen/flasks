@@ -44,6 +44,7 @@ const resetForm = async () => {
         document.getElementById('recordId').textContent = data.id;
         document.getElementById('recordId').setAttribute('data-new-id', 'true');
         currentRecord = null;
+        document.getElementById('public').checked = true;
         
         // Reset meta fields
         const metaFieldsContainer = document.getElementById('metaFields');
