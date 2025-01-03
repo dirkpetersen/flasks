@@ -42,3 +42,4 @@ class Config:
     
     # Meta fields
     META_FIELDS = parse_meta_fields()
+    print(META_FIELDS)

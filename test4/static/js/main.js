@@ -458,6 +458,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return response.json();
         })
         .then(fields => {
+            console.warn(`fields ${fields}`);
             metaFields = fields;
             const container = document.getElementById('metaFields');
             if (!fields) {
@@ -468,7 +469,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (!config || !config.options) {
                     console.warn(`Invalid config for field ${fieldId}`);
                     return;
-                }
+                }                
                 const fieldDiv = document.createElement('div');
                 fieldDiv.className = 'mb-3';
                 fieldDiv.innerHTML = `
