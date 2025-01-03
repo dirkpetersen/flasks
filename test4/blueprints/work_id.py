@@ -1,6 +1,10 @@
-from flask import Blueprint, render_template, jsonify, request, current_app
+from flask import Blueprint, render_template, jsonify, request, current_app, redirect, url_for
 from test4.database import RedisDB
 from test4.utils import local_only
+from test4.email_verification import (
+    validate_email_address, generate_token, verify_token,
+    send_verification_email, store_identity, get_identity
+)
 
 work_id_bp = Blueprint('work_id', __name__)
 
@@ -72,7 +76,57 @@ def search_records():
 
 @work_id_bp.route('/')
 def index():
+    email = request.cookies.get('creatorId')
+    if not email or not get_identity(email):
+        return redirect(url_for('work_id.verify_email'))
     return render_template('index.html', app_name=current_app.config['APP_NAME'])
+
+@work_id_bp.route('/verify')
+def verify_email():
+    return render_template('verify_email.html', app_name=current_app.config['APP_NAME'])
+
+@work_id_bp.route('/api/verify-email', methods=['POST'])
+@local_only
+def initiate_verification():
+    data = request.get_json()
+    email = data.get('email')
+    
+    if not email:
+        return jsonify({'error': 'Email is required'}), 400
+        
+    valid, normalized_email = validate_email_address(email)
+    if not valid:
+        return jsonify({'error': normalized_email}), 400
+    
+    # Generate verification token
+    token = generate_token(normalized_email)
+    
+    # Store unverified identity
+    store_identity(normalized_email, verified=False)
+    
+    # Send verification email
+    if not send_verification_email(normalized_email, token):
+        return jsonify({'error': 'Failed to send verification email'}), 500
+        
+    return jsonify({'message': 'Verification email sent'})
+
+@work_id_bp.route('/verify/<token>')
+def verify_email_token(token):
+    email = verify_token(token)
+    if not email:
+        return render_template('verify_email.html', 
+                             error='Invalid or expired verification link',
+                             app_name=current_app.config['APP_NAME'])
+    
+    # Update identity as verified
+    if not store_identity(email, verified=True):
+        return render_template('verify_email.html',
+                             error='Failed to verify email',
+                             app_name=current_app.config['APP_NAME'])
+    
+    response = redirect(url_for('work_id.index'))
+    response.set_cookie('creatorId', email, max_age=30*24*60*60)  # 30 days
+    return response
 
 @work_id_bp.route('/api/meta-fields')
 @local_only

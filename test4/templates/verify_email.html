@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h4 class="mb-0">Email Verification Required</h4>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">
+                        Please enter your main work email address. We will send you two emails:
+                        <ol>
+                            <li>First to confirm you accept receiving emails from Amazon Simple Email Service</li>
+                            <li>Then a verification link to confirm your identity for {{ app_name }}</li>
+                        </ol>
+                    </p>
+                    <form id="verifyEmailForm">
+                        <div class="mb-3">
+                            <input type="email" class="form-control" id="emailInput" 
+                                   placeholder="Enter your work email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-envelope"></i> Send Verification Email
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('verifyEmailForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('emailInput').value;
+    const submitBtn = e.target.querySelector('button');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+    
+    try {
+        const response = await fetch('/api/verify-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email })
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Failed to send verification email');
+        
+        // Show success message
+        e.target.innerHTML = `
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle me-2"></i>
+                Please check your email for verification instructions.
+            </div>
+        `;
+    } catch (error) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="bi bi-envelope"></i> Send Verification Email';
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger mt-3';
+        errorDiv.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>${error.message}`;
+        e.target.appendChild(errorDiv);
+    }
+});
+</script>
+{% endblock %}
