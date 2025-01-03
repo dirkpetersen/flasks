@@ -38,7 +38,7 @@ class RedisDB:
                 return work_id
 
     def get_all_records(self, creator_id: Optional[str] = None, 
-                       page: int = 1, per_page: int = 5) -> Dict[str, Any]:
+                       page: int = 1, per_page: int = 6) -> Dict[str, Any]:
         """Get paginated records, optionally filtered by creator"""
         try:
             # Get all records
@@ -151,8 +151,8 @@ class RedisDB:
             # Sort by created_at
             records.sort(key=lambda x: x.get('created_at', 0), reverse=True)
             
-            # Return only the first 5 records
-            return records[:5]
+            # Return only the first 6 records
+            return records[:6]
         except Exception as e:
             current_app.logger.error(f"Error searching records: {e}")
             return []
