@@ -243,6 +243,9 @@ class RedisDB:
     def get_public_record(self, partial_id: str) -> Optional[Dict[str, Any]]:
         """Get a public record by ID or partial ID"""
         try:
+            # Convert partial_id to uppercase for consistency
+            partial_id = partial_id.upper()
+            
             # If partial ID provided, try to match against pattern
             if '-' not in partial_id:
                 pattern = current_app.config['WORK_ID_PATTERN']
