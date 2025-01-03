@@ -85,3 +85,27 @@ def get_new_id():
         from flask import current_app
         current_app.logger.error(f"Error generating new ID: {e}", exc_info=True)
         return jsonify({'error': str(e)}), 500
+
+@work_id_bp.route('/api/public/ids')
+def get_public_ids():
+    """Get list of all public record IDs"""
+    try:
+        db = RedisDB()
+        public_ids = db.get_public_record_ids()
+        return jsonify(public_ids)
+    except Exception as e:
+        current_app.logger.error(f"Error getting public IDs: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+@work_id_bp.route('/api/public/id/<record_id>')
+def get_public_record(record_id):
+    """Get a public record by ID or partial ID"""
+    try:
+        db = RedisDB()
+        record = db.get_public_record(record_id)
+        if record:
+            return jsonify(record)
+        return jsonify({'error': 'Record not found or not public'}), 404
+    except Exception as e:
+        current_app.logger.error(f"Error getting public record: {e}", exc_info=True)
+        return jsonify({'error': str(e)}), 500

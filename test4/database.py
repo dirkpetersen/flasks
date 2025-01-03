@@ -223,3 +223,53 @@ class RedisDB:
         """Delete a record"""
         return bool(self.client.delete(f'record:{record_id}'))
 
+    def get_public_record_ids(self) -> List[str]:
+        """Get IDs of all public records"""
+        keys = self.client.keys('record:*')
+        public_ids = []
+        for key in keys:
+            try:
+                data = self.client.json().get(key, Path.root_path())
+                if isinstance(data, list):
+                    data = data[0]
+                if data.get('public', False):
+                    record_id = key.split(':')[1]
+                    public_ids.append(record_id)
+            except Exception as e:
+                current_app.logger.error(f"Error processing record {key}: {e}")
+                continue
+        return sorted(public_ids)
+
+    def get_public_record(self, partial_id: str) -> Optional[Dict[str, Any]]:
+        """Get a public record by ID or partial ID"""
+        try:
+            # If partial ID provided, try to match against pattern
+            if '-' not in partial_id:
+                pattern = current_app.config['WORK_ID_PATTERN']
+                x_positions = [i for i, char in enumerate(pattern) if char == 'X']
+                if len(partial_id) == len(x_positions):
+                    # Reconstruct full ID using pattern
+                    id_chars = list(pattern)
+                    for pos, char in zip(x_positions, partial_id):
+                        id_chars[pos] = char
+                    full_id = ''.join(id_chars)
+                else:
+                    return None
+            else:
+                full_id = partial_id
+
+            # Get record data
+            key = f'record:{full_id}'
+            data = self.client.json().get(key, Path.root_path())
+            if data:
+                if isinstance(data, list):
+                    data = data[0]
+                # Only return if record is public
+                if data.get('public', False):
+                    data['id'] = full_id
+                    return data
+            return None
+        except Exception as e:
+            current_app.logger.error(f"Error getting public record: {e}")
+            return None
+
