@@ -74,6 +74,7 @@ const loadRecord = (record) => {
     document.getElementById('time_start').value = formatDateTime(record.time_start, true);
     document.getElementById('time_end').value = formatDateTime(record.time_end, true);
     document.getElementById('active').checked = record.active !== false;
+    document.getElementById('public').checked = record.public !== false;
 
     // Load meta fields
     Object.entries(metaFields).forEach(([fieldId, config]) => {
@@ -313,6 +314,7 @@ const submitForm = async (event) => {
             time_end: document.getElementById('time_end').value ? 
                 luxon.DateTime.fromISO(document.getElementById('time_end').value).toUTC().toSeconds() : null,
             active: document.getElementById('active').checked,
+            public: document.getElementById('public').checked,
             creator_id: document.getElementById('userIdInput').value,
             meta: {}
         };
