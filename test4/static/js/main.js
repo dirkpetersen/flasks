@@ -429,16 +429,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
             userIdInput.classList.remove('is-invalid');
             if (email) {
-                try {
-                    // Save creator ID in cookie (expires in 30 days)
-                    const expiryDate = new Date();
-                    expiryDate.setDate(expiryDate.getDate() + 30);
-                    document.cookie = `creatorId=${encodeURIComponent(email)};expires=${expiryDate.toUTCString()};path=/`;
-                    await loadRecords(1);
-                } catch (error) {
-                    console.error('Error loading records:', error);
-                    showToast('Failed to load records', 'danger');
-                }
+                // Redirect to verify page with email parameter
+                window.location.href = `/verify?email=${encodeURIComponent(email)}`;
             } else {
                 // Clear cookie if email is empty
                 document.cookie = 'creatorId=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
