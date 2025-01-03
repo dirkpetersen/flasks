@@ -108,7 +108,11 @@ def initiate_verification():
     if not send_verification_email(normalized_email, token):
         return jsonify({'error': 'Failed to send verification email'}), 500
         
-    return jsonify({'message': 'Verification email sent'})
+    return jsonify({
+        'message': 'Please check your email for two messages:\n' +
+                  '1. AWS SES verification request\n' +
+                  '2. Application verification link (will arrive after confirming the first email)'
+    })
 
 @work_id_bp.route('/verify/<token>')
 def verify_email_token(token):

@@ -10,11 +10,15 @@
                 </div>
                 <div class="card-body">
                     <p class="mb-4">
-                        Please enter your main work email address. We will send you two emails:
+                        Please enter your main work email address. You will receive:
                         <ol>
-                            <li>First to confirm you accept receiving emails from Amazon Simple Email Service</li>
-                            <li>Then a verification link to confirm your identity for {{ app_name }}</li>
+                            <li>First, an AWS SES verification request - you must click the link in this email</li>
+                            <li>After verifying with AWS SES, you'll receive a second email with your {{ app_name }} verification link</li>
                         </ol>
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            This two-step process is required by AWS SES for security purposes.
+                        </div>
                     </p>
                     <form id="verifyEmailForm">
                         <div class="mb-3">

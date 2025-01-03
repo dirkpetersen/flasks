@@ -40,6 +40,15 @@ def send_verification_email(email: str, token: str) -> bool:
     ses = session.client('ses')
     
     try:
+        # First verify the email address if not already verified
+        try:
+            ses.get_identity_verification_attributes(Identities=[email])['VerificationAttributes'][email]
+        except (KeyError, ClientError):
+            # Email not verified, send verification request
+            ses.verify_email_identity(EmailAddress=email)
+            return True  # Return true but don't send verification email yet
+            
+        # If we get here, email is verified, send the verification email
         response = ses.send_email(
             Source=current_app.config['MAIL_DEFAULT_SENDER'],
             Destination={
