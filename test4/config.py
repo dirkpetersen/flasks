@@ -8,7 +8,7 @@ def parse_meta_fields() -> Dict[str, List[str]]:
     """Parse META_SEL and META_MSEL environment variables"""
     meta_fields = {}
     order_counter = 0
-    for key, value in sorted(os.environ.items()):
+    for key, value in os.environ.items():
         if key.startswith(('META_SEL_', 'META_MSEL_')):
             if ':' in value:
                 field_name, options = value.split(':', 1)
@@ -45,4 +45,3 @@ class Config:
     
     # Meta fields
     META_FIELDS = parse_meta_fields()
-    print(META_FIELDS)
