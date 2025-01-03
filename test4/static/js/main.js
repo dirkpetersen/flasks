@@ -458,20 +458,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             return response.json();
         })
         .then(fields => {
-            // console.warn(`fields ${fields}`);
-            // Sort fields by order and create new object
-            metaFields = Object.entries(fields)
-                .sort((a, b) => a[1].order - b[1].order)
-                .reduce((obj, [key, value]) => {
-                    obj[key] = value;
-                    return obj;
-                }, {});
+            // Sort fields by order
+            const sortedEntries = Object.entries(fields).sort((a, b) => a[1].order - b[1].order);
+            metaFields = Object.fromEntries(sortedEntries);
             const container = document.getElementById('metaFields');
             if (!fields) {
                 console.warn('No meta fields configuration received');
                 return;
             }
-            Object.entries(fields).forEach(([fieldId, config]) => {
+            sortedEntries.forEach(([fieldId, config]) => {
                 console.warn(`Current ${fieldId}`);
                 if (!config || !config.options) {
                     console.warn(`Invalid config for field ${fieldId}`);
