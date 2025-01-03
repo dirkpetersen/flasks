@@ -464,13 +464,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.warn('No meta fields configuration received');
                 return;
             }
-            // Sort fields: single-select first, then multi-select
-            const sortedFields = Object.entries(fields).sort(([, a], [, b]) => {
-                if (a.multiple === b.multiple) return 0;
-                return a.multiple ? 1 : -1;
-            });
-
-            sortedFields.forEach(([fieldId, config]) => {
+            Object.entries(fields).forEach(([fieldId, config]) => {
                 if (!config || !config.options) {
                     console.warn(`Invalid config for field ${fieldId}`);
                     return;
