@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     placeholder: `Select ${config.name}`,
                     multiple: config.multiple,
                     search: true,
-                    maxWidth: config.multiple ? '100%' : '50%',
+                    maxWidth: config.multiple ? '100%' : '45%',
                     showSelectedOptionsFirst: true,
                     hideClearButton: false,
                     markSearchResults: true,
