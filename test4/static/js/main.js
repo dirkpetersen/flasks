@@ -458,7 +458,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return response.json();
         })
         .then(fields => {
-            console.warn(`fields ${fields}`);
+            // console.warn(`fields ${fields}`);
             // Sort fields by order and create new object
             metaFields = Object.entries(fields)
                 .sort((a, b) => a[1].order - b[1].order)
@@ -472,6 +472,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
             Object.entries(fields).forEach(([fieldId, config]) => {
+                console.warn(`Current ${fieldId}`);
                 if (!config || !config.options) {
                     console.warn(`Invalid config for field ${fieldId}`);
                     return;
