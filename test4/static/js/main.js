@@ -210,10 +210,7 @@ const updateRecordsList = (records) => {
 
 const updatePagination = (totalPages, currentPage) => {
     const pagination = document.querySelector('.pagination');
-    if (totalPages <= 1) {
-        pagination.innerHTML = '';
-        return;
-    }
+    // Always show pagination since we're limiting to 5 records per page
 
     let pages = [];
     const delta = 2;
