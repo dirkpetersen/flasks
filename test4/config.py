@@ -7,7 +7,8 @@ load_dotenv()
 def parse_meta_fields() -> Dict[str, List[str]]:
     """Parse META_SEL and META_MSEL environment variables"""
     meta_fields = {}
-    for key, value in os.environ.items():
+    order_counter = 0
+    for key, value in sorted(os.environ.items()):
         if key.startswith(('META_SEL_', 'META_MSEL_')):
             if ':' in value:
                 field_name, options = value.split(':', 1)
@@ -15,8 +16,10 @@ def parse_meta_fields() -> Dict[str, List[str]]:
                 meta_fields[field_id] = {
                     'name': field_name,
                     'options': [opt.strip() for opt in options.split(',')],
-                    'multiple': key.startswith('META_MSEL_')
+                    'multiple': key.startswith('META_MSEL_'),
+                    'order': order_counter
                 }
+                order_counter += 1
     return meta_fields
 
 class Config:
