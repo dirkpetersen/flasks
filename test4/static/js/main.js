@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 return;
             }
             sortedEntries.forEach(([fieldId, config]) => {
-                console.warn(`Current ${fieldId}`);
+                // console.warn(`Current ${fieldId}`);
                 if (!config || !config.options) {
                     console.warn(`Invalid config for field ${fieldId}`);
                     return;
