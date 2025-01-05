@@ -46,3 +46,6 @@ class Config:
     
     # Meta fields
     META_FIELDS = parse_meta_fields()
+    
+    # Allowed email domains (comma-separated list)
+    EMAIL_DOMAINS_ALLOWED = [d.strip() for d in os.getenv('EMAIL_DOMAINS_ALLOWED', '').split(',') if d.strip()]

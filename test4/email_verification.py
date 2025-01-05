@@ -8,10 +8,19 @@ from typing import Optional, Tuple
 from .database import RedisDB
 
 def validate_email_address(email: str) -> Tuple[bool, Optional[str]]:
-    """Validate email format"""
+    """Validate email format and domain"""
     try:
         validation = validate_email(email, check_deliverability=True)
-        return True, validation.normalized
+        normalized_email = validation.normalized
+        
+        # Check if domain restrictions are in place
+        allowed_domains = current_app.config['EMAIL_DOMAINS_ALLOWED']
+        if allowed_domains:
+            domain = normalized_email.split('@')[1]
+            if domain not in allowed_domains:
+                return False, f"Email domain '{domain}' is not allowed. Allowed domains: {', '.join(allowed_domains)}"
+        
+        return True, normalized_email
     except EmailNotValidError as e:
         return False, str(e)
 
