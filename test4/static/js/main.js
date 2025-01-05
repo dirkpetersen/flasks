@@ -91,7 +91,9 @@ const loadRecord = (record) => {
     // Update submit button
     const submitButton = form.querySelector('button[type="submit"]');
     if (!isOwner) {
-        submitButton.innerHTML = '<i class="bi bi-lock"></i> View Only';
+        const ownerEmail = record.creator_id || 'unknown';
+        const truncatedEmail = ownerEmail.length > 30 ? ownerEmail.substring(0, 27) + '...' : ownerEmail;
+        submitButton.innerHTML = `<i class="bi bi-lock"></i> View Only for ${truncatedEmail}'s IDs`;
         submitButton.classList.remove('btn-primary');
         submitButton.classList.add('btn-secondary');
     } else {
