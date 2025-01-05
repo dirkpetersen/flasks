@@ -333,6 +333,7 @@ const submitForm = async (event) => {
             id: document.getElementById('recordId').textContent,
             title: document.getElementById('title').value,
             description: document.getElementById('description').value,
+            access_control_by: document.getElementById('access_control_by').value,
             time_start: document.getElementById('time_start').value ? 
                 luxon.DateTime.fromISO(document.getElementById('time_start').value).toUTC().toSeconds() : null,
             time_end: document.getElementById('time_end').value ? 
