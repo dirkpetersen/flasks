@@ -15,11 +15,7 @@ def get_records():
     page = request.args.get('page', 1, type=int)
     show_all = request.args.get('show_all', 'false').lower() == 'true'
     user_id = request.args.get('user_id')
-    
-    if not show_all and user_id:
-        records = db.get_all_records(creator_id=user_id, page=page)
-    else:
-        records = db.get_all_records(page=page)
+    records = db.get_all_records(creator_id=user_id, page=page, show_all=show_all)
     
     return jsonify(records)
 
@@ -67,10 +63,7 @@ def search_records():
     show_all = request.args.get('show_all', 'false').lower() == 'true'
     user_id = request.args.get('user_id')
     
-    if not show_all and user_id:
-        records = db.search_records(query, creator_id=user_id)
-    else:
-        records = db.search_records(query)
+    records = db.search_records(query, creator_id=user_id, show_all=show_all)
     
     return jsonify(records)
 

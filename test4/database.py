@@ -40,7 +40,8 @@ class RedisDB:
                 return work_id
 
     def get_all_records(self, creator_id: Optional[str] = None, 
-                       page: int = 1, per_page: int = records_per_page) -> Dict[str, Any]:
+                       page: int = 1, per_page: int = records_per_page,
+                       show_all: bool = False) -> Dict[str, Any]:
         """Get paginated records, optionally filtered by creator"""
         try:
             # Get all records
@@ -53,13 +54,13 @@ class RedisDB:
                     data = data[0]
                 
                 # Filter by creator_id and public flag
-                if creator_id:
-                    # Show records if they belong to the user or are public
-                    if data.get('creator_id') != creator_id and data.get('public') is False:
+                if not show_all and creator_id:
+                    # Show only user's records when not showing all
+                    if data.get('creator_id') != creator_id:
                         continue
                 else:
-                    # When showing all records, only show public ones
-                    if data.get('public') is False:
+                    # When showing all records, show all public ones and user's private ones
+                    if data.get('public') is False and data.get('creator_id') != creator_id:
                         continue
                     
                 data['id'] = key.split(':')[1]
@@ -91,7 +92,8 @@ class RedisDB:
             current_app.logger.error(f"Error getting records: {e}")
             return {'records': [], 'total': 0, 'pages': 0}
 
-    def search_records(self, query: str, creator_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    def search_records(self, query: str, creator_id: Optional[str] = None, 
+                      show_all: bool = False) -> List[Dict[str, Any]]:
         """Search records with Boolean AND and quoted string support"""
         try:
             # Get all records
@@ -137,13 +139,13 @@ class RedisDB:
                         data = data[0]
                     
                     # Filter by creator_id and public flag
-                    if creator_id:
-                        # Show records if they belong to the user or are public
-                        if data.get('creator_id') != creator_id and data.get('public') is False:
+                    if not show_all and creator_id:
+                        # Show only user's records when not showing all
+                        if data.get('creator_id') != creator_id:
                             continue
                     else:
-                        # When showing all records, only show public ones
-                        if data.get('public') is False:
+                        # When showing all records, show all public ones and user's private ones
+                        if data.get('public') is False and data.get('creator_id') != creator_id:
                             continue
                     
                     # Boolean AND search in title and description
