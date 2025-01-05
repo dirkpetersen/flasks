@@ -10,15 +10,7 @@
                 </div>
                 <div class="card-body">
                     <p class="mb-4">
-                        Please enter your main work email address. You will receive:
-                        <ol>
-                            <li>First, an AWS SES verification request - you must click the link in this email</li>
-                            <li>After verifying with AWS SES, you'll receive a second email with your {{ app_name }} verification link</li>
-                        </ol>
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            This two-step process is required by AWS SES for security purposes.
-                        </div>
+                        Please enter your main work email address. You will receive an email from {{ config['MAIL_DEFAULT_SENDER'] }} asking you to click on a link which verifies your email and authenticates you to this site in one step. It will store a secure cookie in your browser for one month after which you have to enter your email address again.
                     </p>
                     <form id="verifyEmailForm">
                         <div class="mb-3">
