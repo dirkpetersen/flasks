@@ -72,6 +72,7 @@ const loadRecord = (record) => {
     document.getElementById('recordId').setAttribute('data-new-id', 'false');
     document.getElementById('title').value = record.title || '';
     document.getElementById('description').value = record.description || '';
+    document.getElementById('access_control_by').value = record.access_control_by || '';
     document.getElementById('time_start').value = formatDateTime(record.time_start, true);
     document.getElementById('time_end').value = formatDateTime(record.time_end, true);
     document.getElementById('active').checked = record.active !== false;
