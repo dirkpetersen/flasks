@@ -396,8 +396,10 @@ const handleDateTimeChange = (type) => {
 // Event Listeners
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Start with a new record
-    await resetForm();
+    // Start with a new record only if not on verify page
+    if (!window.location.pathname.includes('/verify')) {
+        await resetForm();
+    }
     // Initialize form submission
     document.getElementById('recordForm').addEventListener('submit', submitForm);
 
