@@ -150,9 +150,24 @@ class RedisDB:
                     
                     # Boolean AND search in title and description
                     if terms:
-                        title = str(data.get('title', '')).lower()
-                        description = str(data.get('description', '')).lower()
-                        searchable_text = f"{title} {description}"
+                        # Include all fields in search
+                        searchable_parts = [
+                            str(data.get('title', '')),
+                            str(data.get('description', '')),
+                            str(data.get('access_control_by', '')),
+                            str(data.get('id', '')),
+                            str(data.get('creator_id', ''))
+                        ]
+                        
+                        # Add all meta field values to searchable text
+                        if data.get('meta'):
+                            for meta_value in data['meta'].values():
+                                if isinstance(meta_value, list):
+                                    searchable_parts.extend(str(v) for v in meta_value)
+                                else:
+                                    searchable_parts.append(str(meta_value))
+                        
+                        searchable_text = ' '.join(searchable_parts).lower()
                         
                         # All terms must match for the record to be included
                         if not all(term in searchable_text for term in terms):
