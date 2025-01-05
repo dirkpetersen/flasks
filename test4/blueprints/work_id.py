@@ -47,6 +47,16 @@ def create_record():
 def update_record(record_id):
     db = RedisDB()
     data = request.get_json()
+    
+    # Get existing record
+    existing_record = db.get_record(record_id)
+    if not existing_record:
+        return jsonify({'error': 'Record not found'}), 404
+        
+    # Check if user owns the record
+    if existing_record.get('creator_id') != data.get('creator_id'):
+        return jsonify({'error': 'You can only modify your own records'}), 403
+    
     try:
         db.save_record(record_id, data)
         return jsonify({'message': 'Record updated successfully'})

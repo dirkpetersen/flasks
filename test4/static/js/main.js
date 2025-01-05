@@ -76,6 +76,29 @@ const loadRecord = (record) => {
     document.getElementById('time_end').value = formatDateTime(record.time_end, true);
     document.getElementById('active').checked = record.active !== false;
     document.getElementById('public').checked = record.public !== false;
+    
+    // Check if record belongs to current user
+    const currentUserId = document.getElementById('userIdInput').value;
+    const isOwner = record.creator_id === currentUserId;
+    
+    // Disable form fields if user doesn't own the record
+    const form = document.getElementById('recordForm');
+    const formElements = form.elements;
+    for (let i = 0; i < formElements.length; i++) {
+        formElements[i].disabled = !isOwner;
+    }
+    
+    // Update submit button
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (!isOwner) {
+        submitButton.innerHTML = '<i class="bi bi-lock"></i> View Only';
+        submitButton.classList.remove('btn-primary');
+        submitButton.classList.add('btn-secondary');
+    } else {
+        submitButton.innerHTML = '<i class="bi bi-save"></i> Save Record';
+        submitButton.classList.remove('btn-secondary');
+        submitButton.classList.add('btn-primary');
+    }
 
     // Load meta fields
     Object.entries(metaFields).forEach(([fieldId, config]) => {
