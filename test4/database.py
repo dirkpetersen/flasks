@@ -52,9 +52,15 @@ class RedisDB:
                 if isinstance(data, list):
                     data = data[0]
                 
-                # Filter by creator_id if specified
-                if creator_id and data.get('creator_id') != creator_id:
-                    continue
+                # Filter by creator_id and public flag
+                if creator_id:
+                    # Show records if they belong to the user or are public
+                    if data.get('creator_id') != creator_id and data.get('public') is False:
+                        continue
+                else:
+                    # When showing all records, only show public ones
+                    if data.get('public') is False:
+                        continue
                     
                 data['id'] = key.split(':')[1]
                 records.append(data)
@@ -130,9 +136,15 @@ class RedisDB:
                     if isinstance(data, list):
                         data = data[0]
                     
-                    # Filter by creator_id if specified
-                    if creator_id and data.get('creator_id') != creator_id:
-                        continue
+                    # Filter by creator_id and public flag
+                    if creator_id:
+                        # Show records if they belong to the user or are public
+                        if data.get('creator_id') != creator_id and data.get('public') is False:
+                            continue
+                    else:
+                        # When showing all records, only show public ones
+                        if data.get('public') is False:
+                            continue
                     
                     # Boolean AND search in title and description
                     if terms:
