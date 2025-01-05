@@ -26,12 +26,12 @@ def validate_email_address(email: str) -> Tuple[bool, Optional[str]]:
 
 def generate_token(email: str) -> str:
     """Generate a secure token for email verification"""
-    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    serializer = URLSafeTimedSerializer(current_app.config['FLASK_SECRET_KEY'])
     return serializer.dumps(email, salt='email-verification')
 
 def verify_token(token: str, expiration=3600) -> Optional[str]:
     """Verify the email verification token"""
-    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    serializer = URLSafeTimedSerializer(current_app.config['FLASK_SECRET_KEY'])
     try:
         email = serializer.loads(token, salt='email-verification', max_age=expiration)
         return email
