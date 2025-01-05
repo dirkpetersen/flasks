@@ -14,6 +14,7 @@
         <div class="container">
             <a class="navbar-brand text-white" href="/">{{ app_name }}</a>
             <div class="d-flex align-items-center">
+                {% if not request.path.startswith('/verify') %}
                 <div class="input-group">
                     <input type="email" class="form-control" id="userIdInput" 
                            placeholder="Enter your email" autocomplete="email">
@@ -21,6 +22,7 @@
                         <i class="bi bi-check-circle"></i>
                     </button>
                 </div>
+                {% endif %}
             </div>
         </div>
     </nav>
