@@ -8,7 +8,7 @@ import redis
 from redis.commands.json.path import Path
 from flask import current_app
 
-records_per_page = 6
+records_per_page = 7
 
 class RedisDB:
     _instance = None
