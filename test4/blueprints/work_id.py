@@ -3,7 +3,8 @@ from test4.database import RedisDB
 from test4.utils import local_only
 from test4.email_verification import (
     validate_email_address, generate_token, verify_token,
-    send_verification_email, store_identity, get_identity
+    send_verification_email, store_identity, get_identity,
+    generate_creator_token, verify_creator_token
 )
 
 work_id_bp = Blueprint('work_id', __name__)
