@@ -17,15 +17,28 @@ class RedisDB:
             cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, host=None, port=None, db=None):
         if not hasattr(self, 'client'):
+            # Use parameters if provided, otherwise get from Flask config
+            if host is None or port is None:
+                from flask import current_app
+                host = current_app.config['REDIS_HOST']
+                port = current_app.config['REDIS_PORT']
+                db = current_app.config.get('REDIS_DB', 0)
+            
             self.client = redis.Redis(
-                host=current_app.config['REDIS_HOST'],
-                port=current_app.config['REDIS_PORT'],
-                db=current_app.config.get('REDIS_DB', 0),
+                host=host,
+                port=port,
+                db=db,
                 decode_responses=True
             )
-            current_app.logger.debug("Redis client initialized")
+            
+            # Only log if we have an application context
+            try:
+                from flask import current_app
+                current_app.logger.debug("Redis client initialized")
+            except RuntimeError:
+                print("Redis client initialized")
 
 
     def generate_work_id(self) -> str:
