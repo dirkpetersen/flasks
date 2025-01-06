@@ -19,19 +19,16 @@ def create_app(config_class: type = Config) -> Flask:
     CORS(app)
     
     # Check Redis connectivity
-    try:
-        redis_db = RedisDB(
-            host=app.config['REDIS_HOST'],
-            port=app.config['REDIS_PORT'],
-            db=app.config.get('REDIS_DB', 0)
-        )
-        redis_db.client.ping()
-    except ConnectionError as e:
-        app.logger.error(f"Failed to connect to Redis: {e}")
-        @app.route('/')
-        def maintenance():
-            return render_template('errors/maintenance.html'), 503
-        return app
+    with app.app_context():
+        try:
+            redis_db = RedisDB()
+            redis_db.client.ping()
+        except ConnectionError as e:
+            app.logger.error(f"Failed to connect to Redis: {e}")
+            @app.route('/')
+            def maintenance():
+                return render_template('errors/maintenance.html'), 503
+            return app
 
     # Register blueprints
     app.register_blueprint(errors_bp)
