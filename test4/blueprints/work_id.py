@@ -10,7 +10,6 @@ from test4.email_verification import (
 work_id_bp = Blueprint('work_id', __name__)
 
 @work_id_bp.route('/api/records', methods=['GET'])
-@local_only
 def get_records():
     db = RedisDB()
     page = request.args.get('page', 1, type=int)
@@ -21,7 +20,6 @@ def get_records():
     return jsonify(records)
 
 @work_id_bp.route('/api/records/<record_id>', methods=['GET'])
-@local_only
 def get_record(record_id):
     db = RedisDB()
     record = db.get_record(record_id)
@@ -30,7 +28,6 @@ def get_record(record_id):
     return jsonify({'error': 'Record not found'}), 404
 
 @work_id_bp.route('/api/records', methods=['POST'])
-@local_only
 def create_record():
     db = RedisDB()
     data = request.get_json()
@@ -44,7 +41,6 @@ def create_record():
         return jsonify({'error': str(e)}), 500
 
 @work_id_bp.route('/api/records/<record_id>', methods=['PUT'])
-@local_only
 def update_record(record_id):
     db = RedisDB()
     data = request.get_json()
@@ -65,7 +61,6 @@ def update_record(record_id):
         return jsonify({'error': str(e)}), 500
 
 @work_id_bp.route('/api/search')
-@local_only
 def search_records():
     db = RedisDB()
     # Decode the query parameter since it may be URL encoded
@@ -97,7 +92,6 @@ def verify_email():
     return render_template('verify_email.html', app_name=current_app.config['APP_NAME'])
 
 @work_id_bp.route('/api/verify-email', methods=['POST'])
-@local_only
 def initiate_verification():
     data = request.get_json()
     email = data.get('email')
@@ -145,13 +139,11 @@ def verify_email_token(token):
     return response
 
 @work_id_bp.route('/api/meta-fields')
-@local_only
 def get_meta_fields():
     from flask import current_app
     return jsonify(current_app.config.get('META_FIELDS', {}))
 
 @work_id_bp.route('/api/new-id')
-@local_only
 def get_new_id():
     try:
         db = RedisDB()
