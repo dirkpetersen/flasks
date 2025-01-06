@@ -79,10 +79,17 @@ def search_records():
 
 @work_id_bp.route('/')
 def index():
-    email = request.cookies.get('creatorId')
+    creator_token = request.cookies.get('creatorToken')
+    if not creator_token:
+        return redirect(url_for('work_id.verify_email'))
+    
+    email = verify_creator_token(creator_token)
     if not email or not get_identity(email):
         return redirect(url_for('work_id.verify_email'))
-    return render_template('index.html', app_name=current_app.config['APP_NAME'])
+        
+    return render_template('index.html', 
+                         app_name=current_app.config['APP_NAME'],
+                         verified_email=email)
 
 @work_id_bp.route('/verify')
 def verify_email():
@@ -132,7 +139,8 @@ def verify_email_token(token):
                              app_name=current_app.config['APP_NAME'])
     
     response = redirect(url_for('work_id.index'))
-    response.set_cookie('creatorId', email, max_age=30*24*60*60)  # 30 days
+    creator_token = generate_creator_token(email)
+    response.set_cookie('creatorToken', creator_token, max_age=30*24*60*60)  # 30 days
     return response
 
 @work_id_bp.route('/api/meta-fields')

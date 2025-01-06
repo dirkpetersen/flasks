@@ -106,3 +106,17 @@ def get_identity(email: str) -> Optional[dict]:
     except Exception as e:
         current_app.logger.error(f"Failed to get identity: {e}")
         return None
+
+def generate_creator_token(email: str) -> str:
+    """Generate a secure token for creator authentication"""
+    serializer = URLSafeTimedSerializer(current_app.config['FLASK_SECRET_KEY'])
+    return serializer.dumps(email, salt='creator-auth')
+
+def verify_creator_token(token: str, max_age=30*24*60*60) -> Optional[str]:
+    """Verify the creator token and return the email address"""
+    serializer = URLSafeTimedSerializer(current_app.config['FLASK_SECRET_KEY'])
+    try:
+        email = serializer.loads(token, salt='creator-auth', max_age=max_age)
+        return email
+    except:
+        return None

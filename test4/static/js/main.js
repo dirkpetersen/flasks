@@ -444,10 +444,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize user ID validation
     const userIdInput = document.getElementById('userIdInput');
     
-    // Load creator ID from cookie
-    const savedCreatorId = document.cookie.split('; ').find(row => row.startsWith('creatorId='));
-    if (savedCreatorId) {
-        userIdInput.value = decodeURIComponent(savedCreatorId.split('=')[1]);
+    // Set email from server-side if available
+    const verifiedEmail = document.querySelector('meta[name="verified-email"]')?.content;
+    if (verifiedEmail) {
+        userIdInput.value = verifiedEmail;
         loadRecords(1);
     }
 
