@@ -32,5 +32,5 @@ start `aider.chat` with this command line:
 ```
 alias aider='aider --dark-mode --vim --cache-prompts'
 
-aider app.py database.py config.py blueprints/* templates/errors/* templates/base.html templates/index.html static/css/* static/js/*
+aider --env-file ~/.env.aider *.py templates/*.html templates/errors/*.html blueprints/*.py static/css/*.css static/js/*.js
 ```
