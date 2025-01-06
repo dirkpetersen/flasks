@@ -2,9 +2,12 @@
 
 from typing import Optional, Tuple
 import os
+import sys
 from flask import Flask, render_template, jsonify
 from flask_cors import CORS
+from redis.exceptions import ConnectionError
 from .config import Config
+from .database import RedisDB
 from .blueprints.errors import errors_bp
 
 def create_app(config_class: type = Config) -> Flask:
@@ -14,6 +17,17 @@ def create_app(config_class: type = Config) -> Flask:
 
     # Initialize extensions
     CORS(app)
+    
+    # Check Redis connectivity
+    try:
+        redis_db = RedisDB()
+        redis_db.client.ping()
+    except ConnectionError as e:
+        app.logger.error(f"Failed to connect to Redis: {e}")
+        @app.route('/')
+        def maintenance():
+            return render_template('errors/maintenance.html'), 503
+        return app
 
     # Register blueprints
     app.register_blueprint(errors_bp)
