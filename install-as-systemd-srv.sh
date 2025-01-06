@@ -51,7 +51,9 @@ else
         echo "Error: app.py not found in '$APP_DIR'"
         exit 1
     fi
-    PYTHON_COMMAND="-m $APP_DIR.app"
+    # Handle module path for Python, removing leading/trailing dots and normalizing separators
+    MODULE_PATH=$(echo "$APP_DIR" | tr '/' '.' | sed 's/^\.//;s/\.$//;s/\.\.*/./g')
+    PYTHON_COMMAND="-m ${MODULE_PATH}.app"
     SERVICE_DESCRIPTION="Flask application: $(basename "$APP_DIR")"
 fi
 
@@ -90,6 +92,7 @@ fi
 
 # Install requirements
 echo "Installing requirements..."
+"$VENV_DIR/bin/pip" install --upgrade pip
 "$VENV_DIR/bin/pip" install -r "$REPO_ROOT/requirements.txt"
 if [ $? -ne 0 ]; then
     echo "Error: Failed to install requirements"
@@ -100,7 +103,8 @@ fi
 if [ "$CURRENT_DIR_MODE" = true ]; then
     SERVICE_NAME="flask-$(basename "$PYTHON_COMMAND" .py)"
 else
-    SERVICE_NAME="flask-$APP_DIR"
+    # Remove any trailing slashes and get the base name
+    SERVICE_NAME="flask-$(basename "$APP_DIR" | tr -d '/')"
 fi
 
 # Create systemd service file
