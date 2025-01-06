@@ -17,8 +17,8 @@ def validate_email_address(email: str) -> Tuple[bool, Optional[str]]:
         allowed_domains = current_app.config['EMAIL_DOMAINS_ALLOWED']
         if allowed_domains:
             domain = normalized_email.split('@')[1]
-            if domain not in allowed_domains:
-                return False, f"Email domain '{domain}' is not allowed. Allowed domains: {', '.join(allowed_domains)}"
+            if not any(domain.endswith(allowed_domain) for allowed_domain in allowed_domains):
+                return False, f"Email domain '{domain}' is not allowed. Must end with: {', '.join(allowed_domains)}"
         
         return True, normalized_email
     except EmailNotValidError as e:
