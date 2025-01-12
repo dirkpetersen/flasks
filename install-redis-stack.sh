@@ -151,14 +151,14 @@ main() {
 
     # Installation path decision
     case "$os_type" in
-        "rhel"|"amzn")
+        "rhel"|"rocky"|"almalinux"|"amzn")
             if check_arch; then
                 install_redis_rhel "$os_type"
             else
                 install_redis_docker
             fi
             ;;
-        "ubuntu"|"debian")
+        "ubuntu"|"debian"|"linuxmint"|"elementary"|"kali"|"pop")
             if [[ "$os_type" == "ubuntu" && "$os_version" > "22.04" ]]; then
                 log "Ubuntu version > 22.04 detected. Using Docker installation."
                 install_redis_docker
