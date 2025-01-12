@@ -77,7 +77,7 @@ install_redis_rhel() {
     log "Installing Redis on RHEL-based system..."
     
     # Install EPEL if RHEL 9
-    if [[ "$1" == "rhel" ]]; then
+    if [[ "$1" != "amzn" ]]; then
         log "Installing EPEL repository..."
         sudo dnf -y install epel-release
     fi
